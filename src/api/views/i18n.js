@@ -48,7 +48,7 @@ export class I18n {
     if (!value) return key; // Fallback to key if not found
 
     // Replace params {name}
-    return value.replace(/\{(\w+)\}/g, (_, k) => params[k] || `{${k}}`);
+    return value.replace(/\{(\w+)\}/g, (_, k) => (params[k] !== undefined ? params[k] : `{${k}}`));
   }
 }
 

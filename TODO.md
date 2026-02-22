@@ -153,5 +153,3 @@ cipr.info
 guasa.art
 
 ---
-
-Resultados cuando se filtra por Ubicación y no hay dice Resultados ({count})
