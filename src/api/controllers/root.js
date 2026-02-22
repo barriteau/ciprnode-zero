@@ -73,7 +73,7 @@ export const get = (req, db, _config) => {
             </section>
         `;
 
-    return htmlResponse('Home', body, isFragment);
+    return htmlResponse('Home', body, isFragment, { parentUrl: _config.parent_url });
   }
 
   // Default: Plain Text?

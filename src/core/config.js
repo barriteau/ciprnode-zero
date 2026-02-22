@@ -21,6 +21,7 @@ import { exists } from '@std/fs';
  * @property {number} longitude
  * @property {string} bootstrap_node
  * @property {number} page_size
+ * @property {string} [parent_url]
  */
 
 /**
@@ -80,6 +81,7 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
 
     const config = {
       za: ciprEntry.za || 'localhost',
+      parent_url: data.parent_url || '',
       port: Number(network.port) || 443,
       env: data.env || 'development',
       title: ciprEntry.title || '',
@@ -122,6 +124,7 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
 const getDefaultConfig = () => {
   return {
     za: 'localhost',
+    parent_url: '',
     port: 8080,
     env: 'development',
     title: 'Default Node',

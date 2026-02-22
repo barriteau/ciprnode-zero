@@ -138,6 +138,25 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be an integer >= 1000ms. Current Value: ${config.expected_propagation_time}`,
   );
 
+  // 9. Validate Parent URL if present
+  if (config.parent_url) {
+    let isValidUrl = false;
+    try {
+      const url = new URL(config.parent_url);
+      isValidUrl = url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      isValidUrl = false;
+    }
+    check(
+      'Parent URL',
+      config.parent_url,
+      isValidUrl,
+      `Must be a valid HTTP or HTTPS URL. Current Value: "${config.parent_url}"`,
+    );
+  } else {
+    validations['Parent URL'] = 'Skipped (None provided)';
+  }
+
   if (isValid) {
     logKeyValueTable(validations);
     console.log(`[OK] All checks passed\n`);

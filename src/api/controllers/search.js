@@ -282,6 +282,7 @@ export const query = async (req, db, config, scopeZa) => {
   const templateData = {
     scopeZa: scopeZa,
     configZa: config.za,
+    parentUrl: config.parent_url || null,
     stats: { // potentially expensive to get real count every time?
       count: countEntries(db),
       last_insert: (() => {

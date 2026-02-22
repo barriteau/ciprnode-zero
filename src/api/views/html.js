@@ -10,10 +10,13 @@ const ALPS_PROFILE = '/profiles/cipr.json';
  * @param {string} title
  * @param {string} bodyContent
  * @param {boolean} isFragment - If true, returns only body content (HTMX).
+ * @param {object} options - Optional parameters like parentUrl
  * @returns {Response}
  */
-export const htmlResponse = (title, bodyContent, isFragment = false) => {
+export const htmlResponse = (title, bodyContent, isFragment = false, options = {}) => {
   let html = '';
+  const parentUrl = options.parentUrl || null;
+  const brandHref = parentUrl ? parentUrl : '/';
 
   if (isFragment) {
     html = bodyContent;
@@ -35,7 +38,7 @@ export const htmlResponse = (title, bodyContent, isFragment = false) => {
 <body hx-boost="true">
     <header>
         <nav>
-            <a href="/" class="brand">Ciprnode</a>
+            <a href="${brandHref}" class="brand">Ciprnode</a>
             <div class="menu">
                 <a href="/">Home</a>
                 <a href="/profiles/cipr.json">API Profile</a>

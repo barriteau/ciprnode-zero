@@ -1,6 +1,6 @@
   <nav id="toolbar">
-    <div>
-      <a href="/" id="ciprnode-za"><%= it.configZa || 'ciprnode' %></a>
+    <div id="parent-url">
+      <a href="<%= it.parentUrl || '/' %>" id="ciprnode-za"><%= it.configZa || 'ciprnode' %></a>
     </div>
 
     <div>
