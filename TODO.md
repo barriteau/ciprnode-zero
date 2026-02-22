@@ -100,7 +100,7 @@ The header section at the top of the page must include the following sections:
 The footer section must include the following links, all centered and separated with the • symbol:
 
 - API Profile: `/profiles/cipr.json`
-- Cipr's foundational site: https://cipr.info/
+- Cipr's foundational site: <https://cipr.info/>
 - PWA installation button (if PWA is not installed but is installable)
 
 Create the header and footer sections as reusable templates to be included when needed in the `public/*.html` files.

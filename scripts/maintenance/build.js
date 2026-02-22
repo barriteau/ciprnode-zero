@@ -142,57 +142,43 @@ const build = async () => {
 
     // C. Create Archives
     const archives = [];
+    const isWindows = t.target.includes('windows');
 
-    // 1. ZIP
-    try {
-      const zipName = `${t.name}.zip`;
-      console.log(`Creating ${zipName}...`);
-      const zipCmd = new Deno.Command('tar', {
-        // Archive the fixed directory 'ciprnode-zero'
-        args: ['-a', '-cf', zipName, internalDirName],
-        cwd: distDir,
-        stdout: 'inherit', // tar might be noisy
-        stderr: 'inherit',
-      });
-      if ((await zipCmd.output()).success) archives.push(zipName);
-    } catch (_err) {
-      console.warn('ZIP creation failed');
-    }
-
-    // 2. TAR.GZ
-    try {
-      const tarName = `${t.name}.tar.gz`;
-      console.log(`Creating ${tarName}...`);
-      // tar -czf on Linux/Mac. On Windows tar usually supports -z if it's the BSD tar packaged with Win 10.
-      const tarCmd = new Deno.Command('tar', {
-        args: ['-czf', tarName, internalDirName],
-        cwd: distDir,
-        stderr: 'piped', // Suppress errors if -z not supported
-      });
-      if ((await tarCmd.output()).success) {
-        archives.push(tarName);
-      } else {
-        // Fallback: simple .tar if gzip not supported? Or warn.
-        console.warn('TAR.GZ creation failed (flags might vary by OS)');
+    if (isWindows) {
+      // 1. ZIP (Windows only)
+      try {
+        const zipName = `${t.name}.zip`;
+        console.log(`Creating ${zipName}...`);
+        const zipCmd = new Deno.Command('tar', {
+          // Archive the fixed directory 'ciprnode-zero'
+          args: ['-a', '-cf', zipName, internalDirName],
+          cwd: distDir,
+          stdout: 'inherit', // tar might be noisy
+          stderr: 'inherit',
+        });
+        if ((await zipCmd.output()).success) archives.push(zipName);
+      } catch (_err) {
+        console.warn('ZIP creation failed');
       }
-    } catch (_err) {
-      console.warn('TAR.GZ creation skipped');
-    }
-
-    // 3. 7Z
-    try {
-      const sevenZName = `${t.name}.7z`;
-      console.log(`Creating ${sevenZName}...`);
-      const sevenZCmd = new Deno.Command('7z', {
-        args: ['a', sevenZName, internalDirName],
-        cwd: distDir,
-        stdout: 'null', // 7z is very verbose
-        stderr: 'inherit',
-      });
-      if ((await sevenZCmd.output()).success) archives.push(sevenZName);
-      else console.warn('7z command failed (is it in PATH?)');
-    } catch (_err) {
-      console.warn('7z not found in PATH, skipping .7z');
+    } else {
+      // 2. TAR.GZ (Linux/Mac only)
+      try {
+        const tarName = `${t.name}.tar.gz`;
+        console.log(`Creating ${tarName}...`);
+        // tar -czf on Linux/Mac.
+        const tarCmd = new Deno.Command('tar', {
+          args: ['-czf', tarName, internalDirName],
+          cwd: distDir,
+          stderr: 'piped', // Suppress errors if -z not supported
+        });
+        if ((await tarCmd.output()).success) {
+          archives.push(tarName);
+        } else {
+          console.warn('TAR.GZ creation failed (flags might vary by OS)');
+        }
+      } catch (_err) {
+        console.warn('TAR.GZ creation skipped');
+      }
     }
 
     // D. Generate Checksums
