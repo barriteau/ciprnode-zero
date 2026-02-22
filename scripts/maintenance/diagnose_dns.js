@@ -1,4 +1,4 @@
-import { loadConfig } from '../src/core/config.js';
+import { loadConfig } from '../../src/core/config.js';
 
 const diagnose = async () => {
   console.log('DNS Diagnostic Tool');
