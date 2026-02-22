@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "title": "Ciprnode - Indice Cosmico delle Risorse Pubbliche",
+    "description": "Un indice di ricerca decentralizzato per risorse pubbliche."
+  },
+  "header": {
+    "mode_toggle": "Modo",
+    "help": "Aiuto",
+    "stats": "Ultimo inserimento di {count} aggiunto il {date}"
+  },
+  "search": {
+    "title": "Indice Cosmico delle Risorse Pubbliche",
+    "placeholder": "Operatori: AND, OR, NOT, *, ^ \"\", ()",
+    "btn": "Cerca",
+    "filters": {
+      "date": "Data",
+      "after": "Dopo",
+      "before": "Prima",
+      "location": "Posizione",
+      "near": "Vicino a",
+      "near_placeholder": "Scrivi un luogo...",
+      "radius": "Distanza Massima",
+      "ol": "Livello di Offensività",
+      "ol_any": "Qualsiasi",
+      "ol_0": "Nessuno",
+      "ol_1": "Personale",
+      "ol_2": "Gruppi",
+      "ol_3": "Universale"
+    },
+    "options": {
+      "toggle": "Filtri Avanzati",
+      "reset": "Ripristina"
+    }
+  },
+  "results": {
+    "heading": "Risultati ({count})",
+    "none": "Nessun risultato trovato."
+  },
+  "footer": {
+    "profile": "Profilo API",
+    "foundation": "Fondazione Cipr",
+    "install": "Installa App",
+    "install_desktop": "Cipr sul tuo desktop",
+    "install_mobile": "Cipr sul tuo cellulare"
+  },
+  "error": {
+    "noscript": "L'uso di ECMAScript/JavaScript non è opzionale qui perché questo è un semplice client per una rete diversa di risorse. Senza scripting, il recupero non è possibile. Ad esempio, questo strumento diventa inutile in queste condizioni."
+  },
+  "help": {
+    "title": "Centro Assistenza",
+    "faq": {
+      "title": "Domande Frequenti",
+      "q1": "Cos'è Cipr?",
+      "a1": "Cipr è una rete decentralizzata per l'indicizzazione di risorse pubbliche.",
+      "q2": "Cos'è un ciprnode?",
+      "a2": "Un ciprnode è un server che esegue il software Cipr.",
+      "q3": "Come usare il ciprnode?",
+      "a3": "Usa la barra di ricerca nella home page.",
+      "q4": "Come contribuire a Cipr?",
+      "a4": "Puoi contribuire eseguendo un nodo.",
+      "q5": "Come installare il ciprnode?",
+      "a5": "Segui la guida all'installazione.",
+      "q6": "Come aggiornare il ciprnode?",
+      "a6": "Usa il comando di aggiornamento.",
+      "q7": "Come disinstallare il ciprnode?",
+      "a7": "Rimuovi la directory dell'applicazione.",
+      "q8": "Come ottenere aiuto?",
+      "a8": "Visita i forum della comunità."
+    },
+    "source": {
+      "title": "Codice Sorgente",
+      "content": "Il codice sorgente è aperto."
+    },
+    "license": {
+      "title": "Licenza"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "content": "Rispettiamo la tua privacy."
+    },
+    "terms": {
+      "title": "Termini di Servizio",
+      "content": "Uso a proprio rischio."
+    }
+  }
+}

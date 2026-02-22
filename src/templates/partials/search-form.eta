@@ -1,0 +1,78 @@
+<h1 class="main cover">Cipr: <%= it.t('search.title') %></h1>
+
+<form action="/" method="QUERY" hx-post="/" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML" hx-on:htmx:config-request="event.detail.verb='QUERY'">
+
+  <div id="search-bar">
+    <input type="text" id="q" name="q" value="<%= it.query || '' %>" placeholder="<%= it.t('search.placeholder') %>" data-tooltip="Supports fuzzy search and operators" />
+    <button type="submit"><%= it.t('search.btn') %></button>
+  </div>
+
+  <details id="search-options">
+    <summary><%= it.t('search.options.toggle') || 'Advanced Filters' %></summary>
+    <div id="search-filters">
+      <fieldset id="date-time-filter">
+        <legend><%= it.t('search.filters.date') %></legend>
+        <div>
+          <label for="time_after"><%= it.t('search.filters.after') %></label>
+          <input type="datetime-local" id="time_after" name="after" value="<%= it.filters?.after || '' %>" />
+        </div>
+        <div>
+          <label for="time_before"><%= it.t('search.filters.before') %></label>
+          <input type="datetime-local" id="time_before" name="before" value="<%= it.filters?.before || '' %>" />
+        </div>
+      </fieldset>
+
+      <fieldset id="location-filter">
+        <legend><%= it.t('search.filters.location') %></legend>
+
+        <div>
+          <label for="location-search"><%= it.t('search.filters.near') %></label>
+          <input type="text" id="location-search" placeholder="<%= it.t('search.filters.near_placeholder') %>" autocomplete="off" />
+          <div id="autocomplete-results" class="autocomplete-results hidden"></div>
+        </div>
+
+        <div>
+          <label for="geo_radius"><%= it.t('search.filters.radius') %></label>
+          <input type="number" id="geo_radius" name="geo_radius" value="<%= it.filters?.radius || '' %>" min="0" />
+          <select id="geo_unit" name="geo_unit" aria-label="Distance Unit">
+            <option value="km" selected>km</option>
+            <option value="mi">mi</option>
+          </select>
+        </div>
+        <input type="hidden" name="geo_latitude" value="<%= it.filters?.lat || '' %>" />
+        <input type="hidden" name="geo_longitude" value="<%= it.filters?.lon || '' %>" />
+      </fieldset>
+
+      <fieldset id="ol-filter">
+        <legend><%= it.t('search.filters.ol') %></legend>
+        <% var ol = it.filters?.ol || []; %>
+        <label>
+          <input type="checkbox" id="ol-any" <%= ol.length === 0 ? "checked" : "" %> />
+          <%= it.t('search.filters.ol_any') %>
+        </label>
+        <label>
+          <input type="checkbox" name="ol" value="0" class="ol-input" <%= ol.includes(0) ? "checked" : "" %> />
+          <%= it.t('search.filters.ol_0') %>
+        </label>
+        <label>
+          <input type="checkbox" name="ol" value="1" class="ol-input" <%= ol.includes(1) ? "checked" : "" %> />
+          <%= it.t('search.filters.ol_1') %>
+        </label>
+        <label>
+          <input type="checkbox" name="ol" value="2" class="ol-input" <%= ol.includes(2) ? "checked" : "" %> />
+          <%= it.t('search.filters.ol_2') %>
+        </label>
+        <label>
+          <input type="checkbox" name="ol" value="3" class="ol-input" <%= ol.includes(3) ? "checked" : "" %> />
+          <%= it.t('search.filters.ol_3') %>
+        </label>
+      </fieldset>
+
+      <fieldset id="search-options-buttons">
+        <button type="button" id="reset-filters-btn"><%= it.t('search.options.reset') || 'Reset' %></button>
+        <button type="submit"><%= it.t('search.btn') %></button>
+      </fieldset>
+
+    </div>
+  </details>
+</form>

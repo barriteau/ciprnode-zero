@@ -1,0 +1,127 @@
+{
+  "$schema": "https://alps-io.github.io/schemas/alps.json",
+  "alps": {
+    "version": "1.0",
+    "title": "CiprAPI Profile",
+    "doc": {
+      "value": "Application-Level Profile Semantics for the Cosmic Index of Public Resources (Cipr) API."
+    },
+    "descriptor": [
+      {
+        "id": "za",
+        "type": "semantic",
+        "title": "Zone Apex",
+        "doc": { "value": "The unique identifier for the resource (DNS Zone Apex)." },
+        "def": "https://schema.org/identifier"
+      },
+      {
+        "id": "title",
+        "type": "semantic",
+        "title": "Title",
+        "doc": { "value": "The resource title." },
+        "def": "https://schema.org/name"
+      },
+      {
+        "id": "description",
+        "type": "semantic",
+        "title": "Description",
+        "doc": { "value": "A brief explanation of the resource." },
+        "def": "https://schema.org/description"
+      },
+      {
+        "id": "keywords",
+        "type": "semantic",
+        "title": "Keywords",
+        "doc": { "value": "Space-separated tags." },
+        "def": "https://schema.org/keywords"
+      },
+      {
+        "id": "ol",
+        "type": "semantic",
+        "title": "Offensiveness Level",
+        "doc": { "value": "Subjective rating of content (0=Safe, 1=Individual, 2=Collective, 3=Universal)." }
+      },
+      {
+        "id": "latitude",
+        "type": "semantic",
+        "title": "Latitude",
+        "doc": { "value": "Geographic latitude * 10,000,000." },
+        "def": "https://schema.org/latitude"
+      },
+      {
+        "id": "longitude",
+        "type": "semantic",
+        "title": "Longitude",
+        "doc": { "value": "Geographic longitude * 10,000,000." },
+        "def": "https://schema.org/longitude"
+      },
+      {
+        "id": "timestamp",
+        "type": "semantic",
+        "title": "Timestamp",
+        "doc": { "value": "Unix Epoch of last update." },
+        "def": "https://schema.org/dateModified"
+      },
+      {
+        "id": "CiprResource",
+        "type": "semantic",
+        "title": "Cipr Resource",
+        "descriptor": [
+          { "href": "#za" },
+          { "href": "#title" },
+          { "href": "#description" },
+          { "href": "#keywords" },
+          { "href": "#ol" },
+          { "href": "#latitude" },
+          { "href": "#longitude" },
+          { "href": "#timestamp" },
+          { "href": "#goEntry" },
+          { "href": "#doUpdateEntry" },
+          { "href": "#doDeleteEntry" }
+        ]
+      },
+      {
+        "id": "CiprCollection",
+        "type": "semantic",
+        "title": "Cipr Collection",
+        "descriptor": [
+          { "href": "#CiprResource" },
+          { "href": "#doSearch" }
+        ]
+      },
+      {
+        "id": "goEntry",
+        "type": "safe",
+        "rt": "#CiprResource",
+        "title": "View Entry",
+        "descriptor": [ { "href": "#za" } ]
+      },
+      {
+        "id": "doUpdateEntry",
+        "type": "idempotent",
+        "rt": "#CiprResource",
+        "title": "Update/Register Entry",
+        "descriptor": [ { "href": "#CiprResource" } ]
+      },
+      {
+        "id": "doDeleteEntry",
+        "type": "idempotent",
+        "rt": "#CiprCollection",
+        "title": "Delete Entry",
+        "descriptor": [ { "href": "#za" } ]
+      },
+      {
+        "id": "doSearch",
+        "type": "safe",
+        "rt": "#CiprCollection",
+        "title": "Search",
+        "descriptor": [
+           { "id": "query", "type": "semantic", "doc": { "value": "FTS Expression" } },
+           { "href": "#ol" },
+           { "href": "#latitude" },
+           { "href": "#longitude" }
+        ]
+      }
+    ]
+  }
+}

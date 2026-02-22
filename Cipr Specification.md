@@ -1,0 +1,801 @@
+<!-- This document follows the Pandoc Markdown standard -->
+
+# Cipr: Cosmic Index of Public Resources
+
+The *Cosmic^[Because Martians and Belters are welcome.] Index of Public Resources*, or *Cipr^[Probably best pronounced 'kee-per,' but I'm not good enough at English to decide.]*, is a decentralized, distributed, independent, public, universal, dynamic and queryable directory of websites and other reachable-by-DNS-resolution resources in the Internet.
+
+The Cipr shares some features with conventional search engines, web directories and webrings. However, adding entries to the Cipr does not require crawling the web or the approval of curators or editors, this is because of its decentralized and user-controlled nature.
+
+This idea is really simple. It's surprising that something like this hasn't been the standard resource indexing system for the World Wide Web since its inception.
+
+With the Cipr, every content publisher *owns* their entries in the index, meaning, they can include, update or exclude them at will. It is the publisher ―the domain name owner― who decides when and how their resource is indexed or not.
+
+The factors that determine the ranking position of search results cannot be obscured in the Cipr, they are standardized, public and auditable.
+
+The equivalent to the SEO^[Search Engine Optimization.] activity in the Cipr is very basic, a publisher only needs to use the right and consistent-in-time information about their resources (title, description, keywords, and localization data) to make them visible to their target audience, nothing else.
+
+Censoring, banning, blocking or filtering a Cipr indexed resource is only possible through DNS censoring, banning, blocking or filtering.
+
+The worldwide availability of any inclusion, update or exclusion to the Cipr is expected to take only a few minutes.
+
+Having a website or any other Internet resource effectively indexed in the Cipr is a matter of:
+
+- Owning a domain name, e.g. `example.com`.
+- Deploying a simple demon in the Internet: a ciprnode.
+- Authorizing your ciprnode to add a couple of records to your DNS zone (or doing it manually).
+
+## Technical overview
+
+In this specification, a *resource* refers to whatever a zone apex^[Also known as "root" or "naked" domain, your domain name.] points to, as well as any subdomain beneath it, so, any resource that is effectively indexed in the Cipr is referred as a *cipred resource* and identified by its Zone Apex or ZA, which will always be: `sldl.tldl` (`Second Level Domain` `.` `Top Level Domain`).
+
+The Cipr is built upon a set of software components, network elements, protocols, services, policies, and constraints that ensure its completeness, integrity, availability, responsiveness, accuracy, reliability, and *up-to-dateness*. These components are:
+
+- **Domain Name System**: The existing Internet's naming system.
+- **Ciprnodes**: A type of demon whose swarm enables the existence of the Cipr.
+
+A ciprnode is composed of:
+
+  1. **Ciprdup**: Queryable copy of the Cipr in every ciprnode.
+  2. **Resindex**: Queryable index of the cipred resource in every ciprnode.
+  3. **CiprAPI**: The API exposed in every ciprnode for syncing and searching tasks.
+  4. **Ciprpulse**: The automated set of ciprnode-syncing tasks.
+  5. **Ciprface**: Web interface to search the Cipr and the existing resindexes.
+
+## Domain Name System
+
+The DNS is the old, trusted, ubiquitous hierarchical and decentralized naming system used to identify resources on the Internet; the Cipr uses it to:
+
+1. **Verify entries existence** by validating their presence in the Domain Name System.
+2. **Verify entries correctness** by validating the specifics of a particular TXT record in the Domain Name System.
+
+Extending the verification tasks to any known DNS Root Zone alternative^[Handshake, OpenNIC, Namecoin...] is technically possible, and may even be desirable at some point.
+
+## Ciprnodes
+
+Most of the functions to keep the Cipr running rely on its ciprnodes. A ciprnode is a daemon whose main function is to hold a queryable copy of the Cipr and keep it in sync with all the other copies on the rest of the ciprnodes.
+
+Second function of a ciprnode is to act as an entry point for search requests to the Cipr and the the resource it indexes.
+
+Each ciprnode must be published following this pattern:
+
+`https://ciprnode.ZA`
+
+Where `ZA` is the same as `sldl.tldl`. The literal *ciprnode* **must** be the *third level domain* (3LD) label assigned to the demon, for example:
+
+`https://ciprnode.cipr.info`
+
+**Important note**: For some *country code top-level domains* (ccTLDs) the registration of *second level domains* is restricted or forbidden, this means that resources like `bbc.co.uk`, `up.edu.br` or `ivic.gob.ve` CAN NOT be indexed in the Cipr, this is because allowing ciprnodes under the 3LD allows the inclusion of infinite ciprnodes under a single ZA.
+
+### 1. Ciprdup
+
+A ciprdup is the working copy of the Cipr in each ciprnode. It's probably ―but not mandatorily― a table or a group of tables in a RDBMS.
+
+The fields ―or columns― of the ciprdup are: `za`, `title`, `description`, `ol`, `latitude`, `longitude` and `timestamp`.
+
+| za             | title             | description       | keywords         | ol  | latitude    | longitude   | timestamp    |
+|----------------|-------------------|-------------------|------------------|-----|-------------|-------------|--------------|
+| `pali.to`      | `Little Stick`    | `Stick dedicated` | `polo hilo star` |     |             |             | `1698417000` |
+| `meansite.com` | `We are Mean`     | `Quite offensive` | `truck ala wing` | `2` | `407128000` | `407128000` | `1698417000` |
+| `foobar.org`   | `The Foobar Zone` | `Foobar`          | `late chupe ola` |     |             |             | `1698417000` |
+| `example.com`  | `Example Domain`  | `For examples`    | `rat pote table` |     | `407128000` | `407128000` | `1698417000` |
+| `elcoco.buh`   | `Offense For All` | `Fully offensive` | `bit cigar tool` | `3` |             |             | `1698417000` |
+| `cipr.info`    | `Specification`   | `Cipr spec`       | `pose wind pork` |     | `407128000` | `407128000` | `1698417000` |
+
+Table: Ciprdup fields with example data shown as table rows in a RDBMS:
+
+The fields of the ciprdup are:
+
+#### `za`
+
+*Zone Apex* of the resource in the Domain Name System.
+
+- **Constrains**:
+  - Allowed values/length: `/^[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?$/u`
+  - empty allowed: no.
+  - Primary key: yes.
+  - FTS searchable: yes.
+
+#### `title`
+
+The indexed resource's title.
+
+- **Constrains**:
+  - Allowed values/length: `/^[^\r\n\u2028\u2029]{1,64}$/u`
+  - empty allowed: no.
+  - Primary key: no.
+  - FTS searchable: yes.
+
+#### `description`
+
+The resource's description.
+
+- **Constrains**:
+  - Allowed values/length: `/^[^\r\n\u2028\u2029]{1,256}$/u`
+  - empty allowed: no.
+  - Primary key: no.
+  - FTS searchable: yes.
+
+#### `keywords`
+
+Keywords for the resource.
+
+- **Constrains**:
+  - Allowed values/length: `/^[^\r\n\u2028\u2029]{1,512}$/u`
+  - empty allowed: no.
+  - Primary key: no.
+  - FTS searchable: yes.
+
+#### `ol`
+
+Offensiveness level, a subjective indicator of how offensive the resource content could be from its publisher's point of view.
+
+Taking as a starting point that in this context a *group* is any community, congregation, circle, clan, league, tribe, collective, gang, faction, union, guild or any other form of association based on: sexual orientation, social position, region, ethnicity, culture, nationality, age, profession, gender identity, political views, religious views, ideological views or any other type of affinity; the possible values for the **ol** field are:
+
+**`empty`**: *Non Offensive Content*, indicates the content is not offensive to any person or social group.
+
+**`1`**: *Individually Offensive Content*, indicates the content could be offensive to specific individuals, to one or more specific persons not related by any particular type of affinity between them.
+
+**`2`**: *Collectively Offensive Content*, indicates the content could be offensive to two or more members of one or more specific groups.
+
+**`3`**: *Universally Offensive Content*, used when the publisher considers the offensiveness of their content is transversal to most social groups in the whole world.
+
+It is suggested to provide extra information in the description field to clarify why the resource is considered offensive.
+
+- **Constrains**:
+  - Allowed values/length: `/^[1-3]$/`
+  - empty allowed: yes.
+  - Primary key: no.
+  - FTS searchable: no.
+
+#### `latitude`
+
+Geographic latitude of the resource, the integer value resulting of multiplying the real number that represents the latitude coordinate in WGS 84 (EPSG:4326) format by 10000000. The publisher is free to decide the level of precision to use.
+
+- **Constrains**:
+  - Allowed values/length: `/^[\d]{9}$/`
+  - empty allowed: yes, only if longitude is also empty.
+  - Primary key: no.
+  - FTS searchable: no.
+
+#### `longitude`
+
+Geographic longitude of the resource, the integer value resulting of multiplying the real number that represents the longitude coordinate in WGS 84 (EPSG:4326) format by 10000000. The publisher is free to decide the level of precision to use.
+
+- **Constrains**:
+  - Allowed values/length: `/^[\d]{9}$/`
+  - empty allowed: yes, only if latitude is also empty.
+  - Primary key: no.
+  - FTS searchable: no.
+
+#### `timestamp`
+
+Coordinated Universal Time (UTC) timestamp of the last update of the resource represented with a valid Unix Epoch timestamp (seconds since 1970-01-01T00:00:00Z).
+
+- **Constrains**:
+  - Allowed values/length: `/^[\d]{10}$/`
+  - empty allowed: no.
+  - Primary key: no.
+  - FTS searchable: no.
+
+### 2. Resindex
+
+A resindex is the indexed content of a cipred resource. The creation of the resindex is the exclusive responsibility of each publisher, how to create it depends on them (Pagefind, YaCy, Meilisearch, LLM/RAG tools, etc.) but, no matter how or when it is generated, the resindex must be queryable through the CiprAPI.
+
+The use of a resindex isn't mandatory, but having it is extremely convenient for the publisher; this is an optional but desirable component.
+
+### 3. CiprAPI
+
+CiprAPI is a strict Semantic RESTful Web API used by every ciprnode to:
+
+- Query the ciprdup and the resindex of the ciprnode
+- Maintain the ciprdup in sync with the Cipr
+- Audit its peers to guarantee the trustability, reliability and up-to-dateness of the Cipr
+
+The CiprAPI supports the following media types for the information exchange:
+
+**HAL**, when the `Accept:` header includes any of the following media types:
+
+- `application/hal+json`
+- `application/hal+json; charset=utf-8`
+- `application/hal+xml`
+- `application/hal+xml; charset=utf-8`
+
+**Plain text**, when the `Accept:` header includes the following media types:
+
+- `text/plain`
+- `text/plain; charset=utf-8`
+
+**HTML chunks or fragments**, when the header `HX-Request:` is present and `true`, and the `Accept:` header is absent or present with one of the following media types:
+
+- `*/*`
+- `text/html`
+- `text/html; charset=utf-8`
+- `application/xhtml+xml`
+- `application/xhtml+xml; charset=utf-8`
+
+**Full HTML with HEAD and BODY tags^[This is basically the ciprface.]**, when the header `HX-Request:` is absent or has `false` value, and the `Accept:` header is absent or includes the following media types:
+
+- `*/*`
+- `text/html`
+- `text/html; charset=utf-8`
+- `application/xhtml+xml`
+- `application/xhtml+xml; charset=utf-8`
+
+No matter if it is requested or not, UTF-8 must be used always in any response and is assumed as the default charset for any request and response.
+
+The CiprAPI exposes the following endpoints:
+
+- `HEAD /` - Verifies the presence of a ciprnode in the Cipr.
+- `GET /` - Retrieves the contents of the ciprdup.
+- `GET /ZA/` - Retrieves all fields for a specific cipred resource.
+- `GET /ZA/title/` - Retrieves the title of a specific cipred resource.
+- `GET /ZA/description/` - Retrieves the description of a specific cipred resource.
+- `GET /ZA/ol/` - Retrieves the value of the offensiveness level of a specific cipred resource.
+- `GET /ZA/latitude/` - Retrieves the latitude of a specific cipred resource.
+- `GET /ZA/longitude/` - Retrieves the longitude of a specific cipred resource.
+- `GET /ZA/timestamp/` - Retrieves the timestamp of a specific cipred resource.
+- `PUT /ZA/` - Adds a new cipred resource to the Cipr.
+- `DELETE /ZA/` - Removes a cipred resource from the Cipr.
+- `QUERY /` - Queries the ciprdup of the ciprnode with a given `FTS expression+filters`.
+- `QUERY /ZA/` - Queries the resindex of the cipred resource with a given `FTS expression+filters`.
+
+#### Use of the `GET` method
+
+A `GET` request to `/` accepts the `pages[size]` query parameter, being `size` an integer (n) indicating the expected number of entries. The entries in the Cipr are not expected to be ordered, so pagination is not feasible. A `GET` request to `/ZA/` will retrieve only one row with all the fields for a specific cipred resource or only one row with a specific field. Examples:
+
+This request asks the Cipr to retrieve the full Cipr^[Limits and default pagination settings of the ciprnode will apply.]:
+
+```http
+GET /
+Host: ciprnode.example.com
+```
+
+This request asks the Cipr to retrieve 2048 entries:
+
+```http
+GET /?pages[size]=2048 HTTP/1.1
+Host: ciprnode.example.com
+```
+
+This request asks the Cipr to retrieve the row corresponding to the barriteau.net zone apex:
+
+```http
+GET /barriteau.net/ HTTP/1.1
+Host: ciprnode.guasa.art
+```
+
+This request asks the Cipr to retrieve the title of the barriteau.net cipred resource:
+
+```http
+GET /barriteau.net/title/ HTTP/1.1
+Host: ciprnode.cipr.info
+```
+
+#### Use of the `HEAD` method
+
+A `HEAD` request to `/` will verify the presence of a ciprnode in the Cipr. Example:
+
+```http
+HEAD / HTTP/1.1
+Host: ciprnode.example.com
+```
+
+#### Use of the `PUT` method
+
+A `PUT` request to `ZA` will add a new cipred resource to the Cipr if it doesn't exist or update it if it does. The request body must contain at least all the required fields for a cipred resource. Example:
+
+```http
+PUT /guasa.art/ HTTP/1.1
+Host: ciprnode.example.com
+Content-Type: text/plain; charset=utf-8
+
+za=example.com
+title=La web de los ejemplos
+description=En esta web hay la la la
+keywords=perro gato loro
+ol=0
+latitude=407128000
+longitude=407128000
+timestamp=1698417000
+```
+
+```http
+PUT /guasa.art/ HTTP/1.1
+Host: ciprnode.cipr.info
+Content-Type: application/hal+json; charset=utf-8
+
+{
+  "za": "example.com",
+  "title": "La web de los ejemplos",
+  "description": "En esta web hay la la la",
+  "keywords": "perro gato loro",
+  "ol": 0,
+  "latitude": 407128000,
+  "longitude": 407128000,
+  "timestamp": 1698417000,
+}
+```
+
+Before proceeding with the effective insertion of the entry in the ciprdup, a ciprnode must execute the following validation sequence:
+
+1. Validate that the value in the `timestamp` field is not older than 24 hours.
+2. Send a DNS query to check if the TXT record for the new cipred resource exists and is valid.
+3. Send a `GET /ZA/` request to check if the cipred resource is responding.
+4. Run a test to validate the correctness of the resource's query results.
+5. Run a test to validate the correctness of the resource's field constraints.
+
+The insertion won't be effective if any of those validations fails.
+
+#### Use of the `DELETE` method
+
+A `DELETE` request to `ZA` will remove a cipred resource from the Cipr if it exists. Example:
+
+```http
+DELETE /example.com/ HTTP/1.1
+Host: ciprnode.barriteau.net
+```
+
+Before proceeding with the effective deletion of the entry in the ciprdup, a ciprnode must execute the following validation sequence:
+
+1. Send a DNS query to check if the TXT record for the cipred resource exists and is valid.
+2. Send a `GET /ZA/` request to check if the cipred resource is responding.
+3. Run a test to validate the correctness of the resource's query results.
+4. Run a test to validate the correctness of the resource's field constraints.
+
+The deletion won't be effective if any of those validations fails.
+
+#### Use of the `QUERY` method
+
+A `QUERY` request must be able to receive the `pages[num]` and `pages[size]` query parameters, being `num` an array of integers (n) and/or ranges (n-m) indicating which page numbers are expected, and `size` an array of integers (n) indicating the expected number of entries per page. For example:
+
+This queries the first page of search results with the number of entries defaulted by the ciprnode:
+
+```http
+QUERY /ZA/ HTTP/1.1
+Host: ciprnode.example.com
+Content-Type: text/plain; charset=utf-8
+Accept: application/x-www-form-urlencoded; charset=utf-8
+
+query="FTS expression"
+ol=[0,1,2,3]
+geo_latitude=latitude
+geo_longitude=longitude
+geo_min_radius_km=radius
+geo_max_radius_km=radius
+before=timestamp
+after=timestamp
+```
+
+This queries the fifth page of search results with the number of entries defaulted by the ciprnode:
+
+```http
+QUERY /ZA/?pages[num]=5 HTTP/1.1
+Host: ciprnode.example.com
+Content-Type: text/plain; charset=utf-8
+Accept: application/x-www-form-urlencoded; charset=utf-8
+
+query="FTS expression"
+ol=[0,1,2,3]
+geo_latitude=latitude
+geo_longitude=longitude
+geo_min_radius_km=radius
+geo_max_radius_km=radius
+before=timestamp
+after=timestamp
+```
+
+This queries the first page of search results with 30 entries:
+
+```http
+QUERY /ZA/?pages[size]=30 HTTP/1.1
+Host: ciprnode.example.com
+Content-Type: application/hal+json; charset=utf-8
+Accept: application/hal+json; charset=utf-8
+
+{
+  "query": "FTS expression",
+  "ol": [0,1,2,3],
+  "geo": {
+    "latitude": "latitude",
+    "longitude": "longitude",
+    "geo_min_radius_km": "radius",
+    "geo_max_radius_km": "radius"
+  },
+  "before": "timestamp",
+  "after": "timestamp",
+  "pages_num": [num],
+  "pages_size": [size]
+}
+```
+
+This queries the first page of search results with 10 entries:
+
+```http
+QUERY /ZA/?pages[num]=1&pages[size]=10 HTTP/1.1
+Host: ciprnode.example.com
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+Accept: application/x-www-form-urlencoded; charset=utf-8
+
+query="FTS expression"
+&ol=[0,1,2,3]
+&geo_latitude=latitude
+&geo_longitude=longitude
+&geo_min_radius_km=radius
+&geo_max_radius_km=radius
+&before=timestamp
+&after=timestamp
+&pages_num=[num]
+&pages_size=[size]
+```
+
+This queries the second, sixth and tenth pages of search results with 20 entries each:
+
+```http
+QUERY /ZA/?pages[num]=[2,6,10]&pages[size]=[20] HTTP/1.1
+Host: ciprnode.example.com
+Content-Type: application/hal+json; charset=utf-8
+Accept: application/hal+json; charset=utf-8
+
+{
+  "query": "FTS expression",
+  "ol": [0,1,2,3],
+  "geo": {
+    "latitude": "latitude",
+    "longitude": "longitude",
+    "geo_min_radius_km": "radius",
+    "geo_max_radius_km": "radius"
+  },
+  "before": "timestamp",
+  "after": "timestamp"
+  "pages_num": [num],
+  "pages_size": [size]
+}
+```
+
+This queries the fourth to eighth pages of search results with 10 entries each:
+
+```http
+QUERY /ZA/?pages[num]=[4-8]&pages[size]=10 HTTP/1.1
+Host: ciprnode.example.com
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+Accept: application/x-www-form-urlencoded; charset=utf-8
+
+query="FTS expression"
+&ol=[0,1,2,3]
+&geo_latitude=latitude
+&geo_longitude=longitude
+&geo_min_radius_km=radius
+&geo_max_radius_km=radius
+&before=timestamp
+after=timestamp
+&pages_num=[num]
+&pages_size=[size]
+```
+
+This queries the eleventh to twentieth and the twenty-first to forty pages of search results with 10 entries the first group and 20 entries the second group:
+
+```http
+QUERY /ZA/?pages[num]=[11-20,21-40]&pages[size]=[10,20] HTTP/1.1
+Host: ciprnode.example.com
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+Accept: text/html; charset=utf-8
+HX-Request: true
+
+query="FTS expression"
+ol=[0,1,2,3]
+geo_latitude=latitude
+geo_longitude=longitude
+geo_min_radius_km=radius
+geo_max_radius_km=radius
+before=timestamp
+after=timestamp
+&pages_num=[num]
+&pages_size=[size]
+```
+
+Note the last one is asking for the results to be returned as HTML fragments instead of JSON.
+
+Example responses to the above requests:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+Date: Tue, 18 Feb 2026 10:09:00 GMT
+Content-Length: 368
+
+count=42
+&pages[current]=1
+&pages[total]=5
+&results[0][za]=sub.example.com
+&results[0][title]=FTS Expression Guide
+&results[0][description]=A complete guide to Full Text Search expressions.
+&results[0][timestamp]=1698417000
+&results[1][za]=blog.example.com
+&results[1][title]=My First FTS Post
+&results[1][description]=Testing the expression engine.
+&results[1][timestamp]=1698417055
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/hal+json; charset=utf-8
+Date: Tue, 18 Feb 2026 10:09:00 GMT
+Content-Length: 845
+
+{
+  "_links": {
+    "self": { "href": "/ZA/?pages[num]=1&pages[size]=10" },
+    "next": { "href": "/ZA/?pages[num]=2&pages[size]=10" },
+    "last": { "href": "/ZA/?pages[num]=5&pages[size]=10" }
+  },
+  "count": 42,
+  "pages_num": [1],
+  "pages_size": [10],
+  "_embedded": {
+    "results": [
+      {
+        "_links": { "self": { "href": "/sub.example.com/" } },
+        "za": "sub.example.com",
+        "title": "FTS Expression Guide",
+        "description": "A complete guide to Full Text Search expressions.",
+        "timestamp": 1698417000,
+        "score": 12.5
+      },
+      {
+        "_links": { "self": { "href": "/blog.example.com/" } },
+        "za": "blog.example.com",
+        "title": "My First FTS Post",
+        "description": "Testing the expression engine.",
+        "timestamp": 1698417055,
+        "score": 8.2
+      }
+    ]
+  }
+}
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Date: Tue, 18 Feb 2026 10:09:00 GMT
+Content-Length: 512
+HX-Trigger-After-Swap: update-pagination
+
+<article class="cipr-result" data-za="sub.example.com">
+    <h3><a href="/sub.example.com/">FTS Expression Guide</a></h3>
+    <p class="description">A complete guide to Full Text Search expressions.</p>
+    <small class="meta">
+        <span class="za">sub.example.com</span> &bull;
+        <time datetime="2023-10-27T17:10:00Z">2023-10-27</time>
+    </small>
+</article>
+
+<article class="cipr-result" data-za="blog.example.com">
+    <h3><a href="/blog.example.com/">My First FTS Post</a></h3>
+    <p class="description">Testing the expression engine.</p>
+    <small class="meta">
+        <span class="za">blog.example.com</span> &bull;
+        <time datetime="2023-10-27T17:10:55Z">2023-10-27</time>
+    </small>
+</article>
+
+<div id="pagination-controls" hx-swap-oob="true">
+    <button disabled>1</button>
+    <button hx-get="/ZA/?pages[num]=2&pages[size]=10">2</button>
+    <button hx-get="/ZA/?pages[num]=3&pages[size]=10">3</button>
+</div>
+```
+
+### 4. Ciprpulse
+
+The Ciprpulse is the set of interactions that occurs between ciprnodes with the intention of maintaining the reliability and up-to-dateness of the Cipr. The Ciprpulse is sustained by two types of actions: those scheduled in the ciprnode and those initiated by human interaction. The following values and formulas are of relevance to the Ciprpulse:
+
+**Total number of entries** in the Cipr, obtained by simply counting the number of cipred resources in the Cipr in a given moment.
+
+**Expected propagation time**, the expected time in minutes for any update to be available in the Cipr. It will defaulted to 120000 milliseconds (2 minutes), which is a roughly estimate of the average time for a DNS record to propagate in the DNS system.
+
+**Number of nodes per pulse**, the number of ciprnodes to which a ciprnode needs to send a request that needs to *infect* the whole network in the expected propagation time.
+
+#### Scheduled Actions
+
+Every ciprnode must start one of the following actions every $I$ minutes:
+
+1. Randomly select a set of $N$ entries from its ciprdup, and check their correctness against the corresponding TXT records in the DNS for each one.
+
+2. Randomly select a set of $N$ entries from its ciprdup, and send each one of them a `QUERY` request with a random `FTS expression`, a random `Accept:` header of the allowed ones, and random `pages[num]` and `pages[size]` query parameters. This is to validate the correctness of the ranking when retrieving search results.
+
+3. Randomly select a set of $N$ entries from its ciprdup, and send each one of them a `GET` request to validate the correctness of the ciprdup field's constrains (length and allowed values).
+
+For every resource that fails any of the above audits, a `DELETE` request must be sent to $N$ ciprnodes selected at random from the ciprdup.
+
+#### Human Initiated Actions
+
+For every human initiated `QUERY` request, randomly select a set of $N/2$ entries from the ciprdup, and send each one of them a `QUERY` request with the same `FTS expression` but random `pages[num]` and random `pages[size]` query parameters. This is to validate the correctness of the ranking in the response.
+
+### 5. Ciprface
+
+A ciprface is a front-end for the human interaction with the Cipr, its default client application. At least one ciprface must be available in every ciprnode and it must be accesible from any browser as:
+
+`https://ciprnode.ZA`
+
+Non-TLS requests to a ciprface must be always ignored, rejected or redirected.
+
+There are no checks to verify the presence of the ciprface in a ciprnode, so it could be absent or disabled without affecting the ciprnode's reputation, but having an active ciprface has advantages for a ciprnode: the more search queries it processes, the more up-to-date its ciprdup will be.
+
+There is a **minimal set of features** that a ciprface must have in order to be considered compliant with this specification:
+
+1. When accessed via a simple `GET` request, it must display a first list of randomly selected ZAs from the ciprdup.
+2. There must be a form at the top of the page that helps build FTS expressions (e.g. a form with checkboxes) for the operators and text fields for the search terms.
+3. Must offer at least one of the following capabilities:
+   1. Controls for pagination of `QUERY` results
+   2. Controls for *Load More* `QUERY` results
+   3. Infinite scroll of `QUERY` results
+4. Must be able to *lazy load* the results of querying the user's FTS expression to the resindexes of the different ZAs being listed in a given moment.
+
+There are no restrictions regarding the use of additional features or elements in the ciprface, as long as they don't conflict with the minimal set of features. The domain holder has the final say about design, UI enhancements, ads, tracking, telemetry, fingerprinting, self-promotion, etc., in a healthy Cipr, the abundance of choices make irrelevant any wrongdoings in a particular ciprface.
+
+The ciprface must also provide a way to specify the order of the search results, for example, by relevance, by age, or by offensiveness level. The ciprface must also provide a way to specify the number of results to return, for example, by using a slider or a dropdown menu.
+
+## Search expressions
+
+> The proposals in this section are in a very primitive state and probably will need to be revised and improved in future iterations of this document.
+
+Search expressions are used to query the Cipr and the resindexes, they must support standard boolean operators: `AND`, `OR`, `NOT` (uppercase always). Operators must be separated from the search terms by spaces.
+
+### Operators and syntax
+
+| Logic          | Syntax    | Example                  | Meaning                                                                      |
+|----------------|-----------|--------------------------|------------------------------------------------------------------------------|
+| Implicit `AND` | `(space)` | safety first             | Contains *safety* AND *first*.                                               |
+| Explicit `AND` | `AND`     | safety AND first         | Same as above.                                                               |
+| `OR`           | `OR`      | safety OR danger         | Contains either *safety*, *danger*, or both.                                 |
+| `NOT`          | `NOT`     | safety NOT first         | Contains *safety* but **must not** contain *first*.                          |
+| `Grouping`     | `( )`     | (safety OR danger) first | Control precedence: *safety* or *danger* must exist, AND *first* must exist. |
+
+### Matching Patterns (wildcards & phrases)
+
+These define *how* words are matched.
+
+**Prefix Search (`*`):** Matches words starting with a prefix.
+`work*` matches *work*, *worker*, *working*, *workplace*.
+*Constraint:* The `*` must be at the **end** of the word. You cannot do `*work` or `w*rk`.
+
+**Phrase Search (`" "`):** Matches an exact sequence of words.
+`"safety first"` matches the exact phrase. It will **not** match *safety comes first*.
+
+**Initial Token (`^`):** Matches only if the term is the very **first** word in the column.
+`^Title` matches *Title of the book* but not *The Title*.
+
+### Column Filters
+
+You can restrict a search term to specific columns in your FTS5 table.
+
+**Single Column:** `colname : term`
+`title : linux` (Finds *linux* only in the `title` column).
+
+**Multiple Columns:** `{col1 col2} : term`
+`{title body} : linux` (Finds *linux* in either `title` or `body`, ignoring other columns like `author`).
+
+### Proximity Search
+
+Finds words that are close to each other.
+
+**Syntax:** `NEAR(term1 term2, distance)`
+**Example:** `NEAR(sqlite database, 10)`
+**Meaning:** Find documents where *sqlite* and *database* appear within **10 words** of each other.
+**Note:** The order does not matter (unless you strictly enforce it, which `NEAR` generally doesn't; it just checks distance).
+
+## Search results
+
+> The proposals in this section are in a very primitive state and probably will need to be revised and improved in future iterations of this document.
+
+### Ranking
+
+The Okapi BM25 standard must be used to calculate the ranking of the results when searching the Cipr.
+
+### Weighting
+
+A specific set of weights must be used for every one of the fields used for the full-text search:
+
+- za: 32
+- title: 16
+- description: 8
+- keywords: 1
+
+The proposed weighting model must follow the FTS5 SQLite extension implementation.
+
+### Filtering
+
+It must be possible to filter the results by:
+
+- Offensiveness level (ol) when one or more values are provided (0-3).
+- Geolocation, distance to a given point when its longitude and latitude are provided.
+- Inclusion date (timestamp) when a value is provided (a date or a date range).
+
+### Ordering / Tie-breaking
+
+In the occurrence of obtaining identical ranking values for certain rows, older entries (earlier timestamps) must be ranked higher.
+
+## Incorporation to the Cipr
+
+The process to incorporate a ciprnode to the Cipr is the same process that allows having an entry on it. In general terms, the following steps must be taken to have a working ciprnode, and a valid entry in the Cipr:
+
+### Ciprnode deployment
+
+This step is done after a ciprnode has been installed and is able to operate as `https://ciprnode.ZA`. It's not that it's yet operating as an effective node in the network.
+
+### Initial configuration
+
+Each ciprnode must be specifically configured before being added to the Cipr. At a minimum, the following parameters must be provided to be stored in a configuration file, database or something similar:
+
+```toml
+# Minimal Cipr entry data
+za = "cipr.info"
+title = "Cosmic Index of Public Resources"
+description = "The home of the Cosmic Index of Public Resources, also known as the Cipr"
+keywords = "index directory search engine webring"
+
+# Trusted bootstrap ciprnode to start syncing from
+bootstrap_node = "https://ciprnode.fsf.org/"
+# DNS over UDP (Do53) used for bootstrapping DoH connections
+do53 = ["..."]
+# DNS over HTTPS (DoH) endpoints for regular queries
+doh = ["..."]
+```
+
+### Ciprdup population
+
+Once the ciprnode is deployed and has its initial configuration, next action is to populate its ciprdup, the retrieval of entries begins with a `GET /` to the `bootstrap_node` and then it's possible to keep going with the gradually obtained ZAs.
+
+Note that, even when a `GET /` is a request for the whole Cipr, the response will always be paginated, it might be convenient to ask different nodes for different pages rather than just one.
+
+Of course, it is perfectly possible to simply copy an entire ciprdup from an existing ciprnode and avoid spending time in the sync process, but in this case it is very important to certify the validity of the obtained copy.
+
+### Hash generation
+
+Having a populated ciprdup, the ciprnode must automatically generate the ciprHash, a SHA-256 hash using the existing info in the configuration concatenated using a broken vertical bar (`¦`) just to ease console debugging. Note that numeric values must be converted to strings. For example:
+
+```cpp
+ciprHash = createSha256HashFunction(
+  'za¦title¦description¦keywords¦str(ol)¦str(latitude)¦str(longitude)'
+)
+```
+
+### TXT record creation
+
+By manual or automated means, a `TXT` record must be created in the corresponding DNS Zone namespace, something like:
+
+```yaml
+Name: ciprnode.ZA
+Record Type: TXT
+Value: "_cipr=ciprHash"
+TTL: 1800
+```
+
+### Ciprpulse activation
+
+At this point the ciprnode is ready to join the Cipr, for this, all the Ciprpulse functions must be activated. Plus, it could be a good idea to promote the ciprface usage, search going through it contributes with the sanity of the newly incorporated ciprnode.
+
+## Tenancy models
+
+Regarding the tenancy preferences, two main types of ciprnode implementations are expected to evolve:
+
+### ST Ciprnode
+
+*Single-tenant oriented* implementations, where everything is though to have the lowest possible hardware requirements and the lowest possible resource consumption. Ideal ST implementations runs smoothly in the simplest homelab, in a very light container, in a SBC or in a Tamagotchi.
+
+Even using embedded DBMS'^[SQLite, InfinityDB, Perst...], the main complication for this type of implementation is the size of an eventually well populated Cipr.
+
+No matter what, STs are the ideal implementations because they guarantee distribution, independence and decentralization.
+
+### MT Ciprnode
+
+*Multi-tenant oriented* implementations, where the main goal is to host multiple ciprnodes instances in a single server. This type of implementation probably share the same DBMS/RDBMS under the hood, it's suited to handle a heavy network traffic load so, they are mostly to be deployed in large data centers.
+
+With this type of implementation increases the risk of centralization and the risks to the security of the Cipr, but their existence is justified: they facilitate more publishers having a presence in the Cipr.
+
+## Epilogue
+
+The Cipr is an addition to the existing searching and indexing ecosystem: crawlers, spiders, meta search engines, indexers, aggregators, web directories, link directories, RSS directories, webrings and similar tools can interact with the Cipr, depending on the use case and the level of adoption, the Cipr could be an alternative, a companion, a competitor or a replacement to any of those tools, time will tell.
+
+Juan Barriteau

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Welcome to Alps Editor! Let's make API design fun and effective.
+
+Keyboard shortcuts:
+- F1: Show command palette (lists all shortcuts)
+- F8: Toggle Preview mode
+- Ctrl + Space: Show auto-completion snippets
+- Ctrl + S: Download your work
+
+Quick tips:
+- To start from scratch, clear content and press Ctrl + Space, then select "Skeleton"
+- Drag and drop an ALPS file (JSON, XML, or HTML) to open it
+
+ALPS bridges vision and implementation, creating APIs that speak business and tech fluently.
+
+Learn more:
+- User Guide: https://alps-asd.github.io/alps-editor/user-guide.html
+- ALPS Editor: https://github.com/alps-asd/alps-editor
+- ALPS Specification: https://alps.io/
+- app-state-diagram: https://www.app-state-diagram.com/
+- Vocabulary: https://www.app-state-diagram.com/manuals/1.0/en/schema-org.html
+
+Happy modeling! Remember, solid semantics supports the long-term evolution of your APIs. :)
+-->
+<alps
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://alps-io.github.io/schemas/alps.xsd">
+    <title>ALPS Online Shopping</title>
+    <doc>This is a sample ALPS profile demonstrating the semantic descriptors
+        and operations for a basic e-commerce system. It includes product listing,
+        shopping cart management, and checkout process, serving as an educational
+        example for ALPS implementation in online shopping contexts.</doc>
+
+    <!-- Links -->
+    <link rel="help" href="https://editor.app-state-diagram.com/user-guide.html" title="ALPS Editor User Guide"/>
+    <link rel="help" href="https://www.app-state-diagram.com/" title="app-state-diagram"/>
+    <link rel="help" href="https://datatracker.ietf.org/doc/html/draft-amundsen-richardson-foster-alps-07" title="ALPS Specification"/>
+    <link rel="describedby" href="https://www.app-state-diagram.com/manuals/1.0/en/schema-org.html" title="Vocabulary Guide"/>
+
+    <!-- Ontology -->
+    <descriptor id="id" def="https://schema.org/identifier" title="identifier"/>
+    <descriptor id="name" def="https://schema.org/name" title="name"/>
+    <descriptor id="description" def="https://schema.org/description" title="description"/>
+    <descriptor id="price" def="https://schema.org/price" title="price"/>
+    <descriptor id="quantity" def="https://schema.org/Quantity" title="quantity"/>
+    <descriptor id="email" def="https://schema.org/email" title="email"/>
+    <descriptor id="address" def="https://schema.org/address" title="address"/>
+    <descriptor id="reviewBody" def="https://schema.org/reviewBody" title="review text"/>
+    <descriptor id="rating" def="https://schema.org/ratingValue" title="rating"/>
+
+    <!-- Taxonomy -->
+    <descriptor id="Home" title="Home Page" tag="flow-browse">
+        <descriptor href="#goProductList"/>
+    </descriptor>
+
+    <descriptor id="ProductList" def="https://schema.org/ItemList" title="Product List" tag="collection flow-browse">
+        <descriptor href="#id"/>
+        <descriptor href="#name"/>
+        <descriptor href="#description"/>
+        <descriptor href="#goProductDetail"/>
+        <descriptor href="#goCart"/>
+    </descriptor>
+
+    <descriptor id="ProductDetail" def="https://schema.org/Product" title="Product Detail" tag="item flow-browse flow-purchase flow-review">
+        <descriptor href="#id"/>
+        <descriptor href="#name"/>
+        <descriptor href="#description"/>
+        <descriptor href="#price"/>
+        <descriptor href="#goProductList"/>
+        <descriptor href="#doAddToCart"/>
+        <descriptor href="#goReviewForm"/>
+    </descriptor>
+
+    <descriptor id="ReviewForm" def="https://schema.org/Review" title="Review Form" tag="flow-review">
+        <descriptor href="#id"/>
+        <descriptor href="#reviewBody"/>
+        <descriptor href="#rating"/>
+        <descriptor href="#goProductDetail"/>
+        <descriptor href="#doSubmitReview"/>
+    </descriptor>
+
+    <descriptor id="Cart" def="https://schema.org/Cart" title="Shopping Cart" tag="collection flow-purchase">
+        <descriptor href="#id"/>
+        <descriptor href="#name"/>
+        <descriptor href="#price"/>
+        <descriptor href="#quantity"/>
+        <descriptor href="#goProductList"/>
+        <descriptor href="#goProductDetail"/>
+        <descriptor href="#goCheckout"/>
+        <descriptor href="#doUpdateQuantity"/>
+        <descriptor href="#doRemoveItem"/>
+    </descriptor>
+
+    <descriptor id="Checkout" title="Checkout" tag="flow-purchase">
+        <doc>Available only when cart has at least one item. Guest users can proceed without account.</doc>
+        <descriptor href="#price"/>
+        <descriptor href="#email"/>
+        <descriptor href="#address"/>
+        <descriptor href="#goCart"/>
+        <descriptor href="#goPayment"/>
+    </descriptor>
+
+    <descriptor id="Payment" def="https://schema.org/PayAction" title="Payment" tag="flow-purchase">
+        <descriptor href="#price"/>
+        <descriptor href="#goCart"/>
+        <descriptor href="#doPayment"/>
+    </descriptor>
+
+    <!-- Choreography -->
+    <descriptor id="goProductList" type="safe" rt="#ProductList" rel="collection" title="View product list"/>
+
+    <descriptor id="goProductDetail" type="safe" rt="#ProductDetail" rel="item" title="View product details">
+        <descriptor href="#id"/>
+    </descriptor>
+
+    <descriptor id="goCart" type="safe" rt="#Cart" rel="collection" title="View shopping cart"/>
+
+    <descriptor id="goCheckout" type="safe" rt="#Checkout" title="Proceed to checkout"/>
+
+    <descriptor id="goPayment" type="safe" rt="#Payment" title="Proceed to payment"/>
+
+    <descriptor id="goReviewForm" type="safe" rt="#ReviewForm" title="Write a review">
+        <descriptor href="#id"/>
+    </descriptor>
+
+    <descriptor id="doAddToCart" type="unsafe" rt="#Cart" title="Add to cart">
+        <doc>Adds product to cart. If the same product already exists, increments quantity instead of creating a duplicate entry.</doc>
+        <descriptor href="#id"/>
+        <descriptor href="#quantity"/>
+    </descriptor>
+
+    <descriptor id="doUpdateQuantity" type="idempotent" rt="#Cart" title="Update item quantity">
+        <doc>Updates the quantity of an item in the cart. Set to 0 to remove.</doc>
+        <descriptor href="#id"/>
+        <descriptor href="#quantity"/>
+    </descriptor>
+
+    <descriptor id="doRemoveItem" type="idempotent" rt="#Cart" title="Remove item from cart">
+        <doc>Removes the specified item from the cart completely.</doc>
+        <descriptor href="#id"/>
+    </descriptor>
+
+    <descriptor id="doSubmitReview" type="unsafe" rt="#ProductDetail" title="Submit review">
+        <doc>Submits a product review with rating and comment.</doc>
+        <descriptor href="#id"/>
+        <descriptor href="#reviewBody"/>
+        <descriptor href="#rating"/>
+    </descriptor>
+
+    <descriptor id="doPayment" type="idempotent" rt="#ProductList" title="Complete payment">
+        <doc>Processes payment and completes the order. Clears the cart on success.</doc>
+    </descriptor>
+
+</alps>

@@ -1,0 +1,33 @@
+meta {
+  name: PUT Register Resource
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/{{za}}/
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/hal+json; charset=utf-8
+}
+
+body:json {
+  {
+    "za": "guasa.art",
+    "title": "La web de los ejemplos",
+    "description": "En esta web hay la la la",
+    "keywords": "perro gato loro",
+    "ol": 0,
+    "latitude": 407128000,
+    "longitude": 407128000,
+    "timestamp": 1698417000
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:8443
+  za: guasa.art
+}

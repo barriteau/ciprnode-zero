@@ -1,0 +1,26 @@
+<footer>
+  <span>
+    <a id="to-help" href="/help" title="<%= it.t('header.help') %>">
+      <%= it.t('header.help') %>
+    </a>
+  </span>
+
+  <span>
+    <a href="/profiles/cipr.json"><%= it.t('footer.profile') %></a>
+  </span>
+
+  <span>
+    <a href="https://cipr.info"><%= it.t('footer.foundation') %></a>
+  </span>
+
+  <span>
+    <a id="pwa-install-btn" class="hidden" tabindex="0" role="button" style="cursor: pointer;">
+      <span class="desktop-only">
+        <%= it.t('footer.install_desktop') %> <svg-icon class="install-desktop inline"></svg-icon>
+      </span>
+      <span class="mobile-only">
+        <%= it.t('footer.install_mobile') %> <svg-icon class="install-mobile inline"></svg-icon>
+      </span>
+    </a>
+  </span>
+</footer>

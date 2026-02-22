@@ -1,0 +1,37 @@
+# Deno
+cov_profile
+.deno_plugins
+.deno_history
+coverage/
+lcov.info
+
+# Node/NPM (for compatibility or deps)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Environment
+.env
+
+# Project specific
+# Data directory: keep dir, ignore contents
+data/*
+!data/.gitkeep
+
+# Dist directory: keep dir, ignore contents
+dist/*
+!dist/.gitkeep
+
+# Temp
+tmp/
+*.log
+
+# Agents
+AGENTS.md

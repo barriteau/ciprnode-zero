@@ -1,0 +1,83 @@
+/**
+ * @file src/api/routes.js
+ * @description Functional router for API requests.
+ */
+
+import * as RootController from './controllers/root.js';
+import * as EntryController from './controllers/entry.js';
+import * as SearchController from './controllers/search.js';
+import * as HelpController from './controllers/help.js';
+// import { logDebug } from '../core/logger.js';
+
+/**
+ * Routes the incoming request to the appropriate handler.
+ * @param {Request} request
+ * @param {import('@db/sqlite').Database} db
+ * @param {import('../core/config.js').CiprNodeConfig} config
+ * @returns {Promise<Response|null>} Response or null if no route matched
+ */
+export function handleRequest(request, db, config) {
+  const url = new URL(request.url);
+  const path = url.pathname;
+  const method = request.method;
+  const parts = path.split('/').filter((p) => p.length > 0);
+
+  // 0. Profile (ALPS) - Served statically usually, but let's ensure it's handled if requested via API path logic?
+  // Actually server.js handles static files first.
+
+  // 1. Root /
+  if (path === '/') {
+    // Determine context: API or Browser?
+    // SearchController handles both via Content Negotiation (HTML vs JSON)
+    // and handles both Search (params) and Listing (no params).
+    if (method === 'GET' || method === 'QUERY') {
+      return SearchController.query(request, db, config, null);
+    }
+    if (method === 'HEAD') {
+      return RootController.head(request, db, config);
+    }
+    if (method === 'HEAD') {
+      return RootController.head(request, db, config);
+    }
+  }
+
+  // Help Page
+  if (path === '/help') {
+    return HelpController.get(request, db, config);
+  }
+
+  // 2. Resource Operations /ZA/...
+  if (parts.length >= 1) {
+    const za = parts[0];
+
+    // Basic Domain Validation (weak check)
+    // Avoid routing static files if they slipped through server.js checking
+    if (za.includes('.') && !za.startsWith('css') && !za.startsWith('js')) {
+      if (parts.length === 1) { // /ZA/
+        if (method === 'GET') {
+          return EntryController.get(request, db, config, za);
+        }
+        if (method === 'PUT') {
+          return EntryController.put(request, db, config, za);
+        }
+        if (method === 'DELETE') {
+          return EntryController.del(request, db, config, za);
+        }
+        if (method === 'QUERY') {
+          return SearchController.query(request, db, config, za);
+        }
+      }
+
+      // 3. Resource Field Operations /ZA/field/
+      if (parts.length === 2 && method === 'GET') {
+        const field = parts[1];
+        const allowedFields = ['title', 'description', 'ol', 'latitude', 'longitude', 'timestamp'];
+        if (allowedFields.includes(field)) {
+          return EntryController.getField(request, db, config, za, field);
+        }
+      }
+    }
+  }
+
+  return null; // No match
+}

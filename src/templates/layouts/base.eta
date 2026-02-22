@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="<%= it.locale %>">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= it.title || it.t('meta.title') %></title>
+  <meta name="description" content="<%= it.description || it.t('meta.description') %>" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/figures/apple-touch-icon.png" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/htr.css" />
+
+  <!-- HTMX -->
+  <script src="/js/htmx.min.js"></script>
+  <script src="/js/app.js" defer></script>
+</head>
+
+<body>
+  <%~ include('../partials/header.eta', it) %>
+  <noscript>
+    <div class="noscript-warning">
+      <%= it.t('error.noscript') %>
+    </div>
+  </noscript>
+
+  <main id="wide-main-matter">
+    <%~ it.body %>
+  </main>
+
+  <%~ include('../partials/footer.eta', it) %>
+</body>
+
+</html>

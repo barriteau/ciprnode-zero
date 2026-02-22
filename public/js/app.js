@@ -1,0 +1,204 @@
+/**
+ * Ciprface Client-Side Logic
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSearchForm();
+  initFilters();
+  initLanguageSwitcher();
+  initPwaInstall();
+});
+
+// Re-initialize components after HTMX swaps
+document.addEventListener('htmx:afterSwap', (_evt) => {
+  initSearchForm();
+  initFilters();
+  initLanguageSwitcher();
+  initPwaInstall();
+});
+
+// Enforce QUERY method for Search Operations and set Accept-Language
+document.addEventListener('htmx:configRequest', (evt) => {
+  evt.detail.headers['Accept-Language'] = document.documentElement.lang;
+
+  console.log('HTMX Config Request:', evt.detail);
+  const target = evt.detail.elt;
+  const form = target.tagName === 'FORM' ? target : target.closest('form');
+
+  if (form && form.classList.contains('search-form')) {
+    console.log('Form identified. Switching verb to QUERY.');
+    // We used hx-post in the HTML to ensure HTMX sends data in the body.
+    // Now we switch the actual HTTP method to QUERY before sending.
+    evt.detail.verb = 'QUERY';
+  }
+});
+
+const initAutocomplete = () => {
+  const input = document.getElementById('location-search');
+  if (!input) return;
+
+  const resultsContainer = document.getElementById('autocomplete-results');
+  const latInput = document.querySelector('input[name="geo_latitude"]');
+  const lonInput = document.querySelector('input[name="geo_longitude"]');
+
+  let debounceTimer;
+
+  input.addEventListener('input', (e) => {
+    const query = e.target.value;
+    clearTimeout(debounceTimer);
+
+    // Clear coords if user clears input
+    if (query.length === 0) {
+      latInput.value = '';
+      lonInput.value = '';
+    }
+
+    if (query.length < 3) {
+      resultsContainer.innerHTML = '';
+      resultsContainer.classList.add('hidden');
+      return;
+    }
+
+    debounceTimer = setTimeout(() => {
+      fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5`)
+        .then((res) => res.json())
+        .then((data) => {
+          resultsContainer.innerHTML = '';
+          if (data.features && data.features.length > 0) {
+            resultsContainer.classList.remove('hidden');
+            data.features.forEach((feature) => {
+              const div = document.createElement('div');
+              div.className = 'autocomplete-item';
+
+              const props = feature.properties;
+              let label = props.name || '';
+              if (props.city && props.city !== props.name) label += `, ${props.city}`;
+              if (props.state) label += `, ${props.state}`;
+              if (props.country) label += `, ${props.country}`;
+
+              div.textContent = label;
+
+              div.addEventListener('click', () => {
+                input.value = div.textContent;
+                // Photon returns [lon, lat]
+                latInput.value = feature.geometry.coordinates[1];
+                lonInput.value = feature.geometry.coordinates[0];
+                resultsContainer.classList.add('hidden');
+              });
+              resultsContainer.appendChild(div);
+            });
+          } else {
+            resultsContainer.classList.add('hidden');
+          }
+        })
+        .catch((err) => console.error('Geocoding error:', err));
+    }, 300);
+  });
+
+  // Hide on click outside
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !resultsContainer.contains(e.target)) {
+      resultsContainer.classList.add('hidden');
+    }
+  });
+};
+
+const initSearchForm = () => {
+  initAutocomplete();
+};
+
+const initFilters = () => {
+  const olAny = document.getElementById('ol-any');
+  const olInputs = document.querySelectorAll('.ol-input');
+
+  if (olAny) {
+    if (!olAny.dataset.listenerAttached) {
+      olAny.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          olInputs.forEach((input) => input.checked = false);
+        }
+      });
+      olAny.dataset.listenerAttached = 'true';
+    }
+  }
+
+  olInputs.forEach((input) => {
+    if (!input.dataset.listenerAttached) {
+      input.addEventListener('change', () => {
+        if (input.checked && olAny) {
+          olAny.checked = false;
+        }
+
+        // Check if all OL inputs are selected
+        const allChecked = Array.from(olInputs).every((i) => i.checked);
+        if (allChecked) {
+          olInputs.forEach((i) => i.checked = false);
+          if (olAny) {
+            olAny.checked = true;
+          }
+        }
+      });
+      input.dataset.listenerAttached = 'true';
+    }
+  });
+
+  const resetBtn = document.getElementById('reset-filters-btn');
+  if (resetBtn && !resetBtn.dataset.listenerAttached) {
+    resetBtn.addEventListener('click', () => {
+      const form = resetBtn.closest('form');
+      const filters = document.getElementById('search-filters');
+      if (filters && form) {
+        filters.querySelectorAll('input:not([type=checkbox]), select').forEach((i) => i.value = '');
+        filters.querySelectorAll('input[type=checkbox]').forEach((i) => i.checked = false);
+        if (olAny) olAny.checked = true;
+        const unit = document.getElementById('geo_unit');
+        if (unit) unit.value = 'km';
+        htmx.trigger(form, 'submit');
+      }
+    });
+    resetBtn.dataset.listenerAttached = 'true';
+  }
+};
+
+const initLanguageSwitcher = () => {
+  const switchers = document.querySelectorAll('#lang-switcher');
+  switchers.forEach((switcher) => {
+    if (!switcher.dataset.listenerAttached) {
+      switcher.addEventListener('change', (e) => {
+        document.cookie = 'cipr_lang=' + e.target.value + '; path=/; max-age=31536000';
+        globalThis.location.reload();
+      });
+      switcher.dataset.listenerAttached = 'true';
+    }
+  });
+};
+
+const initPwaInstall = () => {
+  let deferredPrompt;
+  const installBtn = document.getElementById('pwa-install-btn');
+  if (!installBtn) return;
+
+  // We only want to attach this global listener once
+  if (!globalThis.pwaListenerAttached) {
+    globalThis.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.classList.remove('hidden');
+    });
+    globalThis.pwaListenerAttached = true;
+  }
+
+  if (!installBtn.dataset.listenerAttached) {
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBtn.classList.add('hidden');
+        }
+        deferredPrompt = null;
+      }
+    });
+    installBtn.dataset.listenerAttached = 'true';
+  }
+};

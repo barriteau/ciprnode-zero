@@ -1,0 +1,395 @@
+@font-face {
+  font-family: 'Poller One';
+  src: url('/css/typography/PollerOne-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Libertinus';
+  src: url('/css/typography/Libertinus-Serif-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --primary-color: #000000;
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --border-color: #000000;
+  --card-bg: #ffffff;
+  --font-body: 'Libertinus', Georgia, serif;
+  --font-title: 'Poller One', sans-serif;
+  --spacing: 1rem;
+  --radius: 4px;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-body);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+/* Typography */
+h1, h2, h3, h4, .brand, .search-btn {
+  font-family: var(--font-title); /* Search button often matches title font in stylised designs? Or body? Mockup button: "Search". Font looks serif-ish in mockup actually. Let's stick to Libertinus for body/inputs/buttons, Poller for Main Title */
+}
+
+/* Overriding: Button uses Libertinus per observation of standard wireframes unless explicitly funky */
+button, input, select, textarea {
+  font-family: var(--font-body);
+}
+
+.main-title {
+  font-family: 'Poller One', cursive; /* Ensure specificity */
+  text-align: center;
+  font-size: 3.5rem; /* Large */
+  margin: 2rem 0;
+  letter-spacing: 1px;
+}
+
+/* Layout */
+header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.brand {
+  font-size: 1.2rem;
+  text-decoration: none;
+  font-family: 'Poller One', cursive;
+}
+
+main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 2rem;
+}
+
+/* Search Redesign */
+.search-container-redesign {
+  margin-bottom: 3rem;
+}
+
+.search-top-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: stretch;
+}
+
+.search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border: 1px solid black;
+  padding: 0.5rem 1rem;
+  background: white;
+  gap: 0.5rem;
+}
+
+.search-icon {
+  font-size: 1.5rem;
+}
+
+.search-input-wrapper input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.search-btn {
+  background: white;
+  color: black;
+  border: 1px solid black;
+  font-size: 1.5rem;
+  padding: 0 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-body); /* Mockup shows serif-like text "Search" */
+}
+
+.search-btn:hover {
+  background: #f0f0f0;
+}
+
+/* Filter Grid */
+.filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center; /* Center items if they wrap oddly */
+}
+
+.filter-box {
+  border: 1px solid black;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1 1 300px; /* Grow, Shrink, Basis 300px */
+  min-width: 250px; /* Prevent too narrow on very small screens */
+}
+
+.filter-box h3 {
+  text-align: center;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: bold;
+  font-family: var(--font-body); /* Mockup headers look like standard bold serif */
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.filter-row label {
+  font-weight: bold;
+  min-width: 50px;
+}
+
+/* Input Styles */
+input[type='text'],
+input[type='number'],
+input[type='datetime-local'],
+select {
+  border: 1px solid black;
+  padding: 0.4rem;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+/* Specific Layout Adjustments */
+.radius-wrapper {
+  display: flex;
+  gap: 0;
+  flex: 1;
+}
+
+.radius-wrapper input {
+  border-right: none;
+  width: 50%;
+}
+.radius-wrapper select {
+  width: 50%;
+  background: white;
+}
+
+/* OL List */
+.ol-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ol-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.ol-item input {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: #333; /* Dark checkbox */
+}
+
+/* Autocomplete */
+.location-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.autocomplete-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid black;
+  border-top: none;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.autocomplete-item {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.autocomplete-item:hover {
+  background: #f0f0f0;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Responsive */
+/* Search Bar Row - extracted from inline */
+.search-bar-row {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+  /* .filter-grid handled by flex-wrap */
+  .search-top-row {
+    flex-direction: column;
+  }
+}
+@media (max-width: 600px) {
+    .main-title {
+        font-size: 1.8rem;
+    }
+    .search-bar-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    .search-bar-row .form-group {
+        width: 100%;
+    }
+    .search-bar-row button {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid black;
+  margin-top: 2rem;
+}
+
+.cipr-entry {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+.cipr-entry:last-child {
+    border-bottom: none;
+}
+.cipr-entry h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-family: var(--font-body);
+}
+.cipr-entry a {
+    text-decoration: underline;
+    color: #0000EE; /* Standard link blue */
+}
+
+/* Refactored Inline Styles */
+.noscript-warning {
+    padding: 2rem;
+    background: #fee;
+    color: #a00;
+    border: 1px solid #a00;
+    margin: 1rem;
+}
+
+/* Help Page */
+.help-content-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+details {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+summary {
+    font-weight: bold;
+    cursor: pointer;
+    font-family: var(--font-body);
+}
+
+details[open] summary {
+    margin-bottom: 0.5rem;
+}
+
+/* Search Form Refactor */
+.flex-grow {
+    flex: 1;
+}
+
+.search-input-lg {
+    font-size: 1.2rem;
+    padding: 0.8rem;
+}
+
+.search-btn-lg {
+    font-size: 1.2rem;
+    padding: 0.8rem 2rem;
+}
+
+.filter-label-date {
+    width: 50px;
+}
+
+.filter-label-near {
+    min-width: 60px;
+}
+
+.filter-label-radius {
+    min-width: 90px;
+    white-space: nowrap;
+}
+
+.mb-half {
+    margin-bottom: 0.5rem;
+}
+
+.gap-half {
+    gap: 0.5rem;
+}
+
+.w-50 {
+    width: 50%;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.d-flex {
+    display: flex;
+}

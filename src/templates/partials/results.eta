@@ -1,0 +1,26 @@
+<section aria-live="polite" aria-atomic="true">
+  <h2><%= it.t('results.heading', { count: it.results.length }) %></h2>
+
+  <% if (it.results.length === 0) { %>
+  <p><%= it.t('results.none') %></p>
+  <% } else { %>
+  <% it.results.forEach(function(item) { %>
+  <article class="cipr-entry" data-za="<%= item.za %>">
+    <h3><a href="/<%= item.za %>/"><%= item.title %></a></h3>
+    <p class="description"><%= item.description %></p>
+    <small class="meta">
+      <span class="za"><%= item.za %></span> &bull;
+      <time datetime="<%= new Date(item.timestamp * 1000).toISOString() %>">
+        <%= new Date(item.timestamp * 1000).toLocaleDateString(it.locale === 'en' ? 'en-US' : it.locale) %>
+      </time>
+      <% if (item.ol) { %> &bull; OL: <%= item.ol %><% } %>
+    </small>
+  </article>
+  <% }) %>
+  <% } %>
+
+  <!-- Pagination: Pass data needed for prev/next -->
+  <div class="pagination">
+    <!-- TODO: Pagination logic based on 'pages' passed from controller -->
+  </div>
+</section>
