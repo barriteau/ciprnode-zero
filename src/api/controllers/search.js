@@ -131,28 +131,35 @@ export async function query(req, db, config, scopeZa) {
   }
 
   // Geo
-  if (params.has('geo_latitude')) options.geo.latitude = params.get('geo_latitude');
-  if (params.has('geo_longitude')) options.geo.longitude = params.get('geo_longitude');
+  options.geo.latitude = params.get('geo_latitude');
+  options.geo.longitude = params.get('geo_longitude');
+
+  if (!options.geo.latitude || !options.geo.longitude) {
+    options.geo.latitude = null;
+    options.geo.longitude = null;
+  }
 
   // Radius handling
   const radius = params.get('geo_radius');
   const unit = params.get('geo_unit');
   options.filters = {}; // Store raw filter values for inputs
   options.filters.radius = radius;
-  options.filters.lat = options.geo.latitude;
-  options.filters.lon = options.geo.longitude;
+  options.filters.lat = params.get('geo_latitude');
+  options.filters.lon = params.get('geo_longitude');
   options.filters.unit = unit;
 
-  if (radius) {
-    let r = parseFloat(radius);
-    if (unit === 'mi') {
-      r = r * 1.60934;
+  if (options.geo.latitude && options.geo.longitude) {
+    if (radius) {
+      let r = parseFloat(radius);
+      if (unit === 'mi') {
+        r = r * 1.60934;
+      }
+      options.geo.max = r;
     }
-    options.geo.max = r;
-  }
-  if (params.has('geo_min_radius_km')) options.geo.min = params.get('geo_min_radius_km');
-  if (params.has('geo_max_radius_km') && !options.geo.max) {
-    options.geo.max = params.get('geo_max_radius_km');
+    if (params.has('geo_min_radius_km')) options.geo.min = params.get('geo_min_radius_km');
+    if (params.has('geo_max_radius_km') && !options.geo.max) {
+      options.geo.max = params.get('geo_max_radius_km');
+    }
   }
 
   // Timestamp

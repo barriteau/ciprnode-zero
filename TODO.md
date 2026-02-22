@@ -153,3 +153,9 @@ cipr.info
 guasa.art
 
 ---
+
+When filtering by location:
+
+Once a location is provided in the "Near" autocomplete, automatically set the "Max Distance" value a number of km that makes sense to cover the area of an average city
+
+If the form has the Max Distance field filled, but there are no coordinates present, the geo_radius	can't be used for filtering in the database search since it makes no sense 

@@ -83,6 +83,10 @@ const initAutocomplete = () => {
                 // Photon returns [lon, lat]
                 latInput.value = feature.geometry.coordinates[1];
                 lonInput.value = feature.geometry.coordinates[0];
+                const radiusInput = document.getElementById('geo_radius');
+                if (radiusInput && !radiusInput.value) {
+                  radiusInput.value = '50';
+                }
                 resultsContainer.classList.add('hidden');
               });
               resultsContainer.appendChild(div);
