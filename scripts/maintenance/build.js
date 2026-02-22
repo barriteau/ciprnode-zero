@@ -16,14 +16,14 @@ const TARGETS = [
   { name: 'ciprnode-zero-mac-arm64', target: 'aarch64-apple-darwin', ext: '' },
 ];
 
-async function generateChecksum(filePath) {
+const generateChecksum = async (filePath) => {
   const data = await Deno.readFile(filePath);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-}
+};
 
-async function build() {
+const build = async () => {
   console.log('Starting Multi-Target Build (ciprnode-zero)...');
 
   const distDir = join(Deno.cwd(), 'dist');
@@ -211,7 +211,7 @@ async function build() {
   }
 
   console.log('\nBuild Process Complete.');
-}
+};
 
 if (import.meta.main) {
   build();

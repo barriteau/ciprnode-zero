@@ -1,6 +1,6 @@
 import { loadConfig } from '../src/core/config.js';
 
-async function diagnose() {
+const diagnose = async () => {
   console.log('DNS Diagnostic Tool');
   console.log('-------------------');
 
@@ -57,7 +57,7 @@ async function diagnose() {
   } catch (e) {
     console.error('Configuration load failed:', e.message);
   }
-}
+};
 
 if (import.meta.main) {
   diagnose();

@@ -5,7 +5,7 @@
 
 import { dirname as _dirname, fromFileUrl as _fromFileUrl, join } from '@std/path';
 
-async function install() {
+const install = async () => {
   console.log('Ciprnode Service Installer');
   const os = Deno.build.os;
 
@@ -44,9 +44,9 @@ async function install() {
   } else {
     console.error(`Unsupported OS: ${os}`);
   }
-}
+};
 
-async function installWindows(execPath, _cwd) {
+const installWindows = async (execPath, _cwd) => {
   const serviceName = 'Ciprnode';
   console.log(`Installing Windows Service '${serviceName}'...`);
 
@@ -72,9 +72,9 @@ async function installWindows(execPath, _cwd) {
   } else {
     console.error('Failed to create service. Ensure you are running as Administrator.');
   }
-}
+};
 
-async function installLinux(execPath, cwd) {
+const installLinux = async (execPath, cwd) => {
   const serviceName = 'ciprnode.service';
   const serviceContent = `[Unit]
 Description=Ciprnode Decentralized Index
@@ -112,9 +112,9 @@ ${serviceContent}
   // Usually safer to just print instructions for Linux users or generate the file.
   await Deno.writeTextFile(serviceName, serviceContent);
   console.log(`\nGenerated local file '${serviceName}' for your convenience.`);
-}
+};
 
-async function installMac(execPath, cwd) {
+const installMac = async (execPath, cwd) => {
   const label = 'com.ciprnode.service';
   const plistContent = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -147,16 +147,16 @@ async function installMac(execPath, cwd) {
   console.log(instructions);
   await Deno.writeTextFile(`${label}.plist`, plistContent);
   console.log(`\nGenerated local file '${label}.plist' for your convenience.`);
-}
+};
 
-async function exists(path) {
+const exists = async (path) => {
   try {
     await Deno.stat(path);
     return true;
   } catch {
     return false;
   }
-}
+};
 
 if (import.meta.main) {
   install();

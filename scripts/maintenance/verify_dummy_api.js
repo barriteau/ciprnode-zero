@@ -1,6 +1,6 @@
 const baseUrl = 'http://localhost:8443';
 
-async function testEndpoint(name, path, method = 'GET', body = null) {
+const testEndpoint = async (name, path, method = 'GET', body = null) => {
   try {
     const opts = { method };
     if (body) {
@@ -18,9 +18,9 @@ async function testEndpoint(name, path, method = 'GET', body = null) {
     console.error(`[${name}] FAILED:`, e.message);
     return false;
   }
-}
+};
 
-async function run() {
+const run = async () => {
   // Wait a bit for server to start if running in parallel, but here we run check manually
   console.log('Verifying Dummy API...');
 
@@ -31,6 +31,6 @@ async function run() {
   await testEndpoint('Delete', '/guasa.art/', 'DELETE');
   // QUERY method might not be supported by standard fetch without custom config in some envs, but Deno supports it.
   await testEndpoint('Query Ciprdup', '/', 'QUERY');
-}
+};
 
 run();

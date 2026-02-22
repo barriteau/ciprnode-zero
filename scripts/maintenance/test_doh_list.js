@@ -86,7 +86,7 @@ const candidates = [
   'https://doh.this.web.id/dns-query',
 ];
 
-async function testServer(url) {
+const testServer = async (url) => {
   try {
     const name = 'google.com';
     const packet = encodeDnsQuery(name, 1); // 1 = A Record
@@ -122,10 +122,10 @@ async function testServer(url) {
     console.log(`[ERR ] ${e.message} - ${url}`);
     return null;
   }
-}
+};
 
 // Helpers
-function encodeDnsQuery(name, type) {
+const encodeDnsQuery = (name, type) => {
   const parts = name.split('.').filter((p) => p.length);
   let len = 12;
   for (const p of parts) len += 1 + p.length;
@@ -150,10 +150,10 @@ function encodeDnsQuery(name, type) {
   offset += 2;
   view.setUint16(offset, 1);
   return buf;
-}
+};
 
 // Main
-async function main() {
+const main = async () => {
   console.log(`Testing ${candidates.length} candidates...`);
   const passed = [];
 
@@ -174,6 +174,6 @@ async function main() {
   if (passed.length < 64) {
     console.warn(`\nWARNING: Only found ${passed.length} working servers!`);
   }
-}
+};
 
 main();

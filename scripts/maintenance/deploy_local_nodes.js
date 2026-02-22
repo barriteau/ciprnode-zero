@@ -11,7 +11,7 @@ const CIPR_NODES_ROOT = 'D:\\Proyectos_VSCode\\Cipr\\ciprnodes';
 const DIST_ARTEFACT = 'dist/ciprnode-zero-win-x64.zip';
 const TEMP_EXTRACT_DIR = 'dist/temp_extract';
 
-async function main() {
+const main = async () => {
   console.log('Starting Local Deployment...');
 
   // 1. Always Build (Ensure latest code)
@@ -65,9 +65,9 @@ async function main() {
   } catch {}
 
   console.log('\nDeployment Complete!');
-}
+};
 
-async function deployToNode(source, target) {
+const deployToNode = async (source, target) => {
   // Sync Logic: Copy overwrite everything EXCEPT ignored list.
   const files = Deno.readDir(source);
   for await (const file of files) {
@@ -96,7 +96,7 @@ async function deployToNode(source, target) {
     // console.log(`  Copying ${file.name}...`);
     await copy(srcPath, destPath, { overwrite: true });
   }
-}
+};
 
 if (import.meta.main) {
   main();

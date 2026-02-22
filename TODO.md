@@ -152,4 +152,6 @@ barriteau.org
 cipr.info
 guasa.art
 
-
+link must point to the actual za in search results
+Change Cipr foundation
+Complete the Help page

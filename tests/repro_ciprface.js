@@ -46,7 +46,7 @@ insertEntry(db, {
   timestamp: 1000,
 });
 
-async function runTest(name, req, validator) {
+const runTest = async (name, req, validator) => {
   console.log(`\nRunning: ${name}`);
   try {
     const res = await query(req, db, config, null);
@@ -62,11 +62,11 @@ async function runTest(name, req, validator) {
   } catch (e) {
     console.error('ERROR:', e);
   }
-}
+};
 
-function createRequest(url, headers = {}) {
+const createRequest = (url, headers = {}) => {
   return new Request(url, { headers });
-}
+};
 
 // Tests
 (async () => {

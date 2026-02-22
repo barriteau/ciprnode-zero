@@ -8,7 +8,7 @@ import { exists } from '@std/fs';
 
 const PID_FILE = join(Deno.cwd(), 'data', 'ciprnode.pid');
 
-async function getPid() {
+const getPid = async () => {
   if (await exists(PID_FILE)) {
     try {
       const txt = await Deno.readTextFile(PID_FILE);
@@ -18,9 +18,9 @@ async function getPid() {
     }
   }
   return null;
-}
+};
 
-async function stop() {
+const stop = async () => {
   const pid = await getPid();
   if (!pid) {
     console.log('No running Ciprnode found (no PID file).');
@@ -43,7 +43,7 @@ async function stop() {
   } catch { /* ignore */ }
 
   console.log('Ciprnode stopped.');
-}
+};
 
 const action = Deno.args[0];
 

@@ -7,7 +7,7 @@ import { join } from 'jsr:@std/path';
 
 const CIPR_NODES_ROOT = 'D:\\Proyectos_VSCode\\Cipr\\ciprnodes';
 
-async function main() {
+const main = async () => {
   console.log('Preparing 2x4 Grid Layout for Ciprnodes...');
 
   const nodesDir = Deno.readDir(CIPR_NODES_ROOT);
@@ -131,7 +131,7 @@ async function main() {
   } else {
     console.log('Terminal launched.');
   }
-}
+};
 
 if (import.meta.main) {
   main();

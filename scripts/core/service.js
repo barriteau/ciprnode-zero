@@ -7,7 +7,7 @@ import { dirname as _dirname, join } from '@std/path';
 
 const COMMANDS = ['install', 'uninstall', 'start', 'stop', 'restart', 'status'];
 
-async function main() {
+const main = async () => {
   const action = Deno.args[0];
   if (!action || !COMMANDS.includes(action)) {
     console.log(`Usage: deno run -A service.js <${COMMANDS.join('|')}>`);
@@ -34,9 +34,9 @@ async function main() {
   } else {
     console.error(`Unsupported OS: ${os}`);
   }
-}
+};
 
-async function findExecutable(cwd, os) {
+const findExecutable = async (cwd, os) => {
   const ext = os === 'windows' ? '.exe' : '';
   const name = `ciprnode${ext}`;
 
@@ -46,10 +46,10 @@ async function findExecutable(cwd, os) {
   if (await exists(join(cwd, 'dist', name))) return join(cwd, 'dist', name);
 
   return null;
-}
+};
 
 // --- Windows Implementation (sc.exe) ---
-async function manageWindows(action, execPath) {
+const manageWindows = async (action, execPath) => {
   const serviceName = 'Ciprnode';
 
   switch (action) {
@@ -84,10 +84,10 @@ async function manageWindows(action, execPath) {
       await runCmd('sc', ['query', serviceName]);
       break;
   }
-}
+};
 
 // --- Linux Implementation (Systemd) ---
-async function manageLinux(action, execPath, cwd) {
+const manageLinux = async (action, execPath, cwd) => {
   const serviceName = 'ciprnode';
 
   switch (action) {
@@ -138,10 +138,10 @@ WantedBy=multi-user.target
       await runCmd('sudo', ['systemctl', 'status', serviceName]);
       break;
   }
-}
+};
 
 // --- macOS Implementation (launchctl) ---
-async function manageMac(action, execPath, cwd) {
+const manageMac = async (action, execPath, cwd) => {
   const label = 'com.ciprnode.service';
   const plistPath = `${Deno.env.get('HOME')}/Library/LaunchAgents/${label}.plist`;
 
@@ -189,22 +189,22 @@ async function manageMac(action, execPath, cwd) {
       await runCmd('launchctl', ['list', label]);
       break;
   }
-}
+};
 
-async function runCmd(cmd, args) {
+const runCmd = async (cmd, args) => {
   console.log(`> ${cmd} ${args.join(' ')}`);
   const c = new Deno.Command(cmd, { args, stdout: 'inherit', stderr: 'inherit' });
   return (await c.output()).success;
-}
+};
 
-async function exists(path) {
+const exists = async (path) => {
   try {
     await Deno.stat(path);
     return true;
   } catch {
     return false;
   }
-}
+};
 
 if (import.meta.main) {
   main();
