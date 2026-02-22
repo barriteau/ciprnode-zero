@@ -11,7 +11,7 @@ import { createSha256Hash } from './crypto.js';
  * @param {number} propagationTime - Expected propagation time in milliseconds. (Required)
  * @returns {number} Number of ciprnodes per pulse (integer >= 1).
  */
-export function calculateNodesPerPulse(totalNodes, propagationTime) {
+export const calculateNodesPerPulse = (totalNodes, propagationTime) => {
   if (totalNodes === undefined || totalNodes === null) {
     throw new Error('Total numbers of ciprnodes in the ciprdup is required');
   }
@@ -31,7 +31,7 @@ export function calculateNodesPerPulse(totalNodes, propagationTime) {
 
   // Can't be less than 1
   return Math.max(1, nodesPerPulse);
-}
+};
 
 /**
  * Generates the standardized CIPR hash for an entry.
@@ -46,7 +46,15 @@ export function calculateNodesPerPulse(totalNodes, propagationTime) {
  * @param {number|string} longitude
  * @returns {Promise<string>} The SHA256 hash.
  */
-export async function generateCiprHash(za, title, description, keywords, ol, latitude, longitude) {
+export const generateCiprHash = async (
+  za,
+  title,
+  description,
+  keywords,
+  ol,
+  latitude,
+  longitude,
+) => {
   const keywordsStr = Array.isArray(keywords) ? keywords.join(' ') : (keywords || '');
 
   // Standardize '0' for falsy/empty numeric fields according to "0 to skip" spec logic.
@@ -69,4 +77,4 @@ export async function generateCiprHash(za, title, description, keywords, ol, lat
   console.log(`String to hash: ${input}`);
 
   return await createSha256Hash(input);
-}
+};

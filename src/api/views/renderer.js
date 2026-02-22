@@ -22,7 +22,7 @@ const eta = new Eta({
  * @param {object} data - Data to pass to template
  * @param {string} locale - Current locale (en, es, etc.)
  */
-export function render(templatePath, data = {}, locale = 'en') {
+export const render = (templatePath, data = {}, locale = 'en') => {
   // Inject t() function into data
   const ctx = {
     ...data,
@@ -33,11 +33,11 @@ export function render(templatePath, data = {}, locale = 'en') {
   };
 
   return eta.render(templatePath, ctx);
-}
+};
 
 /**
  * Initialize Renderer (Load locales)
  */
-export async function initRenderer() {
+export const initRenderer = async () => {
   await i18n.load(join(Deno.cwd(), 'src/locales'));
-}
+};

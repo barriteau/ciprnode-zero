@@ -12,7 +12,7 @@ import { verifyCiprHash } from './dns.js';
  * @param {string} expectedHash - The expected SHA256 hash for the TXT record.
  * @returns {Promise<boolean>} True if both checks pass.
  */
-export async function verifyNode(config, za, expectedHash) {
+export const verifyNode = async (config, za, expectedHash) => {
   // 1. Triple DNS TXT Validation
   const isTxtValid = await verifyCiprHash(config, za, expectedHash);
   if (!isTxtValid) {
@@ -30,7 +30,7 @@ export async function verifyNode(config, za, expectedHash) {
   }
 
   return true;
-}
+};
 
 /**
  * Verifies if a ciprnode is reachable via HTTP HEAD request to /.
@@ -38,7 +38,7 @@ export async function verifyNode(config, za, expectedHash) {
  * @param {import('./config.js').CiprNodeConfig} [config] - Optional config for debug logging.
  * @returns {Promise<boolean>} True if 200 OK.
  */
-export async function verifyNodeHttp(za, config = {}) {
+export const verifyNodeHttp = async (za, config = {}) => {
   const url = `https://ciprnode.${za}/`;
   const maxRetries = 6;
   const retryDelay = 2000; // 2 seconds
@@ -78,4 +78,4 @@ export async function verifyNodeHttp(za, config = {}) {
 
   // All attempts failed
   return false;
-}
+};

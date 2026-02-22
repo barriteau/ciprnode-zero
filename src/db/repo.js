@@ -20,7 +20,7 @@
  * @param {import('@db/sqlite').Database} db
  * @param {CiprEntry} entry
  */
-export function insertEntry(db, entry) {
+export const insertEntry = (db, entry) => {
   const keywords = Array.isArray(entry.keywords) ? entry.keywords.join(' ') : entry.keywords;
 
   const stmt = db.prepare(`
@@ -48,7 +48,7 @@ export function insertEntry(db, entry) {
   );
 
   return result.changes > 0;
-}
+};
 
 /**
  * Retrieves a single entry by its Zone Apex (ZA).
@@ -56,7 +56,7 @@ export function insertEntry(db, entry) {
  * @param {string} za
  * @returns {CiprEntry|undefined}
  */
-export function getEntry(db, za) {
+export const getEntry = (db, za) => {
   const stmt = db.prepare(`SELECT * FROM ciprdup WHERE za = ?`);
   const row = stmt.get(za);
   if (row) {
@@ -67,17 +67,17 @@ export function getEntry(db, za) {
     return row;
   }
   return undefined;
-}
+};
 
 /**
  * Deletes an entry by its Zone Apex (ZA).
  * @param {import('@db/sqlite').Database} db
  * @param {string} za
  */
-export function deleteEntry(db, za) {
+export const deleteEntry = (db, za) => {
   const stmt = db.prepare(`DELETE FROM ciprdup WHERE za = ?`);
   stmt.run(za);
-}
+};
 
 /**
  * Searches entries using FTS5 virtual table with complex filtering and pagination.
@@ -96,7 +96,7 @@ export function deleteEntry(db, za) {
  * @param {Array<{offset: number, limit: number}>} [options.pages] - Pagination ranges.
  * @returns {CiprEntry[]}
  */
-export function searchEntries(db, options = {}) {
+export const searchEntries = (db, options = {}) => {
   const { query, ol, geo, timestamp, pages } = options;
   // Construct Base SQL
 
@@ -185,24 +185,24 @@ export function searchEntries(db, options = {}) {
 
   const stmt = db.prepare(finalSql);
   return stmt.all(...allParams);
-}
+};
 
 /**
  * Counts total entries.
  * @param {import('@db/sqlite').Database} db
  * @returns {number}
  */
-export function countEntries(db) {
+export const countEntries = (db) => {
   const row = db.prepare(`SELECT COUNT(*) as count FROM ciprdup`).get();
   return row.count;
-}
+};
 
 /**
  * Retrieves the timestamp of the most recently inserted or updated entry.
  * @param {import('@db/sqlite').Database} db
  * @returns {number|null} The latest timestamp in milliseconds, or null if empty.
  */
-export function getLatestTimestamp(db) {
+export const getLatestTimestamp = (db) => {
   const row = db.prepare(`SELECT MAX(timestamp) as latest FROM ciprdup`).get();
   return row.latest || null;
-}
+};

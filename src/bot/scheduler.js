@@ -14,7 +14,7 @@ import { validateCiprConfig } from '../core/validator.js';
  * @param {import('@db/sqlite').Database} db
  * @param {boolean} txtUpdated
  */
-export async function startScheduler(config, db, txtUpdated) {
+export const startScheduler = async (config, db, txtUpdated) => {
   console.log('Starting Ciprpulse scheduler...');
 
   // 1. Check for Initial Broadcast requirement
@@ -41,14 +41,14 @@ export async function startScheduler(config, db, txtUpdated) {
   setInterval(() => {
     runSelfValidation(config, db);
   }, SELF_VALIDATION_INTERVAL);
-}
+};
 
 /**
  * Broadcasts the local node's updated data to a set of peers.
  * @param {import('../core/config.js').CiprNodeConfig} config
  * @param {import('@db/sqlite').Database} db
  */
-async function broadcastUpdate(config, db) {
+const broadcastUpdate = async (config, db) => {
   try {
     const totalNodes = countEntries(db);
     if (totalNodes <= 1) {
@@ -103,7 +103,7 @@ async function broadcastUpdate(config, db) {
   } catch (e) {
     console.error(`[Ciprpulse] Broadcast error: ${e.message}`);
   }
-}
+};
 
 import { generateCiprHash } from '../core/utils.js';
 import { verifyNode } from '../core/verification.js';
@@ -114,7 +114,7 @@ import { deleteEntry } from '../db/repo.js';
  * @param {import('@db/sqlite').Database} db
  * @param {import('../core/config.js').CiprNodeConfig} config
  */
-async function runPulseChecks(db, config) {
+const runPulseChecks = async (db, config) => {
   // console.log('CiprPulse: Running background checks...');
   const totalNodes = countEntries(db);
   if (totalNodes === 0) return;
@@ -198,12 +198,12 @@ async function runPulseChecks(db, config) {
       }
     }
   }
-}
+};
 
 /**
  * Helper to send Pulse requests (PUT/DELETE)
  */
-function sendPulseRequest(config, targetZa, method, body, resourceZa) {
+const sendPulseRequest = (config, targetZa, method, body, resourceZa) => {
   const url = `https://ciprnode.${targetZa}/${resourceZa || body.za}/`;
   try {
     const options = {
@@ -250,14 +250,14 @@ function sendPulseRequest(config, targetZa, method, body, resourceZa) {
   } catch (e) {
     if (config.debug) console.log(`[CiprPulse] Request setup error: ${e.message}`);
   }
-}
+};
 
 /**
  * Runs self-validation logic.
  * @param {import('../core/config.js').CiprNodeConfig} config
  * @param {import('@db/sqlite').Database} db
  */
-async function runSelfValidation(config, db) {
+const runSelfValidation = async (config, db) => {
   // console.log('[CiprPulse] Running self-validation...');
   const isValid = validateCiprConfig(config, false); // exitOnFail = false
 
@@ -338,4 +338,4 @@ async function runSelfValidation(config, db) {
       }
     }
   }
-}
+};

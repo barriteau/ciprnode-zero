@@ -13,7 +13,7 @@ const CF_API_URL = 'https://api.cloudflare.com/client/v4';
  * @param {string} expectedHash
  * @returns {Promise<boolean>} True if updated successfully.
  */
-export async function updateCloudflareRecord(config, expectedHash) {
+export const updateCloudflareRecord = async (config, expectedHash) => {
   const { api_token, zone_id } = config.dns_provider;
   // Cloudflare usually expects the record name to be relative or absolute.
   // Generally using the FQDN is safest.
@@ -31,7 +31,7 @@ export async function updateCloudflareRecord(config, expectedHash) {
   /**
    * Helper for fetch
    */
-  async function cfRequest(endpoint, method = 'GET', body = null) {
+  const cfRequest = async (endpoint, method = 'GET', body = null) => {
     const url = `${CF_API_URL}${endpoint}`;
     const headers = {
       'Authorization': `Bearer ${cleanToken}`,
@@ -52,7 +52,7 @@ export async function updateCloudflareRecord(config, expectedHash) {
       throw new Error(`Cloudflare API Error: ${errors}`);
     }
     return json.result;
-  }
+  };
 
   console.log(`[CLOUDFLARE] Integration`);
   try {
@@ -153,4 +153,4 @@ export async function updateCloudflareRecord(config, expectedHash) {
     // console.groupEnd();
     return false;
   }
-}
+};

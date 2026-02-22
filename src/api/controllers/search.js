@@ -9,7 +9,7 @@ import { render } from '../views/renderer.js';
 /**
  * Handles QUERY requests.
  */
-export async function query(req, db, config, scopeZa) {
+export const query = async (req, db, config, scopeZa) => {
   // 1. Parse Request Body & Query Params
   const params = new URLSearchParams();
   const contentType = req.headers.get('content-type') || '';
@@ -320,4 +320,4 @@ export async function query(req, db, config, scopeZa) {
       'Vary': 'Accept-Language, Cookie',
     },
   });
-}
+};

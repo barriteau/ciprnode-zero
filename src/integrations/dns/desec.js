@@ -10,7 +10,7 @@
  * @param {string} hash - The calculated ciprHash to set.
  * @returns {Promise<boolean>} True if updated/created, false if error or no change needed.
  */
-export async function updateDesecRecord(config, hash) {
+export const updateDesecRecord = async (config, hash) => {
   const token = config.dns_provider.api_token;
   // If zone_id is not provided, we might try to infer it from config.za
   // deSEC uses the domain name as the identifier in the URL.
@@ -68,4 +68,4 @@ export async function updateDesecRecord(config, hash) {
     console.error(`[deSEC] Error updating record:`, error);
     return false;
   }
-}
+};

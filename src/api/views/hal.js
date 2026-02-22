@@ -12,7 +12,7 @@ const ALPS_PROFILE = '/profiles/cipr.json';
  * @param {object} [embedded] - The _embedded object (rel -> resource or array).
  * @returns {Response}
  */
-export function halResponse(data, links = {}, embedded = {}) {
+export const halResponse = (data, links = {}, embedded = {}) => {
   // 1. Ensure Self Link exists
   if (!links.self) {
     throw new Error('HAL Resource must have a self link.');
@@ -35,7 +35,7 @@ export function halResponse(data, links = {}, embedded = {}) {
       'Link': `<${ALPS_PROFILE}>; rel="profile"`,
     },
   });
-}
+};
 
 /**
  * Helper to build a standard 'collection' HAL response.
@@ -44,7 +44,7 @@ export function halResponse(data, links = {}, embedded = {}) {
  * @param {object} [pagination] - Pagination links (next, prev, first, last).
  * @param {number} [total] - Total number of items in the collection (optional).
  */
-export function halCollectionResponse(items, selfUrl, pagination = {}, total = null) {
+export const halCollectionResponse = (items, selfUrl, pagination = {}, total = null) => {
   const embedded = {
     item: items, // Standard 'item' relation for collections
   };
@@ -60,4 +60,4 @@ export function halCollectionResponse(items, selfUrl, pagination = {}, total = n
   }
 
   return halResponse(data, links, embedded);
-}
+};

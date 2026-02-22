@@ -11,7 +11,7 @@ import { searchEntries } from '../../db/repo.js';
  * @param {import('@db/sqlite').Database} db
  * @returns {Promise<Response>}
  */
-export async function handleQuery(request, db) {
+export const handleQuery = async (request, db) => {
   try {
     const bodyText = await request.text();
     let queryParams = {};
@@ -20,24 +20,24 @@ export async function handleQuery(request, db) {
     if (contentType.includes('application/json')) {
       queryParams = JSON.parse(bodyText);
     } else {
-        // Simple plain text parsing
-        const lines = bodyText.split('\n');
-        for (const line of lines) {
-            const [key, ...rest] = line.split('=');
-            if (key && rest) {
-                // handle quoted strings? simplistically:
-                let val = rest.join('=').trim();
-                if (val.startsWith('"') && val.endsWith('"')) {
-                    val = val.slice(1, -1);
-                }
-                queryParams[key.trim()] = val;
-            }
+      // Simple plain text parsing
+      const lines = bodyText.split('\n');
+      for (const line of lines) {
+        const [key, ...rest] = line.split('=');
+        if (key && rest) {
+          // handle quoted strings? simplistically:
+          let val = rest.join('=').trim();
+          if (val.startsWith('"') && val.endsWith('"')) {
+            val = val.slice(1, -1);
+          }
+          queryParams[key.trim()] = val;
         }
+      }
     }
 
     const ftsQuery = queryParams.query;
     if (!ftsQuery) {
-        return new Response('Missing query parameter', { status: 400 });
+      return new Response('Missing query parameter', { status: 400 });
     }
 
     // Pagination
@@ -54,21 +54,20 @@ export async function handleQuery(request, db) {
     const results = searchEntries(db, ftsQuery, size, offset);
 
     const responseBody = {
-        _links: {
-            self: { href: request.url },
-        },
-        count: results.length,
-        _embedded: {
-            items: results
-        }
+      _links: {
+        self: { href: request.url },
+      },
+      count: results.length,
+      _embedded: {
+        items: results,
+      },
     };
 
     return new Response(JSON.stringify(responseBody), {
-        headers: { 'Content-Type': 'application/hal+json; charset=utf-8' }
+      headers: { 'Content-Type': 'application/hal+json; charset=utf-8' },
     });
-
   } catch (error) {
     console.error('QUERY Error:', error);
     return new Response('Internal Server Error', { status: 500 });
   }
-}
+};

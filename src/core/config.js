@@ -35,7 +35,7 @@ import { load } from '@std/dotenv';
  * @param {string} configPath - Path to the config file.
  * @returns {Promise<CiprNodeConfig>} The parsed configuration.
  */
-export async function loadConfig(configPath = 'ciprnode.toml') {
+export const loadConfig = async (configPath = 'ciprnode.toml') => {
   // Load .env file if present (doesn't throw if missing)
   await load({ export: true });
 
@@ -113,13 +113,13 @@ export async function loadConfig(configPath = 'ciprnode.toml') {
     console.error('Error parsing config file:', error);
     throw error;
   }
-}
+};
 
 /**
  * Returns default configuration.
  * @returns {CiprNodeConfig}
  */
-function getDefaultConfig() {
+const getDefaultConfig = () => {
   return {
     za: 'localhost',
     port: 8080,
@@ -142,4 +142,4 @@ function getDefaultConfig() {
       zone_id: '',
     },
   };
-}
+};

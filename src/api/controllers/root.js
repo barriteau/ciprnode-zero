@@ -13,7 +13,7 @@ import { htmlResponse } from '../views/html.js';
  * @param {import('@db/sqlite').Database} db
  * @param {import('../../core/config.js').CiprNodeConfig} config
  */
-export function get(req, db, _config) {
+export const get = (req, db, _config) => {
   const url = new URL(req.url);
   const accept = req.headers.get('accept') || '';
   const isFragment = req.headers.get('HX-Request') === 'true';
@@ -83,14 +83,14 @@ export function get(req, db, _config) {
       headers: { 'Content-Type': 'text/plain' },
     },
   );
-}
+};
 /**
  * Handles HEAD / requests.
  * @param {Request} _req
  * @param {import('@db/sqlite').Database} db
  * @param {import('../../core/config.js').CiprNodeConfig} _config
  */
-export function head(_req, db, _config) {
+export const head = (_req, db, _config) => {
   // Just verify presence. 200 OK if we are here.
   // Could check DB health?
   const total = countEntries(db); // Cheap check that DB works
@@ -100,4 +100,4 @@ export function head(_req, db, _config) {
       'X-Cipr-Count': String(total),
     },
   });
-}
+};

@@ -11,7 +11,7 @@
  * @param {number} lon2 Longitude of point 2 (decimal degrees)
  * @returns {number} Distance in kilometers
  */
-export function haversineDistance(lat1, lon1, lat2, lon2) {
+export const haversineDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371; // Earth's radius in km
   const toRad = (val) => (val * Math.PI) / 180;
 
@@ -21,7 +21,7 @@ export function haversineDistance(lat1, lon1, lat2, lon2) {
     Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
-}
+};
 
 /**
  * SQL compatible function to check if a point is within a radius range.
@@ -35,14 +35,14 @@ export function haversineDistance(lat1, lon1, lat2, lon2) {
  * @param {number} maxRadius Max radius in km
  * @returns {number} 1 if within range, 0 otherwise
  */
-export function isWithinRadius(
+export const isWithinRadius = (
   latCiprnode,
   lonCiprnode,
   targetLat,
   targetLon,
   minRadius,
   maxRadius,
-) {
+) => {
   if (latCiprnode == null || lonCiprnode == null) return 0;
 
   // Convert DB Integer to Real
@@ -55,4 +55,4 @@ export function isWithinRadius(
   if (maxRadius >= 0 && distance > maxRadius) return 0;
 
   return 1;
-}
+};

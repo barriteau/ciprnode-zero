@@ -16,7 +16,7 @@ import * as HelpController from './controllers/help.js';
  * @param {import('../core/config.js').CiprNodeConfig} config
  * @returns {Promise<Response|null>} Response or null if no route matched
  */
-export function handleRequest(request, db, config) {
+export const handleRequest = (request, db, config) => {
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method;
@@ -80,4 +80,4 @@ export function handleRequest(request, db, config) {
   }
 
   return null; // No match
-}
+};

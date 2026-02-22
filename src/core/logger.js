@@ -10,7 +10,7 @@ try {
   console.error('Failed to create log directory:', e);
 }
 
-function formatForFile(level, args) {
+const formatForFile = (level, args) => {
   const timestamp = new Date().toISOString();
   const message = args.map((arg) => {
     if (typeof arg === 'object') {
@@ -24,21 +24,21 @@ function formatForFile(level, args) {
   }).join(' ');
 
   return `[${timestamp}] [${level}] ${message}`;
-}
+};
 
-function writeToLogFile(text) {
+const writeToLogFile = (text) => {
   try {
     Deno.writeTextFileSync(LOG_FILE_PATH, text + '\n', { append: true });
   } catch {
     // Ignore file write errors to prevent crash
   }
-}
+};
 
 /**
  * Patches the global console object to write to the log file.
  * Must be called once at startup.
  */
-export function setupConsoleLogging() {
+export const setupConsoleLogging = () => {
   const originalLog = console.log;
   const originalInfo = console.log;
   const originalWarn = console.warn;
@@ -73,10 +73,10 @@ export function setupConsoleLogging() {
       originalDebug.apply(console, args);
     }
   };
-}
+};
 
 // Custom Table Printer (No Headers)
-export function logKeyValueTable(data, separator = '   ') {
+export const logKeyValueTable = (data, separator = '   ') => {
   if (!data || typeof data !== 'object') return;
 
   const entries = Object.entries(data);
@@ -89,26 +89,26 @@ export function logKeyValueTable(data, separator = '   ') {
     const paddedKey = key.padEnd(maxKeyLen);
     console.log(`${paddedKey}${separator}${value}`);
   });
-}
+};
 
 // Legacy aliases for backward compatibility during refactor
-export function logInfo(msg, data) {
+export const logInfo = (msg, data) => {
   console.log(`${msg}`, data || '');
-}
+};
 
-export function logSuccess(msg, data) {
+export const logSuccess = (msg, data) => {
   console.log(`[OK]   ${msg}`, data || '');
-}
+};
 
-export function logWarn(msg, data) {
+export const logWarn = (msg, data) => {
   console.warn(`[WARN] ${msg}`, data || '');
-}
+};
 
-export function logError(msg, err) {
+export const logError = (msg, err) => {
   console.error(`[ERR]  ${msg}`, err || '');
-}
+};
 
-export function logDebug(config, msg, data) {
+export const logDebug = (config, msg, data) => {
   // If config.debug is true, we want to see this.
   // console.debug might be hidden unless --debug flag is used in Deno.
   // We'll force it to console.log with a [DBG] prefix if config.debug is on.
@@ -120,4 +120,4 @@ export function logDebug(config, msg, data) {
       : '';
     console.log(`[DBG]  ${msg}`, serialized);
   }
-}
+};

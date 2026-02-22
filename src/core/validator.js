@@ -10,7 +10,7 @@ import { logKeyValueTable } from './logger.js';
  * Stops the process if validation fails.
  * @param {import('./config.js').CiprNodeConfig} config
  */
-export function validateCiprConfig(config, exitOnFail = true) {
+export const validateCiprConfig = (config, exitOnFail = true) => {
   let isValid = true;
   const errors = [];
   // Store validation results for a summary table
@@ -19,7 +19,7 @@ export function validateCiprConfig(config, exitOnFail = true) {
   // console.log(`Entries Validation...`);
 
   // Helper to log result
-  function check(label, value, condition, errorMessage) {
+  const check = (label, value, condition, errorMessage) => {
     // Truncate for display if needed
     // let displayValue = value;
     if (typeof value === 'string' && value.length > 50) {
@@ -34,7 +34,7 @@ export function validateCiprConfig(config, exitOnFail = true) {
       errors.push(`${label}: ${errorMessage}`);
       isValid = false;
     }
-  }
+  };
 
   // 1. Validate ZA (Zone Apex)
   // Regex: Simple hostname validation (Spec allows unicode, but basic structure is dot separated)
@@ -153,4 +153,4 @@ export function validateCiprConfig(config, exitOnFail = true) {
     }
   }
   return true;
-}
+};

@@ -5,7 +5,7 @@
 
 import { render } from '../views/renderer.js';
 
-export async function get(req, _db, _config) {
+export const get = async (req, _db, _config) => {
   // Locale Detection (Shared logic, could be a helper but strictly keeping it simple as requested)
   // TODO: Extract this if used in 3+ places
   let locale = 'en';
@@ -27,4 +27,4 @@ export async function get(req, _db, _config) {
   return new Response(html, {
     headers: { 'Content-Type': 'text/html; charset=utf-8' },
   });
-}
+};

@@ -12,7 +12,7 @@ import { htmlResponse, renderError } from '../views/html.js';
 /**
  * Handles GET /ZA/ requests.
  */
-export function get(req, db, _config, za) {
+export const get = (req, db, _config, za) => {
   const entry = getEntry(db, za);
   const accept = req.headers.get('accept') || '';
   const isFragment = req.headers.get('HX-Request') === 'true';
@@ -62,7 +62,7 @@ export function get(req, db, _config, za) {
   }
 
   return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
-}
+};
 
 import { verifyNode } from '../../core/verification.js';
 import { generateCiprHash } from '../../core/utils.js';
@@ -70,7 +70,7 @@ import { generateCiprHash } from '../../core/utils.js';
 /**
  * Handles PUT /ZA/ requests (Upsert).
  */
-export async function put(req, db, config, za) {
+export const put = async (req, db, config, za) => {
   // 1. Parse Body
   let body;
   try {
@@ -134,12 +134,12 @@ export async function put(req, db, config, za) {
     // This is an idempotent success.
     return new Response(null, { status: 200, headers: { Location: `/${za}/` } });
   }
-}
+};
 
 /**
  * Handles DELETE /ZA/ requests.
  */
-export async function del(_req, db, config, za) {
+export const del = async (_req, db, config, za) => {
   // 1. Check if resource exists locally
   const entry = getEntry(db, za);
   if (!entry) {
@@ -188,12 +188,12 @@ export async function del(_req, db, config, za) {
     deleteEntry(db, za);
     return new Response(null, { status: 200 });
   }
-}
+};
 
 /**
  * Handles Sub-field GET /ZA/field/
  */
-export function getField(_req, db, _config, za, field) {
+export const getField = (_req, db, _config, za, field) => {
   const entry = getEntry(db, za);
   if (!entry) return new Response('Not Found', { status: 404 });
 
@@ -201,4 +201,4 @@ export function getField(_req, db, _config, za, field) {
   return new Response(JSON.stringify({ [field]: value }), {
     headers: { 'Content-Type': 'application/json' },
   });
-}
+};

@@ -12,7 +12,7 @@ import { deleteEntry, getEntry, insertEntry } from '../../db/repo.js';
  * @param {string} za - The Zone Apex from the URL.
  * @returns {Promise<Response>}
  */
-export function handleResource(request, db, za) {
+export const handleResource = (request, db, za) => {
   if (request.method === 'GET') {
     return handleGetResource(db, za);
   } else if (request.method === 'PUT') {
@@ -22,12 +22,12 @@ export function handleResource(request, db, za) {
   } else {
     return new Response('Method Not Allowed', { status: 405 });
   }
-}
+};
 
 /**
  * GET /ZA/
  */
-function handleGetResource(db, za) {
+const handleGetResource = (db, za) => {
   const entry = getEntry(db, za);
 
   if (!entry) {
@@ -40,12 +40,12 @@ function handleGetResource(db, za) {
   return new Response(JSON.stringify(entry), {
     headers: { 'Content-Type': 'application/hal+json; charset=utf-8' },
   });
-}
+};
 
 /**
  * PUT /ZA/
  */
-async function handlePutResource(request, db, za) {
+const handlePutResource = async (request, db, za) => {
   // TODO: Validation logic (DNS TXT record check, timestamp check) per spec.
   // For this iteration, we assume basic validation passes or is done by caller.
 
@@ -99,14 +99,14 @@ async function handlePutResource(request, db, za) {
     console.error('PUT Error:', error);
     return new Response('Internal Server Error', { status: 500 });
   }
-}
+};
 
 /**
  * DELETE /ZA/
  */
-function handleDeleteResource(db, za) {
+const handleDeleteResource = (db, za) => {
   // TODO: Validation logic (DNS TXT record check) per spec.
 
   deleteEntry(db, za);
   return new Response(null, { status: 204 });
-}
+};

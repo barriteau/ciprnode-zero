@@ -14,7 +14,7 @@ import { calculateNodesPerPulse, generateCiprHash } from './utils.js';
  * @param {import('./config.js').CiprNodeConfig} config
  * @param {import('@db/sqlite').Database} db
  */
-export async function initialSync(config, db) {
+export const initialSync = async (config, db) => {
   // 1. Check if DB is empty
   const count = countEntries(db);
   if (count > 0) {
@@ -89,7 +89,7 @@ export async function initialSync(config, db) {
   // let knownPeers = []; // Keep a memory list or query DB? Querying DB is safer/more robust.
 
   // Helper to fetch and process entries
-  async function fetchAndProcess(urlStr) {
+  const fetchAndProcess = async (urlStr) => {
     if (config.debug) console.log(`[DBG] Sync > Fetching: ${urlStr}`);
 
     try {
@@ -236,7 +236,7 @@ export async function initialSync(config, db) {
       if (config.debug) console.log(e.stack);
       return null;
     }
-  }
+  };
 
   // --- Start Sync Loop ---
 
@@ -309,4 +309,4 @@ export async function initialSync(config, db) {
   // User requested to remove the loop and only do the viral burst based on calculateNodesPerJump.
 
   console.log(`[OK] Initial population complete.`);
-}
+};

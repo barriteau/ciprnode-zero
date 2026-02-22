@@ -10,10 +10,10 @@ import { crypto } from '@std/crypto';
  * @param {string} input - The string to hash.
  * @returns {Promise<string>} Hex representation of the hash.
  */
-export async function createSha256Hash(input) {
+export const createSha256Hash = async (input) => {
   const encoder = new TextEncoder();
   const data = encoder.encode(input);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+};

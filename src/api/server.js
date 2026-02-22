@@ -11,7 +11,7 @@ import { initRenderer } from './views/renderer.js';
  * @param {Response} res
  * @returns {Response}
  */
-function withCompression(req, res) {
+const withCompression = (req, res) => {
   if (!res.body || res.status !== 200 && res.status !== 201) return res;
 
   const acceptEncoding = req.headers.get('accept-encoding') || '';
@@ -44,7 +44,7 @@ function withCompression(req, res) {
     });
   }
   return res;
-}
+};
 
 /**
  * Starts the HTTP server.
@@ -53,7 +53,7 @@ function withCompression(req, res) {
  * @param {boolean} txtUpdated
  * @param {boolean} [skipScheduler=false]
  */
-export async function startServer(config, db, txtUpdated, skipScheduler = false) {
+export const startServer = async (config, db, txtUpdated, skipScheduler = false) => {
   // Register Custom SQL Functions
   try {
     db.function('is_within_radius', isWithinRadius);
@@ -294,4 +294,4 @@ export async function startServer(config, db, txtUpdated, skipScheduler = false)
     },
   });
   await server.finished;
-}
+};

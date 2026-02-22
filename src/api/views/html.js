@@ -12,7 +12,7 @@ const ALPS_PROFILE = '/profiles/cipr.json';
  * @param {boolean} isFragment - If true, returns only body content (HTMX).
  * @returns {Response}
  */
-export function htmlResponse(title, bodyContent, isFragment = false) {
+export const htmlResponse = (title, bodyContent, isFragment = false) => {
   let html = '';
 
   if (isFragment) {
@@ -60,12 +60,12 @@ export function htmlResponse(title, bodyContent, isFragment = false) {
       'Link': `<${ALPS_PROFILE}>; rel="profile"`,
     },
   });
-}
+};
 
 /**
  * Renders a simple error page/fragment.
  */
-export function renderError(title, message, isFragment) {
+export const renderError = (title, message, isFragment) => {
   return htmlResponse(
     title,
     `<div class="error">
@@ -75,4 +75,4 @@ export function renderError(title, message, isFragment) {
     </div>`,
     isFragment,
   );
-}
+};

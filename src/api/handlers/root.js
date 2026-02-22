@@ -11,7 +11,7 @@
  * @param {import('../../core/config.js').CiprNodeConfig} config
  * @returns {Promise<Response>}
  */
-export function handleGetRoot(request, db, config) {
+export const handleGetRoot = (request, db, config) => {
   // Parsing Pagination (simple implementation for now)
   // Spec: pages[size] query parameter.
   const url = new URL(request.url);
@@ -39,4 +39,4 @@ export function handleGetRoot(request, db, config) {
   return new Response(JSON.stringify(responseBody), {
     headers: { 'Content-Type': 'application/hal+json; charset=utf-8' },
   });
-}
+};

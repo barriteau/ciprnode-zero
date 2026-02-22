@@ -4,15 +4,14 @@
  */
 
 import { Database } from 'jsr:@db/sqlite@^0.12.0';
-import { join, dirname } from 'jsr:@std/path@^1.0.8';
+import { dirname, join } from 'jsr:@std/path@^1.0.8';
 import { ensureDir } from 'jsr:@std/fs@^1.0.6';
-
 
 /**
  * Initializes and returns the database connection.
  * @returns {Promise<Database>} The SQLite database instance.
  */
-export async function getDbConnection() {
+export const getDbConnection = async () => {
   const dbPath = join(Deno.cwd(), 'data', 'ciprdup.db');
 
   // Ensure data directory exists
@@ -40,4 +39,4 @@ export async function getDbConnection() {
   console.log(`Database connection established at: ${dbPath}`);
 
   return db;
-}
+};

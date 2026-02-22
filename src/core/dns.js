@@ -14,7 +14,7 @@ import { encodeBase64Url } from '@std/encoding/base64url';
  * @param {string} expectedHash
  * @returns {Promise<boolean>} True if verified, False otherwise.
  */
-export async function verifyCiprHash(config, za, expectedHash) {
+export const verifyCiprHash = async (config, za, expectedHash) => {
   const dnsConfig = config.dns;
   if (!dnsConfig || !dnsConfig.doh || dnsConfig.doh.length < 3) {
     console.warn(
@@ -121,14 +121,14 @@ export async function verifyCiprHash(config, za, expectedHash) {
 
   console.warn(`DNS Verification failed after ${maxRetries} attempts.`);
   return false;
-}
+};
 
 /**
  * Queries TXT record using RFC 8484 DNS over HTTPS (Wire Format).
  * Attempts to bootstrap via direct IP connection (Do53 resolution) first using Secure TLS SNI.
  * Falls back to standard fetch (OS resolution) if SNI/Handshake fails.
  */
-async function queryDoHTxt(dohUrlStr, name, bootstrapIp) {
+const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
   const packet = encodeDnsQuery(name, 16); // 16 = TXT
   const base64Query = encodeBase64Url(packet);
   const originalUrl = new URL(dohUrlStr);
@@ -254,11 +254,11 @@ async function queryDoHTxt(dohUrlStr, name, bootstrapIp) {
     return txts[0];
   }
   return null;
-}
+};
 
 // --- DNS Wire Format Helpers ---
 
-function encodeDnsQuery(name, type) {
+const encodeDnsQuery = (name, type) => {
   const parts = name.split('.').filter((p) => p.length);
   let len = 12; // Header
   for (const p of parts) len += 1 + p.length;
@@ -291,9 +291,9 @@ function encodeDnsQuery(name, type) {
   view.setUint16(offset, 1); // IN
 
   return buf;
-}
+};
 
-function parseDnsResponse(buf) {
+const parseDnsResponse = (buf) => {
   const view = new DataView(buf.buffer);
   const flags = view.getUint16(2);
   const rcode = flags & 0x000F;
@@ -345,9 +345,9 @@ function parseDnsResponse(buf) {
   }
 
   return results;
-}
+};
 
-function skipName(buf, offset) {
+const skipName = (buf, offset) => {
   while (true) {
     if (offset >= buf.byteLength) return offset; // Safety
     const len = buf[offset];
@@ -359,4 +359,4 @@ function skipName(buf, offset) {
     }
     offset += 1 + len;
   }
-}
+};

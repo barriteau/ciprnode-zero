@@ -7,7 +7,7 @@
  * Initializes the database schema.
  * @param {import('@db/sqlite').Database} db - The database instance.
  */
-export function initSchema(db) {
+export const initSchema = (db) => {
   // Check if main table exists to verify initialization state
   const tableExists = db.prepare(
     "SELECT name FROM sqlite_master WHERE type='table' AND name='ciprdup'",
@@ -112,4 +112,4 @@ export function initSchema(db) {
   `);
 
   console.log(`[OK] Database schema initialized successfully.`);
-}
+};
