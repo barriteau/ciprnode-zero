@@ -14,6 +14,9 @@
         <%= new Date(item.timestamp * 1000).toLocaleDateString(it.locale === 'en' ? 'en-US' : it.locale) %>
       </time>
       <% if (item.ol) { %> &bull; OL: <%= item.ol %><% } %>
+      <% if (item.latitude !== null && item.longitude !== null && item.latitude !== undefined) { %>
+      <span class="reverse-geocode" data-lat="<%= item.latitude / 10000000 %>" data-lon="<%= item.longitude / 10000000 %>" data-prefix="<%= it.t('search.filters.near') %>"></span>
+      <% } %>
     </small>
   </article>
   <% }) %>

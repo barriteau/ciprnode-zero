@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFilters();
   initLanguageSwitcher();
   initPwaInstall();
+  initReverseGeocoding();
 });
 
 // Re-initialize components after HTMX swaps
@@ -15,6 +16,7 @@ document.addEventListener('htmx:afterSwap', (_evt) => {
   initFilters();
   initLanguageSwitcher();
   initPwaInstall();
+  initReverseGeocoding();
 });
 
 // Enforce QUERY method for Search Operations and set Accept-Language
@@ -205,4 +207,35 @@ const initPwaInstall = () => {
     });
     installBtn.dataset.listenerAttached = 'true';
   }
+};
+
+const initReverseGeocoding = () => {
+  const elements = document.querySelectorAll('.reverse-geocode:not([data-geocoded])');
+  if (elements.length === 0) return;
+
+  let delay = 0;
+  elements.forEach((el) => {
+    el.dataset.geocoded = 'true';
+    const lat = el.dataset.lat;
+    const lon = el.dataset.lon;
+    const prefix = el.dataset.prefix || 'Near';
+
+    if (lat && lon) {
+      setTimeout(() => {
+        fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.features && data.features.length > 0) {
+              const props = data.features[0].properties;
+              const label = props.city || props.name || props.state || props.country || '';
+              if (label) {
+                el.innerHTML = ` &bull; ${prefix} ${label}`;
+              }
+            }
+          })
+          .catch((err) => console.error('Reverse Geocoding error:', err));
+      }, delay);
+      delay += 1100; // Respect 1 request/second API rate limit
+    }
+  });
 };
