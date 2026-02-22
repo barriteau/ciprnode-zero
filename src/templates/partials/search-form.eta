@@ -1,4 +1,9 @@
-<h1 class="main cover">Cipr: <%= it.t('search.title') %></h1>
+<h1 class="main cover">
+  Cipr: <%= it.t('search.title') %>
+  <p class="stats">
+    <%= it.t('header.stats', { count: it.stats?.count || '0', date: it.stats?.last_insert || 'N/A' }) %>
+  </p>
+</h1>
 
 <form action="/" method="QUERY" hx-post="/" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML" hx-on:htmx:config-request="event.detail.verb='QUERY'">
 

@@ -12,7 +12,7 @@
     "title": "Cosmic Index of Public Resources",
     "placeholder": "Allowed operators: AND, OR, NOT, *, ^ \"\", ()",
     "btn": "Search",
-    "advanced_filters": "Advanced Filters",
+    "advanced_filters": "Search Filters",
     "filters": {
       "date": "Time",
       "after": "After",
@@ -30,17 +30,17 @@
       "ol_unknown": "Unknown"
     },
     "options": {
-      "toggle": "Advanced Filters",
+      "toggle": "Search Filters",
       "reset": "Reset"
     }
   },
   "results": {
     "heading": "Results ({count})",
-    "none": "No results found."
+    "none": "No results found.",
+    "universal": "Universal"
   },
   "footer": {
     "profile": "API Profile",
-    "foundation": "Cipr Foundation",
     "install": "Install App",
     "install_desktop": "Cipr in your desktop",
     "install_mobile": "Cipr in your mobile"

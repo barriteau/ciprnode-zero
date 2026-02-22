@@ -1,13 +1,11 @@
   <nav id="toolbar">
-    <div id="parent-url">
-      <a href="<%= it.parentUrl || '/' %>" id="ciprnode-za"><%= it.configZa || 'ciprnode' %></a>
-    </div>
-
     <div>
       <small id="stats-info">
-        <%= it.t('header.stats', { count: it.stats?.count || '0', date: it.stats?.last_insert || 'N/A' }) %>
+        <a href="<%= it.parentUrl || '/' %>" id="ciprnode-za"><%= it.parentUrl || it.configZa %></a>
       </small>
     </div>
+
+    <div></div>
 
     <div>
       <select id="lang-switcher" aria-label="Select Language">

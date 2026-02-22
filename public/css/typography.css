@@ -36,11 +36,14 @@ h1,
 .h1 {
     margin: 1em 0 0 0;
     line-height: 1.1;
-    font-family: "Poller One", sans-serif;
+    font-family: "Poller-One", sans-serif;
     word-break: break-word;
     scroll-margin-top: 4rem;
     color: #444444;
-};
+}
+
+;
+
 h2,
 h3,
 h4,
@@ -245,7 +248,6 @@ time {
     line-height: 1.25;
     color: #000000;
     page-break-inside: avoid;
-    /*white-space: pre-wrap;*/
     word-wrap: break-word;
 }
 
@@ -278,4 +280,10 @@ form {
     input {
         font-size: var(--base-font-size);
     }
+}
+
+/* --- Diaolgs ---*/
+
+dialog {
+    font-family: "Libertinus-Sans", sans-serif;
 }

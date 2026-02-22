@@ -29,17 +29,17 @@
       "ol_unknown": "Sconosciuto"
     },
     "options": {
-      "toggle": "Filtri Avanzati",
+      "toggle": "Filtri di ricerca",
       "reset": "Ripristina"
     }
   },
   "results": {
     "heading": "Risultati ({count})",
-    "none": "Nessun risultato trovato."
+    "none": "Nessun risultato trovato.",
+    "universal": "Universale"
   },
   "footer": {
     "profile": "Profilo API",
-    "foundation": "Fondazione Cipr",
     "install": "Installa App",
     "install_desktop": "Cipr sul tuo desktop",
     "install_mobile": "Cipr sul tuo cellulare"

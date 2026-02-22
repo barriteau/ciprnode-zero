@@ -10,10 +10,6 @@
   </span>
 
   <span>
-    <a href="https://cipr.info"><%= it.t('footer.foundation') %></a>
-  </span>
-
-  <span>
     <a id="pwa-install-btn" class="hidden" tabindex="0" role="button" style="cursor: pointer;">
       <span class="desktop-only">
         <%= it.t('footer.install_desktop') %> <svg-icon class="install-desktop inline"></svg-icon>

@@ -93,31 +93,20 @@ hr {
 
 /* --- headings --- */
 
-main h1.main {
+h1.main,
+h1.cover {
     padding: 0;
     text-align: center;
     font-weight: normal;
-    /* font-size: 1.575em; */
-    font-family: "PollerOne", sans-serif;
     color: #555555;
 }
 
-main h1.cover {
-    margin: 0;
-    text-align: center;
-    font-weight: normal;
-    /* font-size: 1.681em; */
-    font-family: "PollerOne", sans-serif;
-    color: #555555;
-}
-
-main h1.main.cover {
-    /* font-size: 2.177em; */
+h1.main.cover {
     margin-bottom: 4rem;
     font-weight: normal;
 }
 
-main h1.main p {
+h1 p {
     margin-top: 0.25em;
     padding: 0;
     text-align: center;
@@ -125,6 +114,15 @@ main h1.main p {
     font-weight: normal;
     font-size: 0.9em;
     color: #676767;
+}
+
+h1 p.stats {
+    padding: 0;
+    text-align: center;
+    font-variant: normal;
+    font-weight: normal;
+    font-size: small;
+    font-family: "Iosevka";
 }
 
 /* --- Tables --- */
@@ -787,7 +785,6 @@ dialog {
     font-size: 1.1rem;
     text-align: justify;
     padding: 0;
-    font-family: "Libertinus-Sans", sans-serif;
 }
 
 dialog:focus {
