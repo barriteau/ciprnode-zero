@@ -25,7 +25,8 @@
       "ol_0": "Nessuno",
       "ol_1": "Personale",
       "ol_2": "Gruppi",
-      "ol_3": "Universale"
+      "ol_3": "Universale",
+      "ol_unknown": "Sconosciuto"
     },
     "options": {
       "toggle": "Filtri Avanzati",
