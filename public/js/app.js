@@ -19,20 +19,9 @@ document.addEventListener('htmx:afterSwap', (_evt) => {
   initReverseGeocoding();
 });
 
-// Enforce QUERY method for Search Operations and set Accept-Language
+// Insert Accept-Language on all HTMX async requests
 document.addEventListener('htmx:configRequest', (evt) => {
   evt.detail.headers['Accept-Language'] = document.documentElement.lang;
-
-  console.log('HTMX Config Request:', evt.detail);
-  const target = evt.detail.elt;
-  const form = target.tagName === 'FORM' ? target : target.closest('form');
-
-  if (form && form.classList.contains('search-form')) {
-    console.log('Form identified. Switching verb to QUERY.');
-    // We used hx-post in the HTML to ensure HTMX sends data in the body.
-    // Now we switch the actual HTTP method to QUERY before sending.
-    evt.detail.verb = 'QUERY';
-  }
 });
 
 const initAutocomplete = () => {
