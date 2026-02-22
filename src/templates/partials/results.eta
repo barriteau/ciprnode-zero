@@ -11,7 +11,7 @@
     <small class="meta">
       <span class="za"><%= item.za %></span> &bull;
       <time datetime="<%= new Date(item.timestamp * 1000).toISOString() %>">
-        <%= new Date(item.timestamp * 1000).toLocaleString(it.locale === 'en' ? 'en-US' : it.locale, { dateStyle: 'short', timeStyle: 'short' }) %>
+        <%= new Date(item.timestamp * 1000).toLocaleString(it.locale === 'en' ? 'en-US' : it.locale, { dateStyle: 'short', timeStyle: 'short', hour12: false }) %>
       </time>
       &bull; OL: <%= item.ol || it.t('search.filters.ol_unknown') %>
       <% if (item.latitude !== null && item.longitude !== null && item.latitude !== undefined) { %>
