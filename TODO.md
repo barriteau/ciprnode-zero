@@ -151,3 +151,5 @@ barriteau.net
 barriteau.org
 cipr.info
 guasa.art
+
+Instead of hiding it, show a "No OL"
