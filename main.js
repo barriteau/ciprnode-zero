@@ -138,6 +138,7 @@ if (import.meta.main) {
           latitude: config.latitude,
           longitude: config.longitude,
           timestamp: now,
+          primary_lang: config.primary_lang, // Patch: missing identity language
         });
         console.log(`[OK] New entry created`);
         // New entry implies we might need to update DNS if it doesn't match,
@@ -164,7 +165,22 @@ if (import.meta.main) {
         );
 
         if (ciprHash !== validationHash) {
-          // ...
+          console.log(
+            `Differences detected between ciprnode.toml and local database. Updating local index...`,
+          );
+          // Sync new config values into the local SQLite node identity
+          insertEntry(db, {
+            za: config.za,
+            title: config.title,
+            description: config.description,
+            keywords: keywordsStr,
+            ol: config.ol === 0 ? null : config.ol,
+            latitude: config.latitude,
+            longitude: config.longitude,
+            timestamp: now,
+            primary_lang: config.primary_lang,
+          });
+
           // Trigger DNS Update
           let updated = false;
 
@@ -182,10 +198,17 @@ if (import.meta.main) {
           if (updated) {
             txtUpdated = true;
             console.log(`TXT DNS record updated. Waiting 60s for propagation...`);
+            // We can lower this or keep it, but standard says wait.
             await new Promise((r) => setTimeout(r, 60000));
+          } else if (!config.dns_provider?.name) {
+            console.warn(
+              `\n[ACTION REQUIRED] You must manually update your DNS TXT record for _cipr.${config.za} to:`,
+            );
+            console.warn(`"${ciprHash}"\n`);
           }
         } else {
           // ...
+          console.log(`[OK] Local database matches ciprnode.toml configuration.`);
         }
       }
       console.groupEnd();
