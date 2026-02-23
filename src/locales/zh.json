@@ -36,7 +36,7 @@
     }
   },
   "results": {
-    "heading": "结果 ({count})",
+    "heading": "结果 ({start}-{end})",
     "none": "未找到结果。",
     "universal": "普遍"
   },

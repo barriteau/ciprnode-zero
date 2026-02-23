@@ -36,7 +36,7 @@
     }
   },
   "results": {
-    "heading": "Risultati ({count})",
+    "heading": "Risultati ({start}-{end})",
     "none": "Nessun risultato trovato.",
     "universal": "Universale"
   },
