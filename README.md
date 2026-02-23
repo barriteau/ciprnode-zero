@@ -76,6 +76,7 @@ The node is configured via `ciprnode.toml`.
 za = "example.com"           # Zone Apex (Your Domain)
 title = "My Node"            # Node Title
 description = "A description" # Node Description
+primary_lang = "en"          # Primary Language code (ISO 639-1)
 
 [network]
 port = 8443

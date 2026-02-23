@@ -94,6 +94,7 @@ if (import.meta.main) {
       config.ol,
       config.latitude,
       config.longitude,
+      config.primary_lang,
     );
 
     console.log(`Hash: ${ciprHash}`);
@@ -159,6 +160,7 @@ if (import.meta.main) {
           existingEntry.ol,
           existingEntry.latitude,
           existingEntry.longitude,
+          existingEntry.primary_lang,
         );
 
         if (ciprHash !== validationHash) {

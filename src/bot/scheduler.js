@@ -148,6 +148,7 @@ const runPulseChecks = async (db, config) => {
       entry.ol,
       entry.latitude,
       entry.longitude,
+      entry.primary_lang,
     );
 
     // "check their correctness with the validator.js functions"

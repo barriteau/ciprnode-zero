@@ -759,7 +759,7 @@ Having a populated ciprdup, the ciprnode must automatically generate the ciprHas
 
 ```cpp
 ciprHash = createSha256HashFunction(
-  'za¦title¦description¦keywords¦str(ol)¦str(latitude)¦str(longitude)'
+  'za¦title¦description¦keywords¦str(ol)¦str(latitude)¦str(longitude)¦str(primary_lang)'
 )
 ```
 

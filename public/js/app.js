@@ -111,7 +111,7 @@ const initLanguageAutocomplete = () => {
 
   // Show reset button if there's already a value
   if (langInput && langInput.value) {
-    if (resetBtn) resetBtn.style.display = 'inline-block';
+    if (resetBtn) resetBtn.classList.remove('hidden');
   }
 
   input.addEventListener('input', (e) => {
@@ -120,12 +120,12 @@ const initLanguageAutocomplete = () => {
 
     if (query.length === 0) {
       langInput.value = '';
-      if (resetBtn) resetBtn.style.display = 'none';
+      if (resetBtn) resetBtn.classList.add('hidden');
       resultsContainer.classList.add('hidden');
       return;
     }
 
-    if (resetBtn) resetBtn.style.display = 'inline-block';
+    if (resetBtn) resetBtn.classList.remove('hidden');
 
     debounceTimer = setTimeout(() => {
       fetch(`/languages/?q=${encodeURIComponent(query)}`)
@@ -159,7 +159,7 @@ const initLanguageAutocomplete = () => {
     resetBtn.addEventListener('click', () => {
       input.value = '';
       langInput.value = '';
-      resetBtn.style.display = 'none';
+      resetBtn.classList.add('hidden');
       resultsContainer.classList.add('hidden');
     });
   }

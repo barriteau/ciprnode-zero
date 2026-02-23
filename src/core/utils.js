@@ -44,6 +44,7 @@ export const calculateNodesPerPulse = (totalNodes, propagationTime) => {
  * @param {number|string} ol
  * @param {number|string} latitude
  * @param {number|string} longitude
+ * @param {string} [primary_lang]
  * @returns {Promise<string>} The SHA256 hash.
  */
 export const generateCiprHash = async (
@@ -54,6 +55,7 @@ export const generateCiprHash = async (
   ol,
   latitude,
   longitude,
+  primary_lang,
 ) => {
   const keywordsStr = Array.isArray(keywords) ? keywords.join(' ') : (keywords || '');
 
@@ -72,6 +74,7 @@ export const generateCiprHash = async (
     olStr,
     latStr,
     lonStr,
+    primary_lang || '',
   ].join('¦');
 
   console.log(`String to hash: ${input}`);

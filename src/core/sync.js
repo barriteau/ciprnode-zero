@@ -164,6 +164,7 @@ export const initialSync = async (config, db) => {
           entry.ol,
           entry.latitude,
           entry.longitude,
+          entry.primary_lang,
         );
 
         // OPTIMIZATION: Check if entry exists and is identical
@@ -177,6 +178,7 @@ export const initialSync = async (config, db) => {
             existing.ol,
             existing.latitude,
             existing.longitude,
+            existing.primary_lang,
           );
 
           if (calculatedHash === existingHash) {

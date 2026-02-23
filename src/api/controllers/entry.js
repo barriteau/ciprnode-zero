@@ -101,6 +101,7 @@ export const put = async (req, db, config, za) => {
     body.ol,
     body.latitude,
     body.longitude,
+    body.primary_lang,
   );
   if (config.debug) console.log(`[DBG] PUT ${za}: Hash calculated: ${calculatedHash}`);
 
@@ -170,6 +171,7 @@ export const del = async (_req, db, config, za) => {
     entry.ol,
     entry.latitude,
     entry.longitude,
+    entry.primary_lang,
   );
 
   const isValid = await verifyNode(config, za, calculatedHash);

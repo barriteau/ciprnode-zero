@@ -8,6 +8,7 @@ const config = {
   ol: 0,
   latitude: 104806000,
   longitude: -669036000,
+  primary_lang: '',
 };
 
 console.log('Testing Hash Generation for alboro.top...');
@@ -19,5 +20,6 @@ const hash = await generateCiprHash(
   config.ol,
   config.latitude,
   config.longitude,
+  config.primary_lang,
 );
 console.log(`Generated Hash: ${hash}`);
