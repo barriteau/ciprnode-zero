@@ -43,6 +43,7 @@
   },
   "footer": {
     "profile": "API Profile",
+    "get_indexed": "Get indexed in the Cipr",
     "install": "Install App",
     "install_desktop": "Cipr in your desktop",
     "install_mobile": "Cipr in your mobile",

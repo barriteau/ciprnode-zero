@@ -42,6 +42,7 @@
   },
   "footer": {
     "profile": "Perfil API",
+    "get_indexed": "Indíxate en el Cipr",
     "install": "Instalar App",
     "install_desktop": "Cipr en tu escritorio",
     "install_mobile": "Cipr en tu móvil",

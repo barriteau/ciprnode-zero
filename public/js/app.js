@@ -8,16 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initLanguageSwitcher();
   initPwaInstall();
   initReverseGeocoding();
-  initSearchForm();
-  initFilters();
-  initLanguageSwitcher();
-  initPwaInstall();
-  initReverseGeocoding();
   initLanguageAutocomplete();
-  initLanguageSwitcher();
-  initPwaInstall();
+});
+
+document.addEventListener('htmx:load', (_evt) => {
   initReverseGeocoding();
-  initLanguageAutocomplete();
 });
 
 // Insert Accept-Language on all HTMX async requests

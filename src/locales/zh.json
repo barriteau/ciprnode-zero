@@ -42,6 +42,7 @@
   },
   "footer": {
     "profile": "API 资料",
+    "get_indexed": "在 Cipr 中编入索引",
     "install": "安装应用",
     "install_desktop": "桌面版 Cipr",
     "install_mobile": "手机版 Cipr",
