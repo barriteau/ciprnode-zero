@@ -19,7 +19,15 @@ import * as HelpController from './controllers/help.js';
 export const handleRequest = (request, db, config) => {
   const url = new URL(request.url);
   const path = url.pathname;
-  const method = request.method;
+  let method = request.method;
+
+  // Apple WebKit Workaround: iOS Safari aggressively drops request body on custom HTTP methods like QUERY.
+  // The frontend bridges this by sending a POST with X-HTTP-Method-Override = QUERY
+  const overrideHdr = request.headers.get('x-http-method-override');
+  if (overrideHdr && overrideHdr.toUpperCase() === 'QUERY' && method === 'POST') {
+    method = 'QUERY';
+  }
+
   const parts = path.split('/').filter((p) => p.length > 0);
 
   // 0. Profile (ALPS) - Served statically usually, but let's ensure it's handled if requested via API path logic?

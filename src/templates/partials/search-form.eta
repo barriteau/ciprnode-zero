@@ -5,7 +5,15 @@
   </p>
 </h1>
 
-<form action="/" method="QUERY" hx-post="/" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML" hx-on:htmx:config-request="event.detail.verb='QUERY'">
+<form action="/" method="GET" hx-post="/" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML" hx-on:htmx:config-request="
+  const isIosSafari = /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent);
+  if (isIosSafari) {
+    event.detail.verb='POST';
+    event.detail.headers['X-HTTP-Method-Override'] = 'QUERY';
+  } else {
+    event.detail.verb='QUERY';
+  }
+">
 
   <div id="search-bar">
     <input type="text" id="q" name="q" value="<%= it.query || '' %>" placeholder="<%= it.t('search.placeholder') %>" data-tooltip="Supports fuzzy search and operators" />
