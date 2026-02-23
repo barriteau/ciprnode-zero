@@ -32,11 +32,8 @@ ol = 0
 latitude = 104830000
 longitude = -669060000
 
-# Leech mode ***NOT IMPLEMENTED YET***: if not null, this ciprnode won't start and instead will
-# create a CNAME record in the DNS for the za pointing to the host of
-# leech_from. If the subdomain 'ciprnode' is omitted, it will be added automatically.
-# leech_from = "ciprnode.cipr.info"
-# leech_from = "cipr.info"
+[ciprface]
+page_size = 3
 
 [network]
 
@@ -47,6 +44,12 @@ port = 8446
 
 # Trusted bootstrap ciprnode to start syncing from
 bootstrap_node = "https://ciprnode.cipr.info"
+
+# Leech mode ***NOT IMPLEMENTED YET***: if not null, this ciprnode won't start and instead will
+# create a CNAME record in the DNS for the za pointing to the host of
+# leech_from. If the subdomain 'ciprnode' is omitted, it will be added automatically.
+# leech_from = "ciprnode.cipr.info"
+# leech_from = "cipr.info"
 
 # Expected time in milliseconds for a new or updated entry to infect the whole Cipr
 # Recommended: 480000 if the Cipr is already well populated
