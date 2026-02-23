@@ -24,7 +24,7 @@
   }
 }
 
-@media screen and (max-width: 1664px) {
+@media screen and (max-width: 1663px) {
 
   main,
   nav#foot-nav,
@@ -89,8 +89,8 @@
   }
 }
 
-/* --- 360px (Small Mobile) --- */
-@media screen and (min-width: 360px) {
+/* --- 360px to 640px (Small Mobile Landscape -> Tablet Portrait Edge) --- */
+@media screen and (min-width: 360px) and (max-width: 639px) {
   article.av {
     display: grid;
     column-gap: 0.5rem;
