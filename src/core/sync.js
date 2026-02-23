@@ -262,12 +262,11 @@ export const initialSync = async (config, db) => {
       console.log(`[Sync] Initiating viral burst to ${targetCount} peers...`);
       // We can't efficiently pick N distinct random rows with simple SQL offset in loop easily if duplicates matter,
       // but for simple approximation:
-      // SELECT za FROM ciprdup ORDER BY RANDOM() LIMIT N
-      const stmt = db.prepare(`SELECT za FROM ciprdup ORDER BY RANDOM() LIMIT ?`);
-      const rows = stmt.all(targetCount);
+      // SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT N
+      const stmt = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`);
+      const rows = stmt.all(config.za, targetCount);
 
       for (const row of rows) {
-        if (row.za === config.za) continue; // Skip self
         const peerUrl = `https://ciprnode.${row.za}/`;
         console.log(`[Sync] Viral Jump -> ${peerUrl}`);
         await fetchAndProcess(peerUrl); // Wait or parallel? Spec implies "send message", here we fetch.

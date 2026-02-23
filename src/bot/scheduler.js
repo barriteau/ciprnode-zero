@@ -68,13 +68,11 @@ const broadcastUpdate = async (config, db) => {
       return;
     }
 
-    // Select Random Peers
-    const stmt = db.prepare(`SELECT za FROM ciprdup ORDER BY RANDOM() LIMIT ?`);
-    const rows = stmt.all(targetCount);
+    // Select Random Peers (Excluding self)
+    const stmt = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`);
+    const rows = stmt.all(config.za, targetCount);
 
     for (const row of rows) {
-      if (row.za === config.za) continue;
-
       // SSRF Prevention: Validate za is not localhost/private
       if (row.za.includes('localhost') || row.za.includes('127.0.0.1') || row.za.includes('::1')) {
         if (config.debug) console.warn(`[Ciprpulse] Skipping broadcast to private peer: ${row.za}`);
@@ -127,9 +125,11 @@ const runPulseChecks = async (db, config) => {
 
   // Efficient random selection for SQLite
   // Note: For very large DBs, rowid range query is faster than ORDER BY RANDOM(), but this is fine for now.
-  const auditEntries = db.prepare(`SELECT * FROM ciprdup ORDER BY RANDOM() LIMIT ?`).all(
-    auditCount,
-  );
+  const auditEntries = db.prepare(`SELECT * FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`)
+    .all(
+      config.za,
+      auditCount,
+    );
 
   if (auditEntries.length === 0) return;
 
@@ -158,12 +158,13 @@ const runPulseChecks = async (db, config) => {
     // "send a PUT/DELETE to calculateNodesPerPulse() randomly selected nodes"
     // We shouldn't send to ourselves or the node we just checked (unless it's invalid?)
     // Actually, sending to random peers is the spec.
-    const peerEntries = db.prepare(`SELECT za FROM ciprdup ORDER BY RANDOM() LIMIT ?`).all(
-      nodesPerPulse,
-    );
+    const peerEntries = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`)
+      .all(
+        config.za,
+        nodesPerPulse,
+      );
 
-    // Filter out self
-    const targets = peerEntries.filter((p) => p.za !== config.za);
+    const targets = peerEntries;
 
     if (isValid) {
       // B. Valid Entry -> Propagate PUT
@@ -326,12 +327,13 @@ const runSelfValidation = async (config, db) => {
           totalNodes,
           config.expected_propagation_time,
         );
-        const peers = db.prepare(`SELECT za FROM ciprdup ORDER BY RANDOM() LIMIT ?`).all(
-          nodesPerPulse,
-        );
+        const peers = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`)
+          .all(
+            config.za,
+            nodesPerPulse,
+          );
 
         for (const peer of peers) {
-          if (peer.za === config.za) continue;
           // sendPulseRequest is (config, targetZa, method, body, resourceZa)
           // For DELETE, body is null, resourceZa is config.za
           sendPulseRequest(config, peer.za, 'DELETE', null, config.za);
