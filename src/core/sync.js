@@ -130,8 +130,11 @@ export const initialSync = async (config, db) => {
       let entries = data._embedded?.item || data._embedded?.items || [];
 
       // Handle Single Entry Response (e.g. Identity Fetch)
-      if (entries.length === 0 && data.za) {
-        entries = [data];
+      // When making a GET /<za> request, the properties are at the root level of the HAL object.
+      if (!Array.isArray(entries) || entries.length === 0) {
+        if (data && typeof data === 'object' && data.za) {
+          entries = [data]; // Wrap the root object in an array
+        }
       }
 
       if (config.debug) {
@@ -222,7 +225,7 @@ export const initialSync = async (config, db) => {
           }
         }
       }
-      return { insertedCount, total: data.total };
+      return { insertedCount, total: data.total, success: true };
     } catch (e) {
       const msg = e.message || '';
       if (
@@ -260,7 +263,7 @@ export const initialSync = async (config, db) => {
     console.log(`[Sync] Verifying bootstrap node identity: ${identityUrl}...`);
     const identityResult = await fetchAndProcess(identityUrl);
 
-    if (!identityResult || identityResult.insertedCount === 0) {
+    if (!identityResult || !identityResult.success) {
       console.error(`[FATAL] Bootstrap node identity verification failed. Aborting network sync.`);
       return;
     }
