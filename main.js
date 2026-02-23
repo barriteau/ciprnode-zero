@@ -85,7 +85,7 @@ if (import.meta.main) {
       ? config.keywords.join(' ')
       : config.keywords;
 
-    // za+title+description+keywords+ol+latitude+longitude (separated by ¦)
+    // za+title+description+keywords+primary_lang+ol+latitude+longitude (separated by ¦)
     const ciprHash = await generateCiprHash(
       config.za,
       config.title,
