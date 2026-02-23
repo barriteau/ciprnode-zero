@@ -24,8 +24,42 @@
   <% }) %>
   <% } %>
 
-  <!-- Pagination: Pass data needed for prev/next -->
+  <!-- Pagination -->
+  <% if (it.pagination && (it.pagination.hasPrevPage || it.pagination.hasNextPage)) { %>
   <div class="pagination">
-    <!-- TODO: Pagination logic based on 'pages' passed from controller -->
+    <%
+      // Utility to build query strings preserving all current filters
+      const buildQuery = (page) => {
+        let q = `?page=${page}`;
+        if (it.query) q += `&q=${encodeURIComponent(it.query)}`;
+        if (it.filters) {
+          if (it.filters.ol && it.filters.ol.length > 0) {
+            it.filters.ol.forEach(ol => q += `&ol=${ol}`);
+          }
+          if (it.filters.lat) q += `&geo_latitude=${it.filters.lat}`;
+          if (it.filters.lon) q += `&geo_longitude=${it.filters.lon}`;
+          if (it.filters.radius) q += `&geo_radius=${it.filters.radius}`;
+          if (it.filters.unit) q += `&geo_unit=${it.filters.unit}`;
+          if (it.filters.before) q += `&before=${encodeURIComponent(it.filters.before)}`;
+          if (it.filters.after) q += `&after=${encodeURIComponent(it.filters.after)}`;
+        }
+        return q;
+      };
+    %>
+
+    <% if (it.pagination.hasPrevPage) { %>
+    <a href="<%= buildQuery(it.pagination.currentPage - 1) %>" hx-get="<%= buildQuery(it.pagination.currentPage - 1) %>" hx-target="#search-results-wrapper" hx-swap="innerHTML show:window:top" hx-push-url="true">
+      &laquo; <%= it.t('pagination.previous') %>
+    </a>
+    <% } %>
+
+    <span class="current"><%= it.t('pagination.page', { page: it.pagination.currentPage }) %></span>
+
+    <% if (it.pagination.hasNextPage) { %>
+    <a href="<%= buildQuery(it.pagination.currentPage + 1) %>" hx-get="<%= buildQuery(it.pagination.currentPage + 1) %>" hx-target="#search-results-wrapper" hx-swap="innerHTML show:window:top" hx-push-url="true">
+      <%= it.t('pagination.next') %> &raquo;
+    </a>
+    <% } %>
   </div>
+  <% } %>
 </section>

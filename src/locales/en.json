@@ -43,7 +43,13 @@
     "profile": "API Profile",
     "install": "Install App",
     "install_desktop": "Cipr in your desktop",
-    "install_mobile": "Cipr in your mobile"
+    "install_mobile": "Cipr in your mobile",
+    "source_code": "Source Code"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page}"
   },
   "error": {
     "noscript": "Using ECMAScript/JavaScript is not optional here because this is a simple client for a diverse network of resources. Without scripting, fetching is not possible. For instance, this tool becomes useless in those conditions."

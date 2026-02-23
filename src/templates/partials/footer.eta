@@ -21,7 +21,7 @@
   </span>
 
   <span>
-    <a href="https://codeberg.org/Ciprnode-zero">Codeberg (Source Code)</a>
+    <a href="https://codeberg.org/Ciprnode-zero">Codeberg (<%= it.t('footer.source_code') %>)</a>
   </span>
 
 </footer>

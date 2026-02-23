@@ -42,7 +42,13 @@
     "profile": "Profilo API",
     "install": "Installa App",
     "install_desktop": "Cipr sul tuo desktop",
-    "install_mobile": "Cipr sul tuo cellulare"
+    "install_mobile": "Cipr sul tuo cellulare",
+    "source_code": "Codice Sorgente"
+  },
+  "pagination": {
+    "previous": "Precedente",
+    "next": "Successivo",
+    "page": "Pagina {page}"
   },
   "error": {
     "noscript": "L'uso di ECMAScript/JavaScript non è opzionale qui perché questo è un semplice client per una rete diversa di risorse. Senza scripting, il recupero non è possibile. Ad esempio, questo strumento diventa inutile in queste condizioni."
