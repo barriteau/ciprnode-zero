@@ -103,9 +103,7 @@ try {
 
   console.log("Seeding 'languages' table...");
   const langsJson = JSON.parse(
-    Deno.readTextFileSync(
-      resolve(dirname(new URL('', import.meta.url).pathname), '../../src/db/languages.json'),
-    ),
+    Deno.readTextFileSync(resolve(Deno.cwd(), 'src/db/languages.json')),
   );
   const insertLang = db.prepare(
     'INSERT OR IGNORE INTO languages (lang_code, lang_name, lang_name_en) VALUES (?, ?, ?)',
