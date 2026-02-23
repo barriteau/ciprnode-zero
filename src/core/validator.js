@@ -138,7 +138,15 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be an integer >= 1000ms. Current Value: ${config.expected_propagation_time}`,
   );
 
-  // 9. Validate Parent URL if present
+  // 9. Validate Page Size
+  check(
+    'Page Size',
+    config.page_size,
+    Number.isInteger(config.page_size) && config.page_size >= 1 && config.page_size <= 100,
+    `Must be an integer between 1 and 100. Current Value: ${config.page_size}`,
+  );
+
+  // 10. Validate Parent URL if present
   if (config.parent_url) {
     let isValidUrl = false;
     try {

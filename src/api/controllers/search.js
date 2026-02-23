@@ -88,7 +88,7 @@ export const query = async (req, db, config, scopeZa) => {
                 params.append(key, String(val));
               }
             }
-          } catch (e) {
+          } catch (_e) {
             params.set('query', trimmedBody);
           }
         } else if (trimmedBody) {
@@ -183,37 +183,54 @@ export const query = async (req, db, config, scopeZa) => {
   // Copy raw OL to filters for template check
   options.filters.ol = options.ol;
 
-  // Pagination (Classic logic preserved)
+  // Pagination
   const pNums = parseArray(params.get('pages_num') || '');
   const pSizes = parseArray(params.get('pages_size') || '');
   const pages = [];
-  const defaultSize = 10;
+  const defaultSize = config.page_size || 50;
 
-  const expandRange = (str) => {
-    if (str.includes('-')) {
-      const [start, end] = str.split('-').map(Number);
-      if (!isNaN(start) && !isNaN(end)) {
-        const res = [];
-        for (let i = start; i <= end; i++) res.push(i);
-        return res;
+  let currentPageUI = Number(params.get('page'));
+  const allPageNums = [];
+
+  if (currentPageUI) {
+    if (currentPageUI < 1) currentPageUI = 1;
+    if (currentPageUI > 100) currentPageUI = 100;
+    allPageNums.push(currentPageUI);
+    pages.push({
+      offset: (currentPageUI - 1) * defaultSize,
+      limit: defaultSize,
+      pageNum: currentPageUI,
+    });
+  } else {
+    const expandRange = (str) => {
+      if (str.includes('-')) {
+        const [start, end] = str.split('-').map(Number);
+        if (!isNaN(start) && !isNaN(end)) {
+          const res = [];
+          for (let i = start; i <= end; i++) res.push(i);
+          return res;
+        }
       }
-    }
-    return [Number(str)];
-  };
+      return [Number(str)];
+    };
 
-  let allPageNums = [];
-  pNums.forEach((p) => allPageNums.push(...expandRange(String(p))));
-  if (allPageNums.length === 0) allPageNums.push(1);
+    pNums.forEach((p) => allPageNums.push(...expandRange(String(p))));
+    if (allPageNums.length === 0) allPageNums.push(1);
 
-  allPageNums.forEach((pageNum, idx) => {
-    let sizeStr = pSizes[idx] !== undefined
-      ? pSizes[idx]
-      : (pSizes.length > 0 ? pSizes[pSizes.length - 1] : defaultSize);
-    let size = Number(sizeStr) || defaultSize;
-    if (pageNum < 1) pageNum = 1;
-    const offset = (pageNum - 1) * size;
-    pages.push({ offset, limit: size, pageNum });
-  });
+    allPageNums.forEach((pageNum, idx) => {
+      const sizeStr = pSizes[idx] !== undefined
+        ? pSizes[idx]
+        : (pSizes.length > 0 ? pSizes[pSizes.length - 1] : defaultSize);
+      const size = Number(sizeStr) || defaultSize;
+      if (pageNum < 1) pageNum = 1;
+      if (pageNum > 100) pageNum = 100; // Max depth cap
+      const offset = (pageNum - 1) * size;
+      pages.push({ offset, limit: size, pageNum });
+    });
+    currentPageUI = allPageNums[0];
+  }
+
+  // Deduplicate and resolve actual pages
   options.pages = pages;
 
   // 2. Search Execution (Repo)
@@ -303,7 +320,12 @@ export const query = async (req, db, config, scopeZa) => {
     filters: options.filters,
     results: items,
     allPageNums: allPageNums,
-    // Add pagination data if needed
+    pagination: {
+      currentPage: currentPageUI,
+      pageSize: defaultSize,
+      hasPrevPage: currentPageUI > 1,
+      hasNextPage: items.length >= defaultSize && currentPageUI < 100, // naive peek
+    },
   };
 
   let html;

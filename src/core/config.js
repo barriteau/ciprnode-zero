@@ -94,7 +94,7 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
       longitude: parseCoord(ciprEntry.longitude),
       bootstrap_node: network.bootstrap_node || '',
       expected_propagation_time: Number(data.expected_propagation_time) || 120000,
-      page_size: 50,
+      page_size: Number(data.ciprface?.page_size) || 50,
       debug: Deno.args.includes('--debug') || data.debug === true || false,
       dns: {
         do53: Array.isArray(network.do53)

@@ -154,5 +154,6 @@ guasa.art
 
 ---
 
-Pagination
-Complete the Help page
+h1 size in media queries
+lang
+Texts in the Help page
