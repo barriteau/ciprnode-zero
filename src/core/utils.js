@@ -71,10 +71,10 @@ export const generateCiprHash = async (
     title,
     description,
     keywordsStr,
+    primary_lang || '',
     olStr,
     latStr,
     lonStr,
-    primary_lang || '',
   ].join('¦');
 
   console.log(`String to hash: ${input}`);
