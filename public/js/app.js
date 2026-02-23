@@ -47,10 +47,7 @@ const initAutocomplete = () => {
     }
 
     debounceTimer = setTimeout(() => {
-      const currentLang = document.documentElement.lang || 'en';
-      fetch(
-        `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&lang=${currentLang}`,
-      )
+      fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5`)
         .then((res) => res.json())
         .then((data) => {
           resultsContainer.innerHTML = '';
@@ -286,8 +283,7 @@ const initReverseGeocoding = () => {
 
     if (lat && lon) {
       setTimeout(() => {
-        const currentLang = document.documentElement.lang || 'en';
-        fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}&lang=${currentLang}`)
+        fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}`)
           .then((res) => res.json())
           .then((data) => {
             if (data.features && data.features.length > 0) {
