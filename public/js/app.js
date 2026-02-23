@@ -289,8 +289,13 @@ const initReverseGeocoding = () => {
             if (data.features && data.features.length > 0) {
               const props = data.features[0].properties;
               // Extract administrative geography, explicitly avoiding point-of-interest 'name' fields
-              const label = props.city || props.town || props.village || props.county ||
-                props.state || props.country || '';
+              const parts = [];
+              const city = props.city || props.town || props.village || props.county || '';
+              if (city) parts.push(city);
+              if (props.state && props.state !== city) parts.push(props.state);
+              if (props.countrycode) parts.push(props.countrycode.toUpperCase());
+
+              const label = parts.join(', ');
               if (label) {
                 el.innerHTML = ` &bull; ${prefix} ${label}`;
               }
