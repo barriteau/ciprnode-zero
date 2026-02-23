@@ -72,14 +72,14 @@ A ciprdup is the working copy of the Cipr in each ciprnode. It's probably ―but
 
 The fields ―or columns― of the ciprdup are: `za`, `title`, `description`, `ol`, `latitude`, `longitude` and `timestamp`.
 
-| za             | title             | description       | keywords         | ol  | latitude    | longitude   | timestamp    |
-|----------------|-------------------|-------------------|------------------|-----|-------------|-------------|--------------|
-| `pali.to`      | `Little Stick`    | `Stick dedicated` | `polo hilo star` |     |             |             | `1698417000` |
-| `meansite.com` | `We are Mean`     | `Quite offensive` | `truck ala wing` | `2` | `407128000` | `407128000` | `1698417000` |
-| `foobar.org`   | `The Foobar Zone` | `Foobar`          | `late chupe ola` |     |             |             | `1698417000` |
-| `example.com`  | `Example Domain`  | `For examples`    | `rat pote table` |     | `407128000` | `407128000` | `1698417000` |
-| `elcoco.buh`   | `Offense For All` | `Fully offensive` | `bit cigar tool` | `3` |             |             | `1698417000` |
-| `cipr.info`    | `Specification`   | `Cipr spec`       | `pose wind pork` |     | `407128000` | `407128000` | `1698417000` |
+| za             | title             | description       | keywords         | primary_lang | ol  | latitude    | longitude   | timestamp    |
+|----------------|-------------------|-------------------|------------------|--------------|-----|-------------|-------------|--------------|
+| `pali.to`      | `Little Stick`    | `Stick dedicated` | `polo hilo star` |              |     |             |             | `1698417000` |
+| `meansite.com` | `We are Mean`     | `Quite offensive` | `truck ala wing` |              | `2` | `407128000` | `407128000` | `1698417000` |
+| `foobar.org`   | `The Foobar Zone` | `Foobar`          | `late chupe ola` |              |     |             |             | `1698417000` |
+| `example.com`  | `Example Domain`  | `For examples`    | `rat pote table` |              |     | `407128000` | `407128000` | `1698417000` |
+| `elcoco.buh`   | `Offense For All` | `Fully offensive` | `bit cigar tool` |              | `3` |             |             | `1698417000` |
+| `cipr.info`    | `Specification`   | `Cipr spec`       | `pose wind pork` |              |     | `407128000` | `407128000` | `1698417000` |
 
 Table: Ciprdup fields with example data shown as table rows in a RDBMS:
 
@@ -227,10 +227,12 @@ The CiprAPI exposes the following endpoints:
 
 - `HEAD /` - Verifies the presence of a ciprnode in the Cipr.
 - `GET /` - Retrieves the contents of the ciprdup.
+- `GET /languages/` - Retrieves the contents of the `languages` database table.
 - `GET /ZA/` - Retrieves all fields for a specific cipred resource.
 - `GET /ZA/title/` - Retrieves the title of a specific cipred resource.
 - `GET /ZA/description/` - Retrieves the description of a specific cipred resource.
 - `GET /ZA/ol/` - Retrieves the value of the offensiveness level of a specific cipred resource.
+- `GET /ZA/language/` - Retrieves the value of the language of a specific cipred resource.
 - `GET /ZA/latitude/` - Retrieves the latitude of a specific cipred resource.
 - `GET /ZA/longitude/` - Retrieves the longitude of a specific cipred resource.
 - `GET /ZA/timestamp/` - Retrieves the timestamp of a specific cipred resource.

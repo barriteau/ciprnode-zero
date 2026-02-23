@@ -157,3 +157,43 @@ guasa.art
 h1 size in media queries
 lang
 Texts in the Help page
+
+---
+
+Now we need to add a new item to the cipr_entry: language.
+
+I'm considering this:
+
+We will need to add a new variable to the ciprnode.toml file: language (already done). This value is optional, but if present, must be validated.
+
+For the validation of that entry and for other purposes, we will need a new table in the database containing some kind of standard language codes (suggest me options) to validate the new language variable in the configuration at startup and for other uses detailed bellow.
+
+I propose the new `language` table to have at least 3 columns:
+
+`lang_code` -> the language code
+`lang_name` -> the name of the language in its native/more common writing system
+`lang_name_en` -> the name of the language in English
+
+Give me your feedback and let me know if you consider using something additional or even something different could be better.
+
+We will need to add a new `language` column in the database for the language, just between the `keywords` and `ol` columns. This is to store something from the new `language` table, suggest me what is optimal, if storing a rowid, the actual `lang_code` value or something else, consider we need our database to flawlessly manage 500+ million entries and FTS search filtered also with this value.
+
+We will need to implement two new CiprAPI methods:
+
+`GET /languages/` -> Retrieves the contents of the `languages` database table. Accepts query parameters to filter by `lang_code`, `lang_name` or `lang_name_en`, this endpoint is to be used for the autocomplete INPUT in the new Language FIELDSET described bellow. Important: this method is the only one in the whole CiprAPI that needs to reject requests that are not originated in its own server.
+
+`GET /ZA/language/` -> Retrieves the value of the language of a specific cipred resource.
+
+We will need this new `language` value to come and go in the API methods that use the rest of the columns that filter.
+
+We will add a new FIELDSET to filter by language just between the Location and the Offensiveness Level FIELDSETs, so be careful because now we will have 4 FIELDSETs in a row without altering the position of the search-options-buttons FIELDSET just bellow them.
+
+We will need this new FIELDSET to have a reset BUTTON just after an autocomplete INPUT which uses as its source of data the new `GET /languages/` endpoint.
+
+We will need to add `lang_name`/`lang_name_en` just after the OL and before the location in the meta for every search result in results.eta. If the entry don't have a language defined, don't show anything.
+
+Consider the internationalization of the new additions to the front-end.
+
+Please, I REALLY need you to deeply analyze my proposal for any weak point, contradiction or problem, I need your objective suggestions, I'm al ears.
+
+Also, let me know if I'm missing something.

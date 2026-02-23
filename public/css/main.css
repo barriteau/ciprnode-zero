@@ -1218,7 +1218,8 @@ form fieldset {
 }
 
 #date-time-filter>div,
-#location-filter>div {
+#location-filter>div,
+#language-filter>div {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
@@ -1232,7 +1233,7 @@ form fieldset {
     grid-column: 2 / -1;
 }
 
-#autocomplete-results {
+.autocomplete-results {
     position: absolute;
     grid-column: 2 / -1;
     top: 100%;

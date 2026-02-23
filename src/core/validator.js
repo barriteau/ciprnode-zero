@@ -78,6 +78,18 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be 1-512 chars, no newlines. Current Length: ${config.keywords.length}`,
   );
 
+  // 4b. Validate Primary Language
+  if (config.primary_lang) {
+    check(
+      'Primary Language',
+      config.primary_lang,
+      config.primary_lang.length === 2 && /^[a-z]{2}$/i.test(config.primary_lang),
+      `If provided, must be a 2-letter ISO 639-1 language code. Current Value: "${config.primary_lang}"`,
+    );
+  } else {
+    validations['Primary Language'] = 'Skipped (None provided)';
+  }
+
   // 5. Validate OL
   // 0, 1, 2, 3
   const validOl = [0, 1, 2, 3];

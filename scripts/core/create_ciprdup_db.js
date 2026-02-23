@@ -1,6 +1,5 @@
-
 import { Database } from 'jsr:@db/sqlite@^0.12.0';
-import { resolve, dirname } from 'jsr:@std/path@^1.0.8';
+import { dirname, resolve } from 'jsr:@std/path@^1.0.8';
 import { ensureDirSync } from 'jsr:@std/fs@^1.0.6';
 
 const DB_PATH = resolve(Deno.cwd(), 'data', 'ciprdup.db');
@@ -36,7 +35,7 @@ try {
   // ---------------------------------------------------------
   // 2. Main Table Creation with Constraints
   // ---------------------------------------------------------
-  console.log('Creating Main Table \'ciprdup\'...');
+  console.log("Creating Main Table 'ciprdup'...");
   db.exec(`
     CREATE TABLE IF NOT EXISTS ciprdup (
       -- Zone Apex: The unique identifier for the resource.
@@ -59,6 +58,10 @@ try {
       -- Constraint: Max length 512 characters.
       -- Constraint: Must NOT contain Newline (LF) or Carriage Return (CR) characters.
       keywords TEXT CHECK (length(keywords) <= 512 AND instr(keywords, x'0A') = 0 AND instr(keywords, x'0D') = 0),
+
+      -- Primary Language: ISO 639-1 language code of the resource.
+      -- Constraint: Must be exactly 2 characters (e.g., 'en', 'es') or NULL.
+      primary_lang TEXT CHECK (length(primary_lang) = 2 OR primary_lang IS NULL),
 
       -- Offensiveness Level (ol): Subjective rating of content.
       -- Constraint: Must be one of: 1, 2, or 3.
@@ -85,13 +88,44 @@ try {
     ) STRICT;
   `);
 
+  // Index on primary_lang for extremely fast global filtering without FTS overhead
+  console.log("Creating index on 'primary_lang'...");
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_ciprdup_primary_lang ON ciprdup(primary_lang);`);
+
+  console.log("Creating 'languages' lookup table...");
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS languages (
+      lang_code TEXT PRIMARY KEY,
+      lang_name TEXT NOT NULL,
+      lang_name_en TEXT NOT NULL
+    ) STRICT;
+  `);
+
+  console.log("Seeding 'languages' table...");
+  const langsJson = JSON.parse(
+    Deno.readTextFileSync(
+      resolve(dirname(new URL('', import.meta.url).pathname), '../../src/db/languages.json'),
+    ),
+  );
+  const insertLang = db.prepare(
+    'INSERT OR IGNORE INTO languages (lang_code, lang_name, lang_name_en) VALUES (?, ?, ?)',
+  );
+
+  db.exec('BEGIN TRANSACTION;');
+  langsJson.forEach((lang) => {
+    insertLang.run(lang.lang_code, lang.lang_name, lang.lang_name_en);
+  });
+  db.exec('COMMIT TRANSACTION;');
+
   // ---------------------------------------------------------
   // 3. FTS5 Virtual Table (External Content)
   // ---------------------------------------------------------
-  console.log('Creating FTS5 Virtual Table \'ciprdup_fts\' (External Content)...');
+  console.log("Creating FTS5 Virtual Table 'ciprdup_fts' (External Content)...");
 
   // We check if the FTS table exists to avoid errors on re-run
-  const ftsExists = db.prepare('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'ciprdup_fts\'').get();
+  const ftsExists = db.prepare(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name='ciprdup_fts'",
+  ).get();
 
   if (!ftsExists) {
     db.exec(`
@@ -172,7 +206,6 @@ try {
     console.error("Validation Error:", e);
   }
   */
-
 } catch (err) {
   console.error('Critical Error during DB initialization:', err);
   Deno.exit(1);

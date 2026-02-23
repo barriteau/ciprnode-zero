@@ -44,6 +44,10 @@ export const initSchema = (db) => {
       -- Constraint: Must NOT contain Newline (LF) or Carriage Return (CR) characters.
       keywords TEXT CHECK (length(keywords) <= 512 AND instr(keywords, x'0A') = 0 AND instr(keywords, x'0D') = 0),
 
+      -- Primary Language: ISO 639-1 language code of the resource.
+      -- Constraint: Must be exactly 2 characters (e.g., 'en', 'es') or NULL.
+      primary_lang TEXT CHECK (length(primary_lang) = 2 OR primary_lang IS NULL),
+
       -- Offensiveness Level (ol): Subjective rating of content.
       -- Constraint: Must be one of: 1, 2, or 3.
       -- Note: NULL is implicitly allowed (representing '0' or 'Safe').
@@ -64,6 +68,36 @@ export const initSchema = (db) => {
       timestamp INTEGER CHECK (timestamp > 0)
     ) STRICT;
   `);
+
+  // Index on primary_lang for extremely fast global filtering without FTS overhead
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_ciprdup_primary_lang ON ciprdup(primary_lang);`);
+
+  // 2. Lookup table for Languages
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS languages (
+      lang_code TEXT PRIMARY KEY,
+      lang_name TEXT NOT NULL,
+      lang_name_en TEXT NOT NULL
+    ) STRICT;
+  `);
+
+  // Seed languages. Read locally or fallback. In Deno, this requires fs read.
+  // We can just rely on the initialization script, but it is nice to have it embedded or read from JSON
+  try {
+    const __dirname = new URL('.', import.meta.url).pathname;
+    const langsJson = JSON.parse(Deno.readTextFileSync(__dirname + '/languages.json'));
+    const insertLang = db.prepare(
+      'INSERT OR IGNORE INTO languages (lang_code, lang_name, lang_name_en) VALUES (?, ?, ?)',
+    );
+
+    db.exec('BEGIN TRANSACTION;');
+    langsJson.forEach((lang) => {
+      insertLang.run(lang.lang_code, lang.lang_name, lang.lang_name_en);
+    });
+    db.exec('COMMIT TRANSACTION;');
+  } catch (e) {
+    console.warn('Could not seed languages table automatically from schema init:', e.message);
+  }
 
   // 2. FTS5 Virtual Table (External Content)
   // We check if the FTS table exists to avoid errors on re-run

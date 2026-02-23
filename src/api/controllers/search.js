@@ -3,7 +3,7 @@
  * @description Controller for Search Operations (QUERY method).
  */
 
-import { countEntries, getLatestTimestamp, searchEntries } from '../../db/repo.js';
+import { countEntries, getLanguageMap, getLatestTimestamp, searchEntries } from '../../db/repo.js';
 import { render } from '../views/renderer.js';
 
 /**
@@ -114,6 +114,7 @@ export const query = async (req, db, config, scopeZa) => {
     geo: {},
     timestamp: {},
     pages: [],
+    primary_lang: [],
   };
 
   // OL
@@ -128,6 +129,18 @@ export const query = async (req, db, config, scopeZa) => {
     });
     // Filter out NaN and duplicates
     options.ol = [...new Set(combinedOl)].filter((n) => !isNaN(n));
+  }
+
+  // Primary Lang
+  const allLang = params.getAll('primary_lang');
+  if (allLang.length > 0) {
+    const combinedLang = [];
+    allLang.forEach((val) => {
+      const parsed = parseArray(val).map((v) => String(v).replace(/["']/g, ''));
+      combinedLang.push(...parsed);
+    });
+    // Filter for valid 2-char codes (basic check before passing to repo)
+    options.primary_lang = [...new Set(combinedLang)].filter((l) => l.length === 2);
   }
 
   // Geo
@@ -180,8 +193,9 @@ export const query = async (req, db, config, scopeZa) => {
   if (params.has('before')) options.timestamp.before = parseTimestamp(params.get('before'));
   if (params.has('after')) options.timestamp.after = parseTimestamp(params.get('after'));
 
-  // Copy raw OL to filters for template check
+  // Copy raw OL/Lang to filters for template check
   options.filters.ol = options.ol;
+  options.filters.primary_lang = options.primary_lang;
 
   // Pagination
   const pNums = parseArray(params.get('pages_num') || '');
@@ -250,6 +264,18 @@ export const query = async (req, db, config, scopeZa) => {
   }
 
   const items = searchEntries(db, options);
+
+  // Attach localized language names
+  const langMap = getLanguageMap(db);
+  items.forEach((item) => {
+    if (item.primary_lang) {
+      const langData = langMap.get(item.primary_lang);
+      if (langData) {
+        item.lang_name = langData.lang_name;
+        item.lang_name_en = langData.lang_name_en;
+      }
+    }
+  });
 
   // 3. Render Response
   const accept = req.headers.get('accept') || '';
@@ -343,4 +369,44 @@ export const query = async (req, db, config, scopeZa) => {
       'Vary': 'Accept-Language, Cookie',
     },
   });
+};
+
+/**
+ * Handles GET /languages/ requests for the autocomplete feature.
+ * Protected by Sec-Fetch-Site to reject cross-origin requests.
+ */
+export const getLanguages = (req, db, _config) => {
+  // Enforce same-origin or same-site check for basic scraping protection
+  const site = req.headers.get('sec-fetch-site');
+  if (site && site !== 'same-origin' && site !== 'same-site') {
+    return new Response('Forbidden', { status: 403 });
+  }
+
+  const url = new URL(req.url);
+  const q = url.searchParams.get('lang_code') || url.searchParams.get('lang_name') ||
+    url.searchParams.get('lang_name_en') || url.searchParams.get('q') || '';
+
+  let queryStr = 'SELECT lang_code, lang_name, lang_name_en FROM languages';
+  let queryParams = [];
+
+  if (q) {
+    queryStr += ' WHERE lang_code LIKE ? OR lang_name LIKE ? OR lang_name_en LIKE ? LIMIT 50';
+    const likeQ = `%${q}%`;
+    queryParams = [likeQ, likeQ, likeQ];
+  } else {
+    queryStr += ' ORDER BY lang_code ASC';
+  }
+
+  try {
+    const langs = db.prepare(queryStr).all(...queryParams);
+    return new Response(JSON.stringify(langs), {
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    });
+  } catch (e) {
+    console.error('Error fetching languages:', e);
+    return new Response('[]', {
+      status: 500,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    });
+  }
 };

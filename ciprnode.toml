@@ -20,6 +20,8 @@ description = "Network node for Proyec.top"
 # Space separated list of keywords, max 512 characters, case insensitive
 keywords = "proyec top network infrastructure"
 
+primary_lang = ""
+
 # Offensiveness Level of the resource
 # 0: Non offensive content
 # 1: Individual offensive content

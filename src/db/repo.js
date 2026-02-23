@@ -13,6 +13,7 @@
  * @property {number|null} latitude
  * @property {number|null} longitude
  * @property {number} timestamp
+ * @property {string} [primary_lang]
  */
 
 /**
@@ -24,8 +25,8 @@ export const insertEntry = (db, entry) => {
   const keywords = Array.isArray(entry.keywords) ? entry.keywords.join(' ') : entry.keywords;
 
   const stmt = db.prepare(`
-    INSERT INTO ciprdup (za, title, description, keywords, ol, latitude, longitude, timestamp)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO ciprdup (za, title, description, keywords, ol, latitude, longitude, timestamp, primary_lang)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(za) DO UPDATE SET
       title = excluded.title,
       description = excluded.description,
@@ -33,7 +34,8 @@ export const insertEntry = (db, entry) => {
       ol = excluded.ol,
       latitude = excluded.latitude,
       longitude = excluded.longitude,
-      timestamp = excluded.timestamp;
+      timestamp = excluded.timestamp,
+      primary_lang = excluded.primary_lang;
   `);
 
   const result = stmt.run(
@@ -45,6 +47,7 @@ export const insertEntry = (db, entry) => {
     entry.latitude || null,
     entry.longitude || null,
     entry.timestamp,
+    entry.primary_lang || null,
   );
 
   return result.changes > 0;
@@ -94,10 +97,11 @@ export const deleteEntry = (db, za) => {
  * @param {number|string} [options.timestamp.before]
  * @param {number|string} [options.timestamp.after]
  * @param {Array<{offset: number, limit: number}>} [options.pages] - Pagination ranges.
+ * @param {string[]} [options.primary_lang] - Array of language codes.
  * @returns {CiprEntry[]}
  */
 export const searchEntries = (db, options = {}) => {
-  const { query, ol, geo, timestamp, pages } = options;
+  const { query, ol, geo, timestamp, pages, primary_lang } = options;
   // Construct Base SQL
 
   const baseSql = `SELECT ciprdup.*, ciprdup.timestamp FROM ciprdup`;
@@ -139,6 +143,13 @@ export const searchEntries = (db, options = {}) => {
     if (olConditions.length > 0) {
       finalWhere.push(`(${olConditions.join(' OR ')})`);
     }
+  }
+
+  // Primary Language Filter
+  if (Array.isArray(primary_lang) && primary_lang.length > 0) {
+    const placeholders = primary_lang.map(() => '?').join(',');
+    finalWhere.push(`ciprdup.primary_lang IN (${placeholders})`);
+    primary_lang.forEach((l) => finalParams.push(l));
   }
 
   if (geo && geo.latitude != null && geo.longitude != null) {
@@ -205,4 +216,27 @@ export const countEntries = (db) => {
 export const getLatestTimestamp = (db) => {
   const row = db.prepare(`SELECT MAX(timestamp) as latest FROM ciprdup`).get();
   return row.latest || null;
+};
+
+let languageMapCache = null;
+
+/**
+ * Returns a complete map of ISO language codes to their localized names.
+ * Cached in memory after the first call.
+ * @param {import('@db/sqlite').Database} db
+ * @returns {Map<string, {lang_name: string, lang_name_en: string}>}
+ */
+export const getLanguageMap = (db) => {
+  if (languageMapCache) return languageMapCache;
+  const map = new Map();
+  try {
+    const rows = db.prepare('SELECT lang_code, lang_name, lang_name_en FROM languages').all();
+    rows.forEach((r) => {
+      map.set(r.lang_code, { lang_name: r.lang_name, lang_name_en: r.lang_name_en });
+    });
+    languageMapCache = map;
+  } catch (_e) {
+    // If table doesn't exist during some early tests, ignore
+  }
+  return languageMapCache || map;
 };

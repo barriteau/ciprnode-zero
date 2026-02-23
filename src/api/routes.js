@@ -46,6 +46,13 @@ export const handleRequest = (request, db, config) => {
     return HelpController.get(request, db, config);
   }
 
+  // 1.5 Languages autocomplete endpoint
+  if (path === '/languages' || path === '/languages/') {
+    if (method === 'GET') {
+      return SearchController.getLanguages(request, db, config);
+    }
+  }
+
   // 2. Resource Operations /ZA/...
   if (parts.length >= 1) {
     const za = parts[0];
@@ -71,7 +78,15 @@ export const handleRequest = (request, db, config) => {
       // 3. Resource Field Operations /ZA/field/
       if (parts.length === 2 && method === 'GET') {
         const field = parts[1];
-        const allowedFields = ['title', 'description', 'ol', 'latitude', 'longitude', 'timestamp'];
+        const allowedFields = [
+          'title',
+          'description',
+          'ol',
+          'latitude',
+          'longitude',
+          'timestamp',
+          'primary_lang',
+        ];
         if (allowedFields.includes(field)) {
           return EntryController.getField(request, db, config, za, field);
         }

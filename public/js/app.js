@@ -8,15 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
   initLanguageSwitcher();
   initPwaInstall();
   initReverseGeocoding();
-});
-
-// Re-initialize components after HTMX swaps
-document.addEventListener('htmx:afterSwap', (_evt) => {
   initSearchForm();
   initFilters();
   initLanguageSwitcher();
   initPwaInstall();
   initReverseGeocoding();
+  initLanguageAutocomplete();
+  initLanguageSwitcher();
+  initPwaInstall();
+  initReverseGeocoding();
+  initLanguageAutocomplete();
 });
 
 // Insert Accept-Language on all HTMX async requests
@@ -93,6 +94,82 @@ const initAutocomplete = () => {
   // Hide on click outside
   document.addEventListener('click', (e) => {
     if (!input.contains(e.target) && !resultsContainer.contains(e.target)) {
+      resultsContainer.classList.add('hidden');
+    }
+  });
+};
+
+const initLanguageAutocomplete = () => {
+  const input = document.getElementById('language-search');
+  if (!input) return;
+
+  const resultsContainer = document.getElementById('language-autocomplete-results');
+  const langInput = document.querySelector('input[name="primary_lang"]');
+  const resetBtn = document.getElementById('language-reset-btn');
+
+  let debounceTimer;
+
+  // Show reset button if there's already a value
+  if (langInput && langInput.value) {
+    if (resetBtn) resetBtn.style.display = 'inline-block';
+  }
+
+  input.addEventListener('input', (e) => {
+    const query = e.target.value;
+    clearTimeout(debounceTimer);
+
+    if (query.length === 0) {
+      langInput.value = '';
+      if (resetBtn) resetBtn.style.display = 'none';
+      resultsContainer.classList.add('hidden');
+      return;
+    }
+
+    if (resetBtn) resetBtn.style.display = 'inline-block';
+
+    debounceTimer = setTimeout(() => {
+      fetch(`/languages/?q=${encodeURIComponent(query)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          resultsContainer.innerHTML = '';
+          if (data && data.length > 0) {
+            resultsContainer.classList.remove('hidden');
+            data.forEach((lang) => {
+              const div = document.createElement('div');
+              div.className = 'autocomplete-item';
+              // Display format: English - Español (es)
+              div.textContent = `${lang.lang_name_en} - ${lang.lang_name} (${lang.lang_code})`;
+
+              div.addEventListener('click', () => {
+                input.value = div.textContent;
+                langInput.value = lang.lang_code;
+                resultsContainer.classList.add('hidden');
+              });
+              resultsContainer.appendChild(div);
+            });
+          } else {
+            resultsContainer.classList.add('hidden');
+          }
+        })
+        .catch((err) => console.error('Language fetch error:', err));
+    }, 200);
+  });
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      input.value = '';
+      langInput.value = '';
+      resetBtn.style.display = 'none';
+      resultsContainer.classList.add('hidden');
+    });
+  }
+
+  // Hide on click outside
+  document.addEventListener('click', (e) => {
+    if (
+      !input.contains(e.target) && !resultsContainer.contains(e.target) &&
+      (!resetBtn || !resetBtn.contains(e.target))
+    ) {
       resultsContainer.classList.add('hidden');
     }
   });
