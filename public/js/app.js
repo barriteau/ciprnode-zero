@@ -283,7 +283,7 @@ const initReverseGeocoding = () => {
 
     if (lat && lon) {
       setTimeout(() => {
-        fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}`)
+        fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}&layer=city`)
           .then((res) => res.json())
           .then((data) => {
             if (data.features && data.features.length > 0) {
