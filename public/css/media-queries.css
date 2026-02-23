@@ -1,0 +1,127 @@
+@charset "utf-8";
+
+/* =========================================
+   MEDIA QUERIES
+   ========================================= */
+
+/* --- Dark Mode System Preferences --- */
+@media (prefers-color-scheme: dark) {
+  /* TODO */
+}
+
+/* --- 1664px (Extra Large Desktop) --- */
+@media screen and (min-width: 1664px) {
+
+  main,
+  nav#foot-nav,
+  footer,
+  dialog {
+    max-width: 45vw;
+  }
+
+  main#wide-main-matter {
+    max-width: 80vw;
+  }
+}
+
+@media screen and (max-width: 1664px) {
+
+  main,
+  nav#foot-nav,
+  footer,
+  dialog {
+    max-width: 85vw;
+  }
+
+  main#wide-main-matter {
+    max-width: 90vw;
+  }
+}
+
+/* --- 960px (Small Desktop / Tablet Landscape) --- */
+@media screen and (max-width: 960px) {
+  #search-filters {
+    flex-wrap: wrap;
+  }
+
+  #search-filters>fieldset {
+    flex: 1 1 45%;
+  }
+
+  #search-filters>fieldset#ol-filter {
+    flex: 1 1 100%;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: inline-block;
+  }
+}
+
+/* --- 720px (Tablet Portrait / Large Mobile) --- */
+@media screen and (max-width: 720px) {
+
+  main,
+  nav#foot-nav,
+  footer,
+  dialog {
+    max-width: 95vw;
+  }
+
+  main#wide-main-matter {
+    max-width: 95vw;
+  }
+
+  svg-icon {
+    height: 1.8rem;
+    width: 1.8rem;
+    mask-size: 1.8rem;
+  }
+}
+
+/* --- 640px (Standard Mobile) --- */
+@media screen and (max-width: 640px) {
+  #search-filters {
+    flex-direction: column;
+  }
+}
+
+/* --- 360px (Small Mobile) --- */
+@media screen and (min-width: 360px) {
+  article.av {
+    display: grid;
+    column-gap: 0.5rem;
+    grid-template-columns: 78% 1fr;
+    grid-template-rows: auto auto 48px;
+    grid-template-areas:
+      "header ."
+      "video aside"
+      "footer footer";
+    font-size: 1.1rem;
+    margin-top: 1rem;
+  }
+}
+
+/* --- Retina / High DPI displays --- */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+
+  select,
+  textarea,
+  input {
+    font-size: var(--base-font-size);
+  }
+}
+
+/* --- PWA / Standalone --- */
+@media all and (display-mode: standalone),
+(display-mode: fullscreen) {
+
+  *,
+  *:before,
+  *:after {
+    user-select: text !important;
+  }
+}
