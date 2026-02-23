@@ -19,13 +19,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
   // console.log(`Entries Validation...`);
 
   // Helper to log result
-  const check = (label, value, condition, errorMessage) => {
-    // Truncate for display if needed
-    // let displayValue = value;
-    if (typeof value === 'string' && value.length > 50) {
-      displayValue = value.substring(0, 47) + '...';
-    }
-
+  const check = (label, _value, condition, errorMessage) => {
     validations[label] = condition ? '[OK] Valid' : '[ERR] Invalid';
 
     if (!condition) {
