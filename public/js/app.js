@@ -15,9 +15,25 @@ document.addEventListener('htmx:load', (_evt) => {
   initReverseGeocoding();
 });
 
-// Insert Accept-Language on all HTMX async requests
+// Manage HTMX async requests globally
 document.addEventListener('htmx:configRequest', (evt) => {
+  // Insert Accept-Language
   evt.detail.headers['Accept-Language'] = document.documentElement.lang;
+
+  // Handle custom HTTP methods explicitly declared via data-cipr-method attributes
+  const customMethod = evt.detail.elt.getAttribute('data-cipr-method');
+  if (customMethod) {
+    const isIosSafari = /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent);
+
+    // Apple WebKit Workaround: iOS Safari drops request body on custom HTTP methods like QUERY.
+    // By keeping the HTMX base request as a POST, we avoid data loss, and override the method via headers.
+    if (isIosSafari && customMethod.toUpperCase() === 'QUERY') {
+      evt.detail.verb = 'post';
+      evt.detail.headers['X-HTTP-Method-Override'] = customMethod.toUpperCase();
+    } else {
+      evt.detail.verb = customMethod.toLowerCase();
+    }
+  }
 });
 
 const initAutocomplete = () => {

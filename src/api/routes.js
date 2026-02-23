@@ -27,7 +27,6 @@ export const handleRequest = (request, db, config) => {
   if (overrideHdr && overrideHdr.toUpperCase() === 'QUERY' && method === 'POST') {
     method = 'QUERY';
   }
-
   const parts = path.split('/').filter((p) => p.length > 0);
 
   // 0. Profile (ALPS) - Served statically usually, but let's ensure it's handled if requested via API path logic?
