@@ -15,9 +15,11 @@ import { calculateNodesPerPulse, generateCiprHash } from './utils.js';
  * @param {import('@db/sqlite').Database} db
  */
 export const initialSync = async (config, db) => {
-  // 1. Check if DB is empty
+  // 1. Check if DB is sufficiently populated (more than just itself)
   const count = countEntries(db);
-  if (count > 0) {
+  // If we only have 0 or 1 entries, a full network sync is strictly required.
+  // 1 entry usually means the node generated its own identity locally but didn't finish syncing peers.
+  if (count > 1) {
     console.log(`[OK] Database already populated, skipping initial sync.`);
     return;
   }
