@@ -283,12 +283,14 @@ const initReverseGeocoding = () => {
 
     if (lat && lon) {
       setTimeout(() => {
-        fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}&layer=city`)
+        fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}`)
           .then((res) => res.json())
           .then((data) => {
             if (data.features && data.features.length > 0) {
               const props = data.features[0].properties;
-              const label = props.city || props.name || props.state || props.country || '';
+              // Extract administrative geography, explicitly avoiding point-of-interest 'name' fields
+              const label = props.city || props.town || props.village || props.county ||
+                props.state || props.country || '';
               if (label) {
                 el.innerHTML = ` &bull; ${prefix} ${label}`;
               }
