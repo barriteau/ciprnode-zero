@@ -282,8 +282,9 @@ form {
     }
 }
 
-/* --- Diaolgs ---*/
+/* --- Forms and Dialogs ---*/
 
+form,
 dialog {
     font-family: "Libertinus-Sans", sans-serif;
 }
