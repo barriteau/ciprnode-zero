@@ -242,44 +242,9 @@ export const initialSync = async (config, db) => {
 
   // --- Start Sync Loop ---
 
-  // Phase 1: Bootstrap
-  console.log(`[Sync] Bootstrapping from ${bootstrapUrl}...`);
-  const bootstrapResult = await fetchAndProcess(bootstrapUrl);
-
-  if (bootstrapResult && bootstrapResult.total > 0) {
-    // Viral Sync Logic
-    const totalNodes = bootstrapResult.total;
-    const nodesPerPulse = calculateNodesPerPulse(totalNodes, config.expected_propagation_time);
-    console.log(`[Sync] Viral Propagation: Total=${totalNodes}, NodesPerPulse=${nodesPerPulse}`);
-
-    // Pick random entries from DB to propagate to
-    // We want to pick 'nodesPerJump' entries.
-    // Since we just populated from bootstrap, we have some entries.
-    const dbTotal = countEntries(db);
-    const targetCount = Math.min(dbTotal, nodesPerPulse);
-
-    if (targetCount > 0) {
-      console.log(`[Sync] Initiating viral burst to ${targetCount} peers...`);
-      // We can't efficiently pick N distinct random rows with simple SQL offset in loop easily if duplicates matter,
-      // but for simple approximation:
-      // SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT N
-      const stmt = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`);
-      const rows = stmt.all(config.za, targetCount);
-
-      for (const row of rows) {
-        const peerUrl = `https://ciprnode.${row.za}/`;
-        console.log(`[Sync] Viral Jump -> ${peerUrl}`);
-        await fetchAndProcess(peerUrl); // Wait or parallel? Spec implies "send message", here we fetch.
-        // Assuming "sync" implies fetching FROM them.
-      }
-    }
-  }
-
-  // Phase 1.5: Sync Bootstrap Node Identity
-  // The bootstrap node itself is a verified peer, so we should have its entry.
+  // Phase 1: Bootstrap Node Identity Verification
+  // The bootstrap node must be validated and inserted first before fetching its entire Ciprdup.
   try {
-    // Assuming standard naming: hostname = ciprnode.<za>
-    // if hostname is just <za> (e.g. localhost), use it.
     const bootstrapUrlObj = new URL(bootstrapUrl);
     const hostname = bootstrapUrlObj.hostname;
     let bootstrapZa = hostname;
@@ -289,21 +254,48 @@ export const initialSync = async (config, db) => {
     }
 
     // Construct Identity URL: bootstrap_base_url + / + za
-    // Ensure we don't double slash
     const baseUrl = bootstrapUrl.endsWith('/') ? bootstrapUrl : `${bootstrapUrl}/`;
     const identityUrl = `${baseUrl}${bootstrapZa}`;
 
-    console.log(`[Sync] Fetching bootstrap node identity: ${identityUrl}...`);
+    console.log(`[Sync] Verifying bootstrap node identity: ${identityUrl}...`);
     const identityResult = await fetchAndProcess(identityUrl);
-    if (identityResult && identityResult.insertedCount > 0) {
-      console.log(`[Sync] Bootstrap node identity verified and stored.`);
-    } else {
-      if (config.debug) {
-        console.log(`[DBG] Bootstrap identity sync skipped (already exists or failed).`);
+
+    if (!identityResult || identityResult.insertedCount === 0) {
+      console.error(`[FATAL] Bootstrap node identity verification failed. Aborting network sync.`);
+      return;
+    }
+    console.log(`[Sync] Bootstrap node identity verified and stored as the first entry.`);
+  } catch (e) {
+    console.error(`[FATAL] Failed to sync bootstrap node identity: ${e.message}`);
+    return;
+  }
+
+  // Phase 2: Populate ciprdup from bootstrap node
+  console.log(`[Sync] Populating ciprdup from ${bootstrapUrl}...`);
+  const bootstrapResult = await fetchAndProcess(bootstrapUrl);
+
+  if (bootstrapResult && bootstrapResult.total > 0) {
+    // Viral Sync Logic
+    const totalNodes = bootstrapResult.total;
+    const nodesPerPulse = calculateNodesPerPulse(totalNodes, config.expected_propagation_time);
+    console.log(`[Sync] Viral Propagation: Total=${totalNodes}, NodesPerPulse=${nodesPerPulse}`);
+
+    // Pick random entries from DB to propagate to
+    const dbTotal = countEntries(db);
+    const targetCount = Math.min(dbTotal, nodesPerPulse);
+
+    if (targetCount > 0) {
+      console.log(`[Sync] Initiating viral burst to ${targetCount} peers...`);
+      // SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT N
+      const stmt = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`);
+      const rows = stmt.all(config.za, targetCount);
+
+      for (const row of rows) {
+        const peerUrl = `https://ciprnode.${row.za}/`;
+        console.log(`[Sync] Viral Jump -> ${peerUrl}`);
+        await fetchAndProcess(peerUrl);
       }
     }
-  } catch (e) {
-    console.warn(`[Sync] Failed to sync bootstrap node identity: ${e.message}`);
   }
 
   // Phase 2: Steady State Maintaince / Continued Sync - REMOVED
