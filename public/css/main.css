@@ -1218,10 +1218,18 @@ form fieldset {
 }
 
 #date-time-filter>div,
-#location-filter>div,
-#language-filter>div {
+#location-filter>div {
     display: grid;
     grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+}
+
+#language-filter>div {
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 0.75rem;
@@ -1262,6 +1270,10 @@ form fieldset {
     max-height: 250px;
     overflow-y: auto;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#language-autocomplete-results {
+    grid-column: 1 / 2;
 }
 
 .autocomplete-item {
