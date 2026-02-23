@@ -52,9 +52,8 @@
         <legend><%= it.t('search.filters.language') || 'Language' %></legend>
 
         <div>
-          <label for="language-search"><%= it.t('search.filters.language_search') || 'Resource Language' %></label>
-          <input type="text" id="language-search" placeholder="<%= it.t('search.filters.language_placeholder') || 'Type a language...' %>" autocomplete="off" />
-          <button type="button" id="language-reset-btn" aria-label="Reset Language" class="hidden" title="<%= it.t('search.options.reset') %>">&times;</button>
+          <input type="text" id="language-search" aria-label="<%= it.t('search.filters.language') || 'Language' %>" placeholder="<%= it.t('search.filters.language_placeholder') || 'Type a language...' %>" autocomplete="off" />
+          <button type="button" id="language-reset-btn" aria-label="<%= it.t('search.options.reset') %>" class="hidden" title="<%= it.t('search.options.reset') %>">&times;</button>
           <div id="language-autocomplete-results" class="autocomplete-results hidden"></div>
         </div>
         <input type="hidden" name="primary_lang" value="<%= it.filters?.primary_lang ? it.filters.primary_lang.join(',') : '' %>" />
