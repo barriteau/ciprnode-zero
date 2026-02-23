@@ -29,7 +29,7 @@
       "ol_1": "Personal",
       "ol_2": "Groups",
       "ol_3": "Universal",
-      "ol_unknown": "Unknown"
+      "ol_unknown": "undefined"
     },
     "options": {
       "toggle": "Search Filters",

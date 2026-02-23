@@ -28,7 +28,7 @@
       "ol_1": "个人",
       "ol_2": "群体",
       "ol_3": "普遍",
-      "ol_unknown": "未知"
+      "ol_unknown": "未定义"
     },
     "options": {
       "toggle": "搜索过滤",
