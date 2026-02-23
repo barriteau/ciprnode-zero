@@ -22,17 +22,8 @@ html {
 *,
 *:before,
 *:after {
+    /* : Check for media query variations */
     user-select: text !important;
-}
-
-@media all and (display-mode: standalone),
-(display-mode: fullscreen) {
-
-    *,
-    *:before,
-    *:after {
-        user-select: text !important;
-    }
 }
 
 body {
@@ -42,13 +33,6 @@ body {
     margin-top: 3.4rem;
     background-color: var(--body-background-color);
     color: var(--body-color);
-
-    /* Dark mode: https://dev.to/madsstoumann/dark-mode-in-3-lines-of-css-and-other-adventures-1ljj */
-    /*
-    background-color: Canvas;
-    color: CanvasText;
-    color-scheme: light dark;
-    */
     color-scheme: light;
     transition: opacity 0.25s ease-in-out;
 }
@@ -236,6 +220,7 @@ nav#toolbar>div>label:last-child {
 /* --- main matter --- */
 
 main {
+    /* : Check for media query variations */
     margin: 0 auto;
     padding: 2rem 0.5rem 0 0.5rem;
     min-height: calc(100vh - 13em);
@@ -307,6 +292,7 @@ main p.firma {
 /* --- foot-nav --- */
 
 nav#foot-nav {
+    /* : Check for media query variations */
     height: 4.25rem;
     margin: 1em auto 0 auto;
     padding: 0;
@@ -330,6 +316,7 @@ nav#foot-nav svg-icon {
 /* --- footer --- */
 
 footer {
+    /* : Check for media query variations */
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -390,6 +377,7 @@ figure>figcaption {
 /* --- Listado de Audiovisuales --- */
 
 article.av {
+    /* : Check for media query variations */
     display: grid;
     column-gap: 0.5rem;
     grid-template-columns: 100% 1fr;
@@ -403,20 +391,7 @@ article.av {
     margin-top: 1rem;
 }
 
-@media screen and (min-width: 360px) {
-    article.av {
-        display: grid;
-        column-gap: 0.5rem;
-        grid-template-columns: 78% 1fr;
-        grid-template-rows: auto auto 48px;
-        grid-template-areas:
-            "header ."
-            "video aside"
-            "footer footer";
-        font-size: 1.1rem;
-        margin-top: 1rem;
-    }
-}
+
 
 article.av header {
     grid-area: header;
@@ -734,7 +709,6 @@ ol#annotations-list>li.here {
     padding: 0 0 0 0.5em;
 }
 
-
 ol#annotations-list>li>figure>figcaption {
     display: flex;
     justify-content: space-between;
@@ -776,6 +750,7 @@ ol#annotations-list>li>figure>figcaption>span.actions {
 /* --- Dialog --- */
 
 dialog {
+    /* : Check for media query variations */
     margin: auto;
     max-width: 50vw;
     min-width: 340px;
@@ -1029,51 +1004,6 @@ p.math-equation-block:before {
     background-color: #015f6b62;
 }
 
-
-/* --- Media queries --- */
-
-@media screen and (min-width: 1664px) {
-
-    main,
-    nav#foot-nav,
-    footer,
-    dialog {
-        max-width: 45vw;
-    }
-
-    main#wide-main-matter {
-        max-width: 80vw;
-    }
-}
-
-@media screen and (max-width: 1664px) {
-
-    main,
-    nav#foot-nav,
-    footer,
-    dialog {
-        max-width: 85vw;
-    }
-
-    main#wide-main-matter {
-        max-width: 90vw;
-    }
-}
-
-@media screen and (max-width: 720px) {
-
-    main,
-    nav#foot-nav,
-    footer,
-    dialog {
-        max-width: 95vw;
-    }
-
-    main#wide-main-matter {
-        max-width: 95vw;
-    }
-}
-
 .hidden {
     opacity: 0;
     visibility: hidden;
@@ -1160,6 +1090,7 @@ input,
 button,
 select,
 textarea {
+    /* : Check for media query variations */
     border-radius: 4px;
     border: 2px solid #dcdcdc;
     cursor: pointer;
@@ -1252,6 +1183,7 @@ form fieldset {
 }
 
 #search-filters {
+    /* : Check for media query variations */
     width: 100%;
     display: flex;
     gap: 0.5rem;
@@ -1263,10 +1195,12 @@ form fieldset {
 }
 
 #search-filters>fieldset {
+    /* : Check for media query variations */
     flex: 1;
 }
 
 #search-filters>fieldset#ol-filter label {
+    /* : Check for media query variations */
     white-space: nowrap;
     margin-right: 1rem;
 }
@@ -1281,26 +1215,6 @@ form fieldset {
 
 #search-filters>fieldset#search-options-buttons button {
     font-size: 1rem;
-}
-
-@media screen and (max-width: 960px) {
-    #search-filters {
-        flex-wrap: wrap;
-    }
-
-    #search-filters>fieldset {
-        flex: 1 1 45%;
-    }
-
-    #search-filters>fieldset#ol-filter {
-        flex: 1 1 100%;
-    }
-}
-
-@media screen and (max-width: 640px) {
-    #search-filters {
-        flex-direction: column;
-    }
 }
 
 #date-time-filter>div,
@@ -1349,21 +1263,13 @@ form fieldset {
 }
 
 .desktop-only {
+    /* : Check for media query variations */
     display: inline-block;
 }
 
 .mobile-only {
+    /* : Check for media query variations */
     display: none;
-}
-
-@media screen and (max-width: 960px) {
-    .desktop-only {
-        display: none;
-    }
-
-    .mobile-only {
-        display: inline-block;
-    }
 }
 
 summary,

@@ -273,14 +273,8 @@ form {
     font-family: "Libertinus-Sans", sans-serif;
 }
 
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-
-    select,
-    textarea,
-    input {
-        font-size: var(--base-font-size);
-    }
-}
+/* : This has media variations */
+/* (Styles applied via media query in media-queries.css for retina) */
 
 /* --- Forms and Dialogs ---*/
 

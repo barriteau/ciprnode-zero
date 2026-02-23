@@ -13,8 +13,8 @@
 @import "./icons.css";
 
 /* --- Code highlighting --- */
-@import "./highlight.js/xcode.css";
 /*
+@import "./highlight.js/xcode.css";
 @import "./highlight.js/default.css";
 @import "./highlight.js/a11y-light.css";
 @import "./highlight.js/base16/papercolor-light.css";
@@ -25,3 +25,6 @@
 
 /* --- General styles --- */
 @import "./main.css";
+
+/* --- Responsive Media Queries --- */
+@import "./media-queries.css";
