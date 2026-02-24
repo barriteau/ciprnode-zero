@@ -31,25 +31,25 @@ ol = 0
 
 # Geographical coordinates in WGS 84 (EPSG:4326) format multiplied by 10000000 to obtain an integer value
 # 0 to skip, any precision level allowed
-latitude = 104830000
-longitude = -669060000
+latitude = 104806000
+longitude = -669036000
 
 [ciprface]
-page_size = 3
+page_size = 5
 
 [network]
 
 # A ciprnode listens only in the port 443, change this
 # value only for testing purposes or if you are behind a proxy
 # port = 443
-port = 8446
+port = 8442
 
 # Trusted bootstrap ciprnode to start syncing from
 bootstrap_node = "https://ciprnode.cipr.info"
 
 # Leech mode ***NOT IMPLEMENTED YET***: if not null, this ciprnode won't start and instead will
-# create a CNAME record in the DNS for the za pointing to the host of
-# leech_from. If the subdomain 'ciprnode' is omitted, it will be added automatically.
+# create a CNAME record in the DNS for the za pointing to the host of leech_from.
+# If the subdomain 'ciprnode' is omitted, it will be added automatically.
 # leech_from = "ciprnode.cipr.info"
 # leech_from = "cipr.info"
 

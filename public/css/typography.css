@@ -14,8 +14,9 @@ html {
 
 body {
     font-family: "Libertinus-Serif", serif;
-    /* esto es 22px de 16px: */
-    font-size: 1.375rem;
+    /* : Check for media query variations */
+    /* 1.25 rem = 20px because 16px = 1rem */
+    font-size: 1.25rem;
     line-height: var(--base-line-height);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;

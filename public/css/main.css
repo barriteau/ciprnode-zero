@@ -77,15 +77,16 @@ hr {
 
 /* --- headings --- */
 
-h1.main,
-h1.cover {
+h1.main {
+    /* : Check for media query variations */
     padding: 0;
     text-align: center;
     font-weight: normal;
     color: #555555;
 }
 
-h1.main.cover {
+h1.cover {
+    /* : Check for media query variations */
     margin-bottom: 4rem;
     font-weight: normal;
 }

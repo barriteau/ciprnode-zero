@@ -36,10 +36,25 @@
   main#wide-main-matter {
     max-width: 90vw;
   }
+
+  main {
+    padding-top: 1rem;
+  }
+
+  h1.main.cover {
+    margin-top: 0;
+    margin-bottom: 2rem;
+  }
+
 }
 
 /* --- 960px (Small Desktop / Tablet Landscape) --- */
 @media screen and (max-width: 960px) {
+
+  body {
+    font-size: 1rem;
+  }
+
   #search-filters {
     flex-wrap: wrap;
   }
