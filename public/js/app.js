@@ -261,7 +261,20 @@ const initPwaInstall = () => {
   const installBtn = document.getElementById('pwa-install-btn');
   if (!installBtn) return;
 
-  // We only want to attach this global listener once
+  // 1. Check if app is already installed natively. If yes, bail out entirely.
+  const isStandalone = globalThis.matchMedia('(display-mode: standalone)').matches ||
+    navigator.standalone;
+  if (isStandalone) {
+    installBtn.classList.add('hidden');
+    return;
+  }
+
+  // 2. Identify browser environment
+  const ua = navigator.userAgent;
+  const isIos = /iP(ad|hone|od)/.test(ua);
+  const isFirefox = /Firefox/.test(ua);
+
+  // 3. Bind the Chromium native install prompt event listener
   if (!globalThis.pwaListenerAttached) {
     globalThis.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -271,15 +284,28 @@ const initPwaInstall = () => {
     globalThis.pwaListenerAttached = true;
   }
 
+  // 4. Force unhide the button for non-Chromium browsers (Safari, Firefox)
+  if (isIos || isFirefox) {
+    installBtn.classList.remove('hidden');
+  }
+
+  // 5. Click Handler
   if (!installBtn.dataset.listenerAttached) {
     installBtn.addEventListener('click', async () => {
       if (deferredPrompt) {
+        // Native Chromium prompt
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') {
           installBtn.classList.add('hidden');
         }
         deferredPrompt = null;
+      } else if (isIos) {
+        // iOS Safari manual instructions
+        alert(installBtn.getAttribute('data-ios-msg'));
+      } else {
+        // Generic fallback instruction for Firefox/Desktop non-chromium
+        alert(installBtn.getAttribute('data-fallback-msg'));
       }
     });
     installBtn.dataset.listenerAttached = 'true';

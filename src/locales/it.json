@@ -46,6 +46,8 @@
     "install": "Installa App",
     "install_desktop": "Cipr sul tuo desktop",
     "install_mobile": "Cipr sul tuo cellulare",
+    "install_ios": "Per installare Cipr sul tuo dispositivo, tocca l'icona Condividi nella parte inferiore dello schermo e seleziona 'Aggiungi alla schermata Home'.",
+    "install_fallback": "Per installare Cipr, cerca l'opzione 'Installa' o 'Aggiungi alla schermata Home' nel menu del tuo browser.",
     "source_code": "Codice Sorgente"
   },
   "pagination": {

@@ -47,6 +47,8 @@
     "install": "Install App",
     "install_desktop": "Cipr in your desktop",
     "install_mobile": "Cipr in your mobile",
+    "install_ios": "To install Cipr on your device, tap the Share icon at the bottom of your screen and select 'Add to Home Screen'.",
+    "install_fallback": "To install Cipr, please look for the 'Install' or 'Add to Home Screen' option in your browser menu.",
     "source_code": "Source Code"
   },
   "pagination": {
