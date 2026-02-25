@@ -10,7 +10,9 @@
   },
   "search": {
     "title": "Cosmic Index of Public Resources",
-    "placeholder": "Allowed operators: AND, OR, NOT, *, ^ \"\", ()",
+    "placeholder": "Search",
+    "operators_tooltip": "Supported operators:\n\n<word> AND <word>\n<word> OR <word>\n<word> NOT <word>\n<word>*\n^<word>\n\"<word> <word>\"\nNEAR(<word>, <word>, ...)\n<col name> : <word>\n{<col name> <col name> ...} : <word>\n(<grouping of any of the above>)",
+    "operators_tooltip_title": "Search operators reference",
     "btn": "Search",
     "advanced_filters": "Search Filters",
     "filters": {

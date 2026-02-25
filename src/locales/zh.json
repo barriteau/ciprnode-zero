@@ -10,7 +10,9 @@
   },
   "search": {
     "title": "公共资源宇宙索引",
-    "placeholder": "允许的运算符: AND, OR, NOT, *, ^ \"\", ()",
+    "placeholder": "搜索",
+    "operators_tooltip": "支持的运算符：\n\n<词> AND <词>\n<词> OR <词>\n<词> NOT <词>\n<词>*\n^<词>\n\"<词> <词>\"\nNEAR(<词>, <词>, ...)\n<列名> : <词>\n{<列名> <列名> ...} : <词>\n(<以上任意内容的分组>)",
+    "operators_tooltip_title": "搜索运算符参考",
     "btn": "搜索",
     "filters": {
       "date": "时间",

@@ -55,13 +55,13 @@ svg-icon.large {
 }
 
 svg-icon.inline {
-  height: 1cap;
   aspect-ratio: 1;
-  vertical-align: text-bottom;
-  height: 1em;
-  width: 1em;
-  mask-size: 1em;
+  /*vertical-align: text-bottom;*/
+  height: 1lh;
+  width: 1lh;
+  mask-size: contain;
   margin: 0;
+  padding: 0;
 }
 
 a:hover svg-icon,
@@ -132,6 +132,21 @@ label:active svg-icon.yellow {
   transition: background-color 0.5s;
   filter: invert(85%) sepia(81%) saturate(933%) hue-rotate(4deg) brightness(107%) contrast(108%);
 }
+
+svg-icon.light {
+  /* color: #dcdcdc;; */
+  filter: invert(69%) sepia(91%) saturate(1%) hue-rotate(314deg) brightness(113%) contrast(83%);
+}
+
+a:hover svg-icon.light,
+label:hover svg-icon.light,
+a:active svg-icon.light,
+label:active svg-icon.light {
+  /* background-color: #dcdcdc; */
+  transition: background-color 0.5s;
+  filter: invert(69%) sepia(91%) saturate(1%) hue-rotate(314deg) brightness(113%) contrast(83%);
+}
+
 
 svg-icon.disabled,
 svg-icon.active.disabled,

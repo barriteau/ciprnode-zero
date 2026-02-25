@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initPwaInstall();
   initReverseGeocoding();
   initLanguageAutocomplete();
+  initFtsValidation();
+  initSearchHelp();
 });
 
 document.addEventListener('htmx:load', (_evt) => {
@@ -310,6 +312,92 @@ const initPwaInstall = () => {
     });
     installBtn.dataset.listenerAttached = 'true';
   }
+};
+
+const initSearchHelp = () => {
+  const details = document.getElementById('search-help');
+  if (!details) return;
+
+  document.addEventListener('click', (e) => {
+    if (!details.contains(e.target)) {
+      details.removeAttribute('open');
+    }
+  });
+};
+
+const initFtsValidation = () => {
+  const input = document.getElementById('q');
+  if (!input) return;
+
+  const validate = (text) => {
+    const trimmed = text.trim();
+    if (!trimmed) return true;
+
+    // --- Phrase search: quotes must be balanced ---
+    const quoteCount = (trimmed.match(/"/g) || []).length;
+    if (quoteCount % 2 !== 0) return false;
+
+    // Strip quoted phrases so their contents don't confuse further checks.
+    let stripped = trimmed.replace(/"[^"]*"/g, 'PHRASE');
+
+    // --- NEAR() syntax validation ---
+    // Valid:   NEAR(term1 term2)  or  NEAR(term1 term2, 10)
+    // Invalid: NEAR()  NEAR(, 10)  NEAR(term,)  unterminated NEAR(
+    const nearRegex = /NEAR\s*\(([^)]*)\)/gi;
+    let nearMatch;
+    while ((nearMatch = nearRegex.exec(stripped)) !== null) {
+      const inner = nearMatch[1].trim();
+      // Must have at least 2 whitespace-separated terms optionally followed by ", number"
+      if (!/^\w[\w\s]*\w(\s*,\s*\d+)?$/.test(inner)) return false;
+    }
+    // Unterminated NEAR( — opening paren with no matching close
+    if (/NEAR\s*\([^)]*$/i.test(stripped)) return false;
+    // Strip valid NEAR() for downstream checks
+    stripped = stripped.replace(/NEAR\s*\([^)]*\)/gi, 'NEAR_OK');
+
+    // --- Column filter syntax validation ---
+    // Valid:   colname : term    {col1 col2} : term
+    // Invalid: : term  (no column)  colname : (no term)  { } : term (empty braces)
+    // A column filter that has nothing after the ':' is invalid
+    if (/:\s*$/.test(stripped)) return false;
+    // A multi-column filter with empty braces is invalid
+    if (/\{\s*\}\s*:/.test(stripped)) return false;
+    // A bare ':' with no column name before it is invalid
+    if (/(?<!\w)\s*:/.test(stripped) && !/\}\s*:/.test(stripped)) return false;
+    // Strip valid column filters so they don't interfere with paren checks
+    stripped = stripped.replace(/\{[^}]+\}\s*:/g, '');
+    stripped = stripped.replace(/\w+\s*:/g, '');
+
+    // --- Prefix search: '*' only valid at END of a word token ---
+    if (/\*[^\s)]/.test(stripped)) return false; // *word or wo*rd
+    if (/(?<!\w)\*/.test(stripped)) return false; // leading star
+
+    // --- Initial token: '^' only valid at START of a term ---
+    if (/\w\^/.test(stripped)) return false; // trailing or mid-word caret
+    if (/\^\s/.test(stripped)) return false; // lone ^ followed by space
+
+    // --- Balanced parentheses ---
+    let depth = 0;
+    for (const ch of stripped) {
+      if (ch === '(') depth++;
+      if (ch === ')') depth--;
+      if (depth < 0) return false;
+    }
+    if (depth !== 0) return false;
+
+    // --- Hanging binary operators at the very start or end ---
+    if (/^(AND|OR)\b/i.test(stripped)) return false;
+    if (/\b(AND|OR|NOT)$/i.test(stripped)) return false;
+
+    // --- Consecutive binary operators (e.g. "AND OR") ---
+    if (/\b(AND|OR|NOT)\s+(AND|OR)\b/i.test(stripped)) return false;
+
+    return true;
+  };
+
+  input.addEventListener('input', () => {
+    input.classList.toggle('fts-invalid', !validate(input.value));
+  });
 };
 
 const initReverseGeocoding = () => {

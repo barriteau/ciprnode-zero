@@ -10,7 +10,9 @@
   },
   "search": {
     "title": "Índice Cósmico de Recursos Públicos",
-    "placeholder": "Operadores: AND, OR, NOT, *, ^ \"\", ()",
+    "placeholder": "Buscar",
+    "operators_tooltip": "Operadores soportados:\n\n<palabra> AND <palabra>\n<palabra> OR <palabra>\n<palabra> NOT <palabra>\n<palabra>*\n^<palabra>\n\"<palabra> <palabra>\"\nNEAR(<palabra>, <palabra>, ...)\n<nombre col> : <palabra>\n{<nombre col> <nombre col> ...} : <palabra>\n(<agrupación de cualquiera de los anteriores>)",
+    "operators_tooltip_title": "Referencia de operadores de búsqueda",
     "btn": "Buscar",
     "filters": {
       "date": "Fecha",

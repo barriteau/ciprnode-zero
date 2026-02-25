@@ -100,8 +100,112 @@ export const deleteEntry = (db, za) => {
  * @param {string[]} [options.primary_lang] - Array of language codes.
  * @returns {CiprEntry[]}
  */
+/**
+ * Sanitizes a raw user FTS5 query string before it is passed to SQLite.
+ *
+ * Rules applied (in order):
+ *  1. Empty / whitespace-only → return null  (skip FTS entirely)
+ *  2. Balance double-quote pairs — an unterminated " is closed.
+ *  3. Strip invalid '*' placements  ('*word', 'wo*rd' but keep 'word*')
+ *  4. Strip invalid '^' placements  ('word^', 'wo^rd' but keep '^word')
+ *  5. Remove leading/trailing binary operators (AND, OR, NOT)
+ *  6. Balance parentheses — remove unmatched closing ')' and open '('
+ *  7. Strip malformed NEAR() expressions (empty, unterminated, bad args)
+ *  8. Strip malformed column filters (bare ':', empty '{}', missing term)
+ *
+ * @param {string|null|undefined} raw - The raw query string from the request.
+ * @returns {string|null} A safe FTS5 expression, or null if nothing remains.
+ */
+const sanitizeFtsQuery = (raw) => {
+  if (!raw || typeof raw !== 'string') return null;
+
+  let q = raw.trim();
+  if (!q) return null;
+
+  // 1. Balance double quotes: count them; if odd, append a closing quote.
+  const quoteCount = (q.match(/"/g) || []).length;
+  if (quoteCount % 2 !== 0) {
+    q = q + '"';
+  }
+
+  // 2. Fix invalid '*' — only valid at the END of a word token (e.g. word*)
+  q = q.replace(/\*(?=\S)/g, ''); // *word → word (star before non-space)
+  q = q.replace(/(\w)\*(\w)/g, '$1$2'); // wo*rd → word (star mid-word)
+
+  // 3. Fix invalid '^' — only valid at the START of a token (e.g. ^word)
+  q = q.replace(/(\w)\^/g, '$1'); // word^ or wo^rd → word
+  q = q.replace(/\^\s*$/g, ''); // trailing lone ^ → remove
+
+  // 4. Remove leading binary operators.
+  q = q.replace(/^\s*(AND|OR)\s+/i, '');
+
+  // 5. Remove trailing binary operators (AND, OR, NOT).
+  q = q.replace(/\s+(AND|OR|NOT)\s*$/i, '');
+
+  // 6. Balance parentheses.
+  //    Pass 1: remove unmatched ')' (depth would go negative).
+  let depth = 0;
+  let balanced = '';
+  for (const ch of q) {
+    if (ch === '(') {
+      depth++;
+      balanced += ch;
+    } else if (ch === ')') {
+      if (depth > 0) {
+        depth--;
+        balanced += ch;
+      }
+      // else: drop the unmatched ')'
+    } else {
+      balanced += ch;
+    }
+  }
+  //    Pass 2: remove unmatched '(' (depth > 0 remaining).
+  while (depth > 0) {
+    const idx = balanced.lastIndexOf('(');
+    if (idx === -1) break;
+    balanced = balanced.slice(0, idx) + balanced.slice(idx + 1);
+    depth--;
+  }
+  q = balanced.trim();
+
+  // 7. Sanitize NEAR() expressions.
+  //    Valid:   NEAR(term1 term2)  or  NEAR(term1 term2, 10)
+  //    Invalid: NEAR()  NEAR(,10)  NEAR(term)  unterminated NEAR(
+  //    Strategy: replace any NEAR(...) that doesn't match the valid pattern
+  //    with just its first term (best-effort fallback), then drop any
+  //    unterminated NEAR( that has no closing paren.
+  q = q.replace(/NEAR\s*\(([^)]*)\)/gi, (_match, inner) => {
+    const t = inner.trim();
+    // Valid: at least two whitespace-separated words, optional ", number"
+    if (/^\w[\w\s]*\w(\s*,\s*\d+)?$/.test(t)) return _match; // keep as-is
+    // Fallback: extract just the word tokens and return the first one
+    const words = t.replace(/,\s*\d+/, '').trim().split(/\s+/).filter(Boolean);
+    return words.length > 0 ? words[0] : '';
+  });
+  // Remove any leftover unterminated NEAR( (no closing paren found)
+  q = q.replace(/NEAR\s*\([^)]*$/gi, '');
+
+  // 8. Sanitize column filters.
+  //    Valid:   colname : term    {col1 col2} : term
+  //    Remove bare ':' with no preceding column identifier.
+  //    Remove column filter where nothing follows the ':'.
+  //    Remove empty multi-column braces '{ } :'.
+  q = q.replace(/\{\s*\}\s*:/g, ''); // { } : → remove
+  q = q.replace(/(?<!\w)(?<!\})\s*:/g, ''); // bare ':' with no col before it
+  q = q.replace(/(\w+|\})\s*:\s*(?=\s|AND|OR|NOT|$)/gi, ''); // col : <nothing useful>
+
+  q = q.trim();
+
+  // Final guard: if nothing meaningful remains return null.
+  if (!q || /^[\s()"*^:{}]+$/.test(q)) return null;
+
+  return q;
+};
+
 export const searchEntries = (db, options = {}) => {
-  const { query, ol, geo, timestamp, pages, primary_lang } = options;
+  const { query: rawQuery, ol, geo, timestamp, pages, primary_lang } = options;
+  const query = sanitizeFtsQuery(rawQuery);
   // Construct Base SQL
 
   const baseSql = `SELECT ciprdup.*, ciprdup.timestamp FROM ciprdup`;

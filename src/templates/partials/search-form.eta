@@ -8,7 +8,13 @@
 <form id="main-search-form" action="/" method="QUERY" hx-post="/" data-cipr-method="QUERY" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML">
 
   <div id="search-bar">
-    <input type="text" id="q" name="q" value="<%= it.query || '' %>" placeholder="<%= it.t('search.placeholder') %>" data-tooltip="Supports fuzzy search and operators" />
+    <input type="text" id="q" name="q" value="<%= it.query || '' %>" placeholder="<%= it.t('search.placeholder') %>" autocomplete="off" spellcheck="false" />
+    <details id="search-help">
+      <summary title="<%= it.t('search.operators_tooltip_title') %>">
+        <a><svg-icon class="help light"></svg-icon></a>
+      </summary>
+      <div id="search-help-panel"><%= it.t('search.operators_tooltip') %></div>
+    </details>
     <button type="submit"><%= it.t('search.btn') %></button>
   </div>
 

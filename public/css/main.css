@@ -1168,7 +1168,7 @@ form fieldset {
 #search-bar {
     display: flex;
     width: 100%;
-    gap: 1rem;
+    gap: 0.5em;
     margin-bottom: 1rem;
 }
 
@@ -1177,6 +1177,62 @@ form fieldset {
     flex: 1;
     min-width: 0;
 }
+
+#search-bar input {
+    margin-right: -3.75em;
+}
+
+/* FTS5 validation feedback: only overrides border/outline color, nothing else */
+#q.fts-invalid {
+    border-color: #d9534f;
+    outline-color: #d9534f;
+}
+
+/* --- #search-help details/summary operator reference panel --- */
+
+#search-help {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+#search-help a {
+    background-color: #ffffff;
+}
+
+/* Hide the native disclosure triangle */
+#search-help>summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0 0.15rem;
+    border-radius: 4px;
+    color: #015f6b;
+}
+
+#search-help>summary::-webkit-details-marker {
+    display: none;
+}
+
+/* The operator reference panel */
+#search-help-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    white-space: pre;
+    font-family: "Iosevka", monospace;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: #fefefe;
+    background-color: #222222;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    z-index: 200;
+    min-width: max-content;
+}
+
 
 #search-bar button,
 #search-filters button {
@@ -1357,6 +1413,7 @@ summary:active {
     text-decoration: none;
     color: #015F6B;
     background-color: #ededed;
+    font-weight: bold;
 }
 
 .pagination a:hover,

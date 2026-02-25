@@ -270,7 +270,8 @@ mjx-container.CtxtMenu_Attached_0 {
 
 /* --- Forms --- */
 
-form {
+form,
+.pagination {
     font-family: "Libertinus-Sans", sans-serif;
 }
 

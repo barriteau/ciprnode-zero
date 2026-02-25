@@ -10,7 +10,9 @@
   },
   "search": {
     "title": "Indice Cosmico delle Risorse Pubbliche",
-    "placeholder": "Operatori: AND, OR, NOT, *, ^ \"\", ()",
+    "placeholder": "Cerca",
+    "operators_tooltip": "Operatori supportati:\n\n<parola> AND <parola>\n<parola> OR <parola>\n<parola> NOT <parola>\n<parola>*\n^<parola>\n\"<parola> <parola>\"\nNEAR(<parola>, <parola>, ...)\n<nome col> : <parola>\n{<nome col> <nome col> ...} : <parola>\n(<raggruppamento di qualsiasi dei precedenti>)",
+    "operators_tooltip_title": "Riferimento agli operatori di ricerca",
     "btn": "Cerca",
     "filters": {
       "date": "Data",

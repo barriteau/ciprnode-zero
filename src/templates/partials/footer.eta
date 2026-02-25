@@ -14,7 +14,7 @@
   </span>
 
   <span>
-    <a id="pwa-install-btn" class="hidden" tabindex="0" role="button" style="cursor: pointer;" data-ios-msg="<%= it.t('footer.install_ios') %>" data-fallback-msg="<%= it.t('footer.install_fallback') %>">
+    <a id="pwa-install-btn" class="hidden" tabindex="0" role="button" data-ios-msg="<%= it.t('footer.install_ios') %>" data-fallback-msg="<%= it.t('footer.install_fallback') %>">
       <span class="desktop-only">
         <%= it.t('footer.install_desktop') %> <svg-icon class="install-desktop inline"></svg-icon>
       </span>
