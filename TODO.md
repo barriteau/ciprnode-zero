@@ -4,6 +4,8 @@ Improve the console logging: silent, regular and debugging.
 
 ---
 
+add more languages
+
 Implement Pagefind (<https://pagefind.app/>) in the HTR and use the created index as the resindex.
 
 Implement `QUERY /za/` to search in the resindex, it mimics `QUERY /` (ranking, filtering, pagination, ordering, tie-breaking, etc.).
@@ -20,16 +22,4 @@ Create the cipr.info HTR with the Specification and a friendly guide to get inde
 
 Implement dark mode.
 
-add more languages.
-
----
-
-## NOTES
-
-| za            | port |
-|---------------|------|
-| barriteau.com | 8445 |
-| barriteau.net | 8446 |
-| barriteau.org | 8447 |
-| cipr.info     | 8448 |
-| guasa.art     | 8449 |
+update alps al final

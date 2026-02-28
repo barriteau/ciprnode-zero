@@ -63,6 +63,61 @@
         "def": "https://schema.org/dateModified"
       },
       {
+        "id": "primary_lang",
+        "type": "semantic",
+        "title": "Primary Language",
+        "doc": { "value": "The primary language code (e.g. ISO 639-1) for the resource." },
+        "def": "https://schema.org/inLanguage"
+      },
+      {
+        "id": "geo_latitude",
+        "type": "semantic",
+        "title": "Geographic Latitude Filter",
+        "doc": { "value": "Latitude center point for geographic search queries." }
+      },
+      {
+        "id": "geo_longitude",
+        "type": "semantic",
+        "title": "Geographic Longitude Filter",
+        "doc": { "value": "Longitude center point for geographic search queries." }
+      },
+      {
+        "id": "geo_min_radius_km",
+        "type": "semantic",
+        "title": "Minimum Radius (km)",
+        "doc": { "value": "Minimum geographic radius for search in kilometers." }
+      },
+      {
+        "id": "geo_max_radius_km",
+        "type": "semantic",
+        "title": "Maximum Radius (km)",
+        "doc": { "value": "Maximum geographic radius for search in kilometers." }
+      },
+      {
+        "id": "before",
+        "type": "semantic",
+        "title": "Before Timestamp",
+        "doc": { "value": "Filter results updated before this Unix Epoch timestamp." }
+      },
+      {
+        "id": "after",
+        "type": "semantic",
+        "title": "After Timestamp",
+        "doc": { "value": "Filter results updated after this Unix Epoch timestamp." }
+      },
+      {
+        "id": "pages_num",
+        "type": "semantic",
+        "title": "Page Numbers",
+        "doc": { "value": "Array of page numbers or ranges to retrieve." }
+      },
+      {
+        "id": "pages_size",
+        "type": "semantic",
+        "title": "Page Sizes",
+        "doc": { "value": "Array of number of entries per page." }
+      },
+      {
         "id": "CiprResource",
         "type": "semantic",
         "title": "Cipr Resource",
@@ -71,6 +126,7 @@
           { "href": "#title" },
           { "href": "#description" },
           { "href": "#keywords" },
+          { "href": "#primary_lang" },
           { "href": "#ol" },
           { "href": "#latitude" },
           { "href": "#longitude" },
@@ -118,8 +174,15 @@
         "descriptor": [
            { "id": "query", "type": "semantic", "doc": { "value": "FTS Expression" } },
            { "href": "#ol" },
-           { "href": "#latitude" },
-           { "href": "#longitude" }
+           { "href": "#primary_lang" },
+           { "href": "#geo_latitude" },
+           { "href": "#geo_longitude" },
+           { "href": "#geo_min_radius_km" },
+           { "href": "#geo_max_radius_km" },
+           { "href": "#before" },
+           { "href": "#after" },
+           { "href": "#pages_num" },
+           { "href": "#pages_size" }
         ]
       }
     ]
