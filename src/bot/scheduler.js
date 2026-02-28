@@ -3,7 +3,7 @@
  * @description Scheduling logic for Ciprpulse maintenance tasks.
  */
 
-import { countEntries, getEntry } from '../db/repo.js';
+import { countEntries, getEntry, searchEntries } from '../db/repo.js';
 import { calculateNodesPerPulse } from '../core/utils.js';
 import { validateCiprConfig } from '../core/validator.js';
 // import { verifyNode } from '../core/verification.js'; // reused? No, broadcast is PUT.
@@ -29,6 +29,7 @@ export const startScheduler = async (config, db, txtUpdated) => {
 
   setInterval(() => {
     runPulseChecks(db, config);
+    runReliabilityChecks(db, config);
   }, PULSE_INTERVAL);
 
   // 3. Self Validation Task
@@ -104,7 +105,8 @@ const broadcastUpdate = async (config, db) => {
 };
 
 import { generateCiprHash } from '../core/utils.js';
-import { verifyNode } from '../core/verification.js';
+import { verifyNode, verifyReliability } from '../core/verification.js';
+import { generateRandomFTSExpression } from '../core/fts_generator.js';
 import { deleteEntry } from '../db/repo.js';
 
 /**
@@ -338,6 +340,92 @@ const runSelfValidation = async (config, db) => {
           // For DELETE, body is null, resourceZa is config.za
           sendPulseRequest(config, peer.za, 'DELETE', null, config.za);
         }
+      }
+    }
+  }
+};
+
+/**
+ * Runs a Reliability Validation checking peer result ranking consistency.
+ * @param {import('@db/sqlite').Database} db
+ * @param {import('../core/config.js').CiprNodeConfig} config
+ */
+const runReliabilityChecks = async (db, config) => {
+  const totalNodes = countEntries(db);
+  if (totalNodes <= 1) return;
+
+  const nodesPerPulse = calculateNodesPerPulse(totalNodes, config.expected_propagation_time);
+
+  // 1. Generate Parameters
+  const ftsExpression = generateRandomFTSExpression(config);
+  const pagesNum = Math.floor(Math.random() * 10) + 1; // 1 to 10
+  const pagesSize = Math.random() < 0.5 ? 20 : 50;
+  const paginationParams = { num: pagesNum, size: pagesSize };
+
+  // 2. Execute Local Baseline Query
+  const startOffset = (pagesNum - 1) * pagesSize;
+  const options = {
+    query: ftsExpression,
+    ol: [],
+    geo: {},
+    timestamp: {},
+    filters: {},
+    pages: [{ offset: startOffset, limit: pagesSize, pageNum: pagesNum }],
+    primary_lang: [],
+  };
+
+  const baselineItems = searchEntries(db, options);
+  const baselineRank = baselineItems.map((item) => item.za);
+
+  // 3. Select Target Peers (Timestamp older than 1 hour)
+  // Unix timestamp in seconds for 1 hour ago
+  const oneHourAgo = Math.floor(Date.now() / 1000) - 3600;
+
+  // Try to gather N targets
+  // Technically, we try to gather up to N targets that match. If there are fewer than N available, we just use what we found.
+  const targets = db.prepare(
+    `SELECT za FROM ciprdup WHERE za != ? AND timestamp <= ? ORDER BY RANDOM() LIMIT ?`,
+  )
+    .all(config.za, oneHourAgo, nodesPerPulse);
+
+  if (targets.length === 0) {
+    if (config.debug) {
+      console.log('[CiprPulse] No eligible peers (older than 1h) available for Reliability Check.');
+    }
+    return;
+  }
+
+  if (config.debug) {
+    console.log(`[CiprPulse] Running Reliability Check on ${targets.length} peer(s).`);
+  }
+
+  // 4. Validate and Enforce
+  for (const target of targets) {
+    // Await prevents overloading network if there are many targets, matching pulse behavior mostly.
+    const isReliable = await verifyReliability(
+      target.za,
+      ftsExpression,
+      paginationParams,
+      baselineRank,
+      config,
+    );
+
+    if (!isReliable) {
+      console.log(
+        `[CiprPulse] ${target.za} FAILED Reliability Check. Evicting and propagating DELETE...`,
+      );
+
+      // Delete locally
+      deleteEntry(db, target.za);
+
+      // Propagate DELETE to random peers
+      const peerEntries = db.prepare(
+        `SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`,
+      )
+        .all(config.za, nodesPerPulse);
+
+      for (const peer of peerEntries) {
+        sendPulseRequest(config, peer.za, 'DELETE', null, target.za);
       }
     }
   }

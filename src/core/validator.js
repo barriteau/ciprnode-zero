@@ -152,6 +152,20 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be an integer between 1 and 100. Current Value: ${config.page_size}`,
   );
 
+  // 9b. Validate Test Words (Non-fatal warning)
+  const testWordsStr = config.test_words.join(' ');
+  const validTestWords = testWordsStr.length > 0 && testWordsStr.length <= 512;
+
+  if (!validTestWords) {
+    console.warn(
+      `[WARN] test_words: Must not exceed 512 characters and must not be empty. Current Length: ${testWordsStr.length}`,
+    );
+    console.warn(`       -> Ignoring test_words configuration error to allow startup.`);
+    validations['Test Words'] = '[WARN] Ignored Invalid Configuration';
+  } else {
+    validations['Test Words'] = '[OK] Valid';
+  }
+
   // 10. Validate Parent URL if present
   if (config.parent_url) {
     let isValidUrl = false;

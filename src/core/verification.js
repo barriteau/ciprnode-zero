@@ -79,3 +79,111 @@ export const verifyNodeHttp = async (za, config = {}) => {
   // All attempts failed
   return false;
 };
+
+/**
+ * Compares two arrays of Zone Apexes for reliability validation.
+ * @param {string[]} baselineArray - The expected (local) ranking.
+ * @param {string[]} targetArray - The received (remote) ranking.
+ * @returns {boolean} True if they match within acceptable tolerances.
+ */
+export const compareSearchResults = (baselineArray, targetArray) => {
+  // 1. Strict Top 8 Match
+  const top8Baseline = baselineArray.slice(0, 8);
+  const top8Target = targetArray.slice(0, 8);
+
+  if (top8Baseline.length !== top8Target.length) return false;
+
+  for (let i = 0; i < top8Baseline.length; i++) {
+    if (top8Baseline[i] !== top8Target[i]) return false;
+  }
+
+  // 2. Tolerance for the Remaining Results (Fuzzy Match / Jaccard > 70%)
+  const remainingBaseline = baselineArray.slice(8);
+  const remainingTarget = targetArray.slice(8);
+
+  if (remainingBaseline.length === 0 && remainingTarget.length === 0) return true;
+  if (remainingBaseline.length === 0 || remainingTarget.length === 0) {
+    // One node has tail results, the other has 0. This is a severe mismatch if we expect many.
+    return false;
+  }
+
+  const setB = new Set(remainingBaseline);
+  const setT = new Set(remainingTarget);
+
+  let intersectionCount = 0;
+  for (const item of setB) {
+    if (setT.has(item)) intersectionCount++;
+  }
+
+  const unionCount = new Set([...setB, ...setT]).size;
+  if (unionCount === 0) return true;
+
+  const similarity = intersectionCount / unionCount;
+  return similarity >= 0.7;
+};
+
+/**
+ * Validates the ranking reliability of a remote node.
+ * @param {string} targetZa - Remote node zone apex.
+ * @param {string} ftsExpression - Random FTS query.
+ * @param {Object} paginationParams - { num, size }
+ * @param {string[]} localBaselineRank - Array of ZAs from local DB query.
+ * @param {import('./config.js').CiprNodeConfig} config
+ * @returns {Promise<boolean>}
+ */
+export const verifyReliability = async (
+  targetZa,
+  ftsExpression,
+  paginationParams,
+  localBaselineRank,
+  config,
+) => {
+  const url = new URL(`https://ciprnode.${targetZa}/`);
+  url.searchParams.set('q', ftsExpression);
+  url.searchParams.set('pages_num', paginationParams.num);
+  url.searchParams.set('pages_size', paginationParams.size);
+
+  try {
+    if (config.debug) {
+      console.log(`[DBG] Verifying Reliability: QUERY ${url.toString()}`);
+    }
+
+    const response = await fetch(url.toString(), {
+      method: 'QUERY',
+      headers: {
+        'Accept': 'application/hal+json',
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!response.ok) {
+      if (config.debug) {
+        console.log(
+          `[DBG] Reliability check failed: ${targetZa} returned status ${response.status}`,
+        );
+      }
+      return false; // Could be offline or rejecting QUERY
+    }
+
+    const json = await response.json();
+    const results = json._embedded?.results || [];
+    const targetRank = results.map((r) => r.za);
+
+    const isReliable = compareSearchResults(localBaselineRank, targetRank);
+
+    if (config.debug) {
+      console.log(
+        `[DBG] Reliability for ${targetZa}: ${
+          isReliable ? 'PASS' : 'FAIL'
+        } (Baseline: ${localBaselineRank.length}, Target: ${targetRank.length})`,
+      );
+    }
+
+    return isReliable;
+  } catch (error) {
+    if (config.debug) {
+      console.log(`[DBG] Reliability error for ${targetZa}: ${error.message}`);
+    }
+    return false;
+  }
+};

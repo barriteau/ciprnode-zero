@@ -2,10 +2,6 @@
 env = "dev"
 debug = true
 
-# The website parent to this ciprnode, the main site for
-# this za, must include the protocol (http or https)
-parent_url = "https://www.proyec.top"
-
 [cipr_entry]
 
 # The Zone Apex for this resource:

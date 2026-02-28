@@ -5,6 +5,7 @@
 
 import { countEntries, getLanguageMap, getLatestTimestamp, searchEntries } from '../../db/repo.js';
 import { render } from '../views/renderer.js';
+import { captureSearchTerms } from '../../core/fts_generator.js';
 
 /**
  * Handles QUERY requests.
@@ -107,7 +108,6 @@ export const query = async (req, db, config, scopeZa) => {
     return cleaned.split(',').map((s) => s.trim()).filter((s) => s);
   };
 
-  // Build Options Object
   const options = {
     query: params.get('q') || params.get('query') || '',
     ol: [],
@@ -116,6 +116,12 @@ export const query = async (req, db, config, scopeZa) => {
     pages: [],
     primary_lang: [],
   };
+
+  // Asynchronously capture search terms for Reliability Validation pool
+  if (options.query) {
+    // Fire and forget so we don't block the response
+    Promise.resolve().then(() => captureSearchTerms(options.query)).catch(() => {});
+  }
 
   // OL
   const allOl = params.getAll('ol');

@@ -23,6 +23,7 @@ import { exists } from '@std/fs';
  * @property {number} page_size
  * @property {string} [parent_url]
  * @property {string} [primary_lang]
+ * @property {string[]} test_words
  */
 
 /**
@@ -97,6 +98,9 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
       bootstrap_node: network.bootstrap_node || '',
       expected_propagation_time: Number(data.expected_propagation_time) || 120000,
       page_size: Number(data.ciprface?.page_size) || 50,
+      test_words: typeof data.test_words === 'string'
+        ? data.test_words.split(/\s+/).filter((k) => k.length > 0)
+        : (Array.isArray(data.test_words) ? data.test_words : []),
       debug: Deno.args.includes('--debug') || data.debug === true || false,
       dns: {
         do53: Array.isArray(network.do53)
@@ -127,7 +131,7 @@ const getDefaultConfig = () => {
   return {
     za: 'localhost',
     parent_url: '',
-    port: 8080,
+    port: 443,
     env: 'development',
     title: 'Default Node',
     description: 'Unconfigured Cipr Node',
@@ -138,6 +142,7 @@ const getDefaultConfig = () => {
     longitude: 0,
     bootstrap_node: '',
     page_size: 50,
+    test_words: [],
     dns: {
       do53: [],
       doh: [],
