@@ -1434,3 +1434,44 @@ summary:active {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* --- PWA Update Toast --- */
+#pwa-update-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--body-color);
+    color: var(--body-background-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 10000;
+}
+
+#pwa-update-toast.hidden {
+    display: none;
+}
+
+#pwa-update-toast .pwa-toast-message {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+#pwa-update-toast button {
+    background-color: #015F6B;
+    color: #ffffff;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#pwa-update-toast button:hover,
+#pwa-update-toast button:focus {
+    background-color: #014c56;
+}

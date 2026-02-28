@@ -75,10 +75,8 @@ const deployToNode = async (source, target) => {
     const destPath = join(target, file.name);
 
     // IGNORE LIST
-    if (
-      file.name === 'ciprnode.toml' || file.name === '.env' || file.name === 'ciprnode.example.toml'
-    ) {
-      // Check existence at dest
+    if (file.name === 'ciprnode.toml' || file.name === '.env') {
+      // Check existence at dest. If they have a live config/env, don't overwrite it!
       if (await exists(destPath)) {
         console.log(`  Skipping config: ${file.name}`);
         continue;

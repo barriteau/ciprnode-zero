@@ -96,5 +96,9 @@
       "title": "Términos de Servicio",
       "content": "Uso bajo tu propio riesgo."
     }
+  },
+  "pwa": {
+    "update_available": "Hay una nueva versión de esta página disponible.",
+    "reload": "Recargar para actualizar"
   }
 }

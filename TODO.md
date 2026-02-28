@@ -20,11 +20,9 @@ Create the cipr.info HTR with the Specification and a friendly guide to get inde
 
 Implement dark mode.
 
-Complete `GET /languages/` and `GET /za/language/` sections in the Spec
+add more languages.
 
 ---
-
-
 
 ## NOTES
 

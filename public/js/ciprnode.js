@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLanguageAutocomplete();
   initFtsValidation();
   initSearchHelp();
+  initServiceWorker();
 });
 
 document.addEventListener('htmx:load', (_evt) => {
@@ -436,4 +437,37 @@ const initReverseGeocoding = () => {
       delay += 1100; // Respect 1 request/second API rate limit
     }
   });
+};
+
+const initServiceWorker = () => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then((reg) => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New update available
+            const toast = document.getElementById('pwa-update-toast');
+            if (toast) {
+              toast.classList.remove('hidden');
+              const reloadBtn = document.getElementById('pwa-reload-btn');
+              if (reloadBtn) {
+                reloadBtn.addEventListener('click', () => {
+                  newWorker.postMessage({ type: 'SKIP_WAITING' });
+                });
+              }
+            }
+          }
+        });
+      });
+    }).catch((err) => console.error('SW Registration failed', err));
+
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        globalThis.location.reload();
+      }
+    });
+  }
 };

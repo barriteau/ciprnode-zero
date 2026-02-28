@@ -48,88 +48,59 @@ const main = async () => {
   // ROOT: [ N0 ]
 
   // 2. Main Vertical Split (Left/Right Cols) -> [ Left ] [ Right ]
-  // Right side gets N4.
-  // User Requested: "split vertically only once, to create the two main columns"
   if (N4) {
     args.push(';', 'split-pane', '-V', '-d', N4);
     // Focus: Right (N4)
   }
 
-  // WE NOW HAVE 2 COLUMNS. WE MUST SPLIT THEM INDEPENDENTLY.
-
-  // --- PROCESS RIGHT COLUMN (N4, N5, N6, N7) ---
-  // User Requested: "split horizontally inside every column"
-
-  // Current: [ N4 ] (Full Height Right Column)
-  // Split Right Col in Half (Top/Bottom) -> Top: N4, Bot: N6.
-  if (N6) {
-    args.push(';', 'split-pane', '-H', '-d', N6);
-    // Focus: Bot Right (N6)
-  }
-
-  // Split Bot Right (N6) in Half -> Top: N6, Bot: N7.
-  if (N7) {
-    args.push(';', 'split-pane', '-H', '-d', N7);
-    // Focus: Bot Bot Right (N7)
-  }
-
-  // Move Focus Up to Top Right (N4)
-  // Path: N7 -> N6 -> N4
-  args.push(';', 'move-focus', 'up'); // to N6
-  args.push(';', 'move-focus', 'up'); // to N4
-
-  // Split Top Right (N4) in Half -> Top: N4, Bot: N5.
+  // --- PROCESS RIGHT COLUMN ---
+  // We use the `--size` (-s) parameter to precisely cut the remaining space.
+  // This completely eliminates the need for buggy `move-focus up/down` chains.
   if (N5) {
-    args.push(';', 'split-pane', '-H', '-d', N5);
-    // Focus: N5.
+    args.push(';', 'split-pane', '-H', '-s', '0.75', '-d', N5);
+  }
+  if (N6) {
+    args.push(';', 'split-pane', '-H', '-s', '0.666', '-d', N6);
+  }
+  if (N7) {
+    args.push(';', 'split-pane', '-H', '-s', '0.5', '-d', N7);
   }
 
-  // Right Col Done: N4, N5, N6, N7 stacked vertically.
-
-  // --- PROCESS LEFT COLUMN (N0, N1, N2, N3) ---
-  // Move Focus: Left to get to Left Col.
+  // --- MOVE TO LEFT COLUMN ---
+  // Moving left from anywhere on the right will cleanly land in the left full pane.
   args.push(';', 'move-focus', 'left');
 
-  // Current: [ N0 ] (Full Height Left)
-  // Split Left Col in Half -> Top: N0, Bot: N2.
-  if (N2) {
-    args.push(';', 'split-pane', '-H', '-d', N2);
-    // Focus: Bot Left (N2)
-  }
-
-  // Split Bot Left (N2) in Half -> Top: N2, Bot: N3.
-  if (N3) {
-    args.push(';', 'split-pane', '-H', '-d', N3);
-    // Focus: Bot Bot Left (N3)
-  }
-
-  // Move Focus Up to Top Left (N0)
-  // Path: N3 -> N2 -> N0
-  args.push(';', 'move-focus', 'up'); // to N2
-  args.push(';', 'move-focus', 'up'); // to N0
-
-  // Split Top Left (N0) in Half -> Top: N0, Bot: N1.
+  // --- PROCESS LEFT COLUMN ---
   if (N1) {
-    args.push(';', 'split-pane', '-H', '-d', N1);
-    // Focus: N1.
+    args.push(';', 'split-pane', '-H', '-s', '0.75', '-d', N1);
   }
-
-  // Left Col Done: N0, N1, N2, N3 stacked vertically.
+  if (N2) {
+    args.push(';', 'split-pane', '-H', '-s', '0.666', '-d', N2);
+  }
+  if (N3) {
+    args.push(';', 'split-pane', '-H', '-s', '0.5', '-d', N3);
+  }
 
   console.log('Launching Windows Terminal (2x4 Grid)...');
-  // console.log("Command:", "wt", ...args);
 
-  const cmd = new Deno.Command('wt', {
-    args: args,
-    stdout: 'inherit',
-    stderr: 'inherit',
-  });
+  // Use a detached spawn so Deno doesn't hang waiting for stdout/stderr of the GUI tool.
+  try {
+    const cmd = new Deno.Command('wt', {
+      args: args,
+      stdout: 'null',
+      stderr: 'null',
+      stdin: 'null',
+    });
 
-  const status = await cmd.output();
-  if (!status.success) {
-    console.error('Failed to launch Windows Terminal.');
-  } else {
-    console.log('Terminal launched.');
+    const child = cmd.spawn();
+    child.unref();
+
+    console.log('Terminal layout dispatched. You may close this window.');
+    // Force exit after a tiny delay so the spawn goes through cleanly
+    setTimeout(() => Deno.exit(0), 100);
+  } catch (error) {
+    console.error('Failed to launch Windows Terminal:', error.message);
+    Deno.exit(1);
   }
 };
 

@@ -33,7 +33,7 @@ export const htmlResponse = (title, bodyContent, isFragment = false, options = {
 
     <!-- Scripts -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <script defer src="/js/app.js"></script>
+    <script defer src="/js/ciprnode.js"></script>
 </head>
 <body hx-boost="true">
     <header>

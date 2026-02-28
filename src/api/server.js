@@ -47,6 +47,28 @@ const withCompression = (req, res) => {
 };
 
 /**
+ * Wraps a Response to completely disable browser and CDN caching (e.g., Cloudflare).
+ * This is crucial for Service Workers (`sw.js`).
+ * @param {Response} res
+ * @returns {Response}
+ */
+const withNoCache = (res) => {
+  const headers = new Headers(res.headers);
+  // Specifically instructs Cloudflare and browsers to never cache this file.
+  headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  headers.set('Pragma', 'no-cache');
+  headers.set('Expires', '0');
+
+  // Return a new Response with the modified headers
+  // Avoids TypeError: Cannot modify an immutable Headers object
+  return new Response(res.body, {
+    status: res.status,
+    statusText: res.statusText,
+    headers,
+  });
+};
+
+/**
  * Starts the HTTP server.
  * @param {import('../core/config.js').CiprNodeConfig} config
  * @param {import('@db/sqlite').Database} db
@@ -127,9 +149,16 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
         url.pathname.startsWith('/css/') || url.pathname.startsWith('/js/') ||
         url.pathname.startsWith('/figures/') || url.pathname.startsWith('/profiles/') ||
         url.pathname === '/favicon.ico' || url.pathname === '/manifest.webmanifest' ||
-        url.pathname === '/robots.txt'
+        url.pathname === '/robots.txt' || url.pathname === '/sw.js'
       ) {
-        const res = await serveDir(request, { fsRoot: 'public', urlRoot: '' });
+        let res = await serveDir(request, { fsRoot: 'public', urlRoot: '' });
+
+        // ONLY bypass cache for sw.js to ensure updates propagate instantly.
+        // Other PWA assets must remain cacheable for offline speed.
+        if (url.pathname === '/sw.js') {
+          res = withNoCache(res);
+        }
+
         return withCompression(request, res);
       }
 
@@ -157,6 +186,7 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
       // 3. Fallback to static for everything else if browser (SPA-like or just 404 static) or return 404 JSON
       if (isBrowser) {
         const fallbackRes = await serveDir(request, { fsRoot: 'public', urlRoot: '' });
+        // NOTE: We do not put withNoCache here to allow normal HTML caching behavior
         return withCompression(request, fallbackRes);
       }
 

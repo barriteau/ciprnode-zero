@@ -3,7 +3,7 @@
  * @description Verifies Ciprface HTML generation (Form, Assets, Map Data).
  */
 
-import { Database } from 'jsr:@db/sqlite';
+import { Database } from 'jsr:@db/sqlite@^0.12.0';
 import { query } from '../src/api/controllers/search.js';
 import { insertEntry } from '../src/db/repo.js';
 
@@ -77,7 +77,7 @@ const createRequest = (url, headers = {}) => {
     createRequest('http://localhost/', { 'Accept': 'text/html' }),
     (html) => {
       const hasLeaflet = html.includes('leaflet.css') && html.includes('leaflet.js');
-      const hasCustomAssets = html.includes('/css/style.css') && html.includes('/js/app.js');
+      const hasCustomAssets = html.includes('/css/style.css') && html.includes('/js/ciprnode.js');
       const hasForm = html.includes('<form action="/" method="GET"');
       const hasMapContainer = html.includes('id="map-container"');
 

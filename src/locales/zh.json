@@ -96,5 +96,9 @@
       "title": "服务条款",
       "content": "使用风险自负。"
     }
+  },
+  "pwa": {
+    "update_available": "有新版本的页面可用。",
+    "reload": "重新加载以更新"
   }
 }

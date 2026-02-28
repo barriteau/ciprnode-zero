@@ -18,7 +18,7 @@
 
   <!-- HTMX -->
   <script src="/js/htmx.min.js"></script>
-  <script src="/js/app.js" defer></script>
+  <script src="/js/ciprnode.js" defer></script>
 </head>
 
 <body>
@@ -34,6 +34,12 @@
   </main>
 
   <%~ include('../partials/footer.eta', it) %>
+
+  <!-- PWA Update Toast -->
+  <div id="pwa-update-toast" class="hidden" role="alert" aria-live="assertive">
+    <span class="pwa-toast-message"><%= it.t('pwa.update_available') %></span>
+    <button id="pwa-reload-btn" class="btn"><%= it.t('pwa.reload') %></button>
+  </div>
 </body>
 
 </html>
