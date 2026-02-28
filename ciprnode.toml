@@ -57,6 +57,11 @@ bootstrap_node = "https://ciprnode.cipr.info"
 # Recommended: 480000 if the Cipr is already well populated
 expected_propagation_time = 120000
 
+# A list of arbitrary words, not related with the keywords of your resource, used to
+# check the reliability of the ciprnodes in the Cipr. Use all languages you want, use
+# phrases or not, keep it shorter than 512 characters.
+test_words = "dog el perro the casa amigo friend árboles social pero como su se tu madera audio carpet wok farm de los in for caballo en la castaña esto eso all"
+
 # DNS over UDP (Do53) used for bootstrapping DoH connections
 do53 = [
   "1.1.1.1",

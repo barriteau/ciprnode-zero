@@ -87,7 +87,7 @@ h1.main {
 
 h1.cover {
     /* : Check for media query variations */
-    margin-bottom: 4rem;
+    margin: 2rem 0 3rem 0;
     font-weight: normal;
 }
 
@@ -238,6 +238,8 @@ main li {
 
 main p {
     margin-block: 1lh;
+    padding-bottom: 0;
+    margin-bottom: 0;
 }
 
 main p.center {

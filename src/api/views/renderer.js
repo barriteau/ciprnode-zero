@@ -32,7 +32,9 @@ export const render = (templatePath, data = {}, locale = 'en') => {
     // Helper to switch language URL? No, handled by browser reload + cookie now.
   };
 
-  return eta.render(templatePath, ctx);
+  // rmWhitespace strips leading/trailing space per line but leaves blank lines;
+  // collapse any run of blank lines into nothing.
+  return eta.render(templatePath, ctx)?.replace(/\n[\s\n]+/g, '\n') ?? '';
 };
 
 /**

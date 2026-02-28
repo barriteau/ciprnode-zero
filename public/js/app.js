@@ -427,7 +427,7 @@ const initReverseGeocoding = () => {
 
               const label = parts.join(', ');
               if (label) {
-                el.innerHTML = ` &bull; ${prefix} ${label}`;
+                el.innerHTML = ` • ${prefix} ${label}`;
               }
             }
           })

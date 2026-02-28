@@ -63,14 +63,14 @@ export const updateCloudflareRecord = async (config, expectedHash) => {
 
     if (!targetZoneId) {
       console.log('Auto-detecting Zone ID...');
-      // Need to find the zone matching the ZA.
-      // If ZA is sub.domain.com, the zone might be domain.com.
+      // Need to find the zone matching the za.
+      // If za is sub.domain.com, the zone might be domain.com.
       // Cloudflare "List Zones" endpoint filters by name. exact match?
-      // Try searching for the ZA first.
+      // Try searching for the za first.
 
-      // Strategy: Search for ZA. If empty, try stripping subdomains?
+      // Strategy: Search for za. If empty, try stripping subdomains?
       // Better: Cloudflare API allows finding the zone containing a hostname? No.
-      // We assume ZA is the zone or the domain is the zone.
+      // We assume za is the zone or the domain is the zone.
 
       // Heuristic 1: Exact Match (for Apex domains)
       let zones = await cfRequest(`/zones?name=${config.za}`);

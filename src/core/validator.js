@@ -30,13 +30,13 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     }
   };
 
-  // 1. Validate ZA (Zone Apex)
+  // 1. Validate za (Zone Apex)
   // Regex: Simple hostname validation (Spec allows unicode, but basic structure is dot separated)
   // Spec: /^[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?$/u
   const zaRegex =
     /^[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?$/u;
   check(
-    'ZA (Zone Apex)',
+    'za (Zone Apex)',
     config.za,
     zaRegex.test(config.za),
     `Must be a valid zone apex (SLD.TLD). Current Value: "${config.za}"`,

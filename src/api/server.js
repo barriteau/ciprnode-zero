@@ -110,11 +110,11 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
       // 1. Static File Serving (Ciprface)
       // Try to serve static files from public/ first if the path doesn't look like an API call.
       // Or prefer explicit paths. Let's assume root / is mostly API or Index.
-      // Spec says: https://ciprnode.ZA/ -> Ciprface
+      // Spec says: https://ciprnode.za/ -> Ciprface
       // Spec says: GET / -> Ciprdup (API)
       // We need Content Negotiation to decide, or strict path prefixes?
       // Spec: "GET / - Retrieves the contents of the ciprdup."
-      // Spec: "Ciprface ... must be accesible from any browser as: https://ciprnode.ZA"
+      // Spec: "Ciprface ... must be accesible from any browser as: https://ciprnode.za"
       // Usually browser sends Accept: text/html. API client sends Accept: application/json or hal+json.
 
       // Simple Content Negotiation Strategy

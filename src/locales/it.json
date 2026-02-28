@@ -30,7 +30,7 @@
       "ol_1": "Personale",
       "ol_2": "Gruppi",
       "ol_3": "Universale",
-      "ol_unknown": "non definito"
+      "ol_unknown": "non dichiarato"
     },
     "options": {
       "toggle": "Filtri di ricerca",

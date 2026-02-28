@@ -1,0 +1,912 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="background: transparent; background-color: transparent;" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="2779px" height="1723px" viewBox="0 0 2779 1723">
+  <defs />
+  <style>
+    @keyframes cipr-flow {
+      from {
+        stroke-dashoffset: 24;
+      }
+
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    path[pointer-events="stroke"][fill="none"]:not([stroke="none"]) {
+      stroke-dasharray: 12 12;
+      animation: cipr-flow 1s linear infinite;
+    }
+  </style>
+  <g>
+    <g data-cell-id="0">
+      <g data-cell-id="1">
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1508">
+          <g>
+            <path d="M 2193.5 899.26 L 1859.5 466.13" fill="none" stroke="#d6b656" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(214, 182, 86);" />
+            <ellipse cx="2199" cy="906.39" rx="9" ry="9" fill="#d6b656" stroke="#d6b656" stroke-width="3" pointer-events="all" style="fill: rgb(214, 182, 86); stroke: rgb(214, 182, 86);" />
+            <ellipse cx="1854" cy="459" rx="9" ry="9" fill="#d6b656" stroke="#d6b656" stroke-width="3" pointer-events="all" style="fill: rgb(214, 182, 86); stroke: rgb(214, 182, 86);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1507">
+          <g>
+            <path d="M 991.09 619.17 L 2100.41 963.72" fill="none" stroke="#d6b656" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(214, 182, 86);" />
+            <ellipse cx="982.5" cy="616.5" rx="9" ry="9" fill="#d6b656" stroke="#d6b656" stroke-width="3" pointer-events="all" style="fill: rgb(214, 182, 86); stroke: rgb(214, 182, 86);" />
+            <ellipse cx="2109" cy="966.39" rx="9" ry="9" fill="#d6b656" stroke="#d6b656" stroke-width="3" pointer-events="all" style="fill: rgb(214, 182, 86); stroke: rgb(214, 182, 86);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1503">
+          <g>
+            <path d="M 991.35 554.87 L 1665.15 430.63" fill="none" stroke="#d6b656" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(214, 182, 86);" />
+            <ellipse cx="982.5" cy="556.5" rx="9" ry="9" fill="#d6b656" stroke="#d6b656" stroke-width="3" pointer-events="all" style="fill: rgb(214, 182, 86); stroke: rgb(214, 182, 86);" />
+            <ellipse cx="1674" cy="429" rx="9" ry="9" fill="#d6b656" stroke="#d6b656" stroke-width="3" pointer-events="all" style="fill: rgb(214, 182, 86); stroke: rgb(214, 182, 86);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1491">
+          <g>
+            <ellipse cx="1749" cy="279" rx="210" ry="150" fill="none" stroke="#808080" stroke-width="3" stroke-dasharray="3 12" pointer-events="all" style="stroke: rgb(128, 128, 128);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1502">
+          <g>
+            <ellipse cx="2394" cy="921.38" rx="165" ry="186.375" fill="none" stroke="#808080" stroke-width="3" stroke-dasharray="3 12" pointer-events="all" style="stroke: rgb(128, 128, 128);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1490">
+          <g>
+            <ellipse cx="699" cy="568.13" rx="180" ry="200.625" fill="none" stroke="#808080" stroke-width="3" stroke-dasharray="3 12" pointer-events="all" style="stroke: rgb(128, 128, 128);" />
+          </g>
+        </g>
+        <g data-cell-id="0SwVLsD_W-PExbp0aROk-1412">
+          <g>
+            <path d="M 687 736.5 L 549 1359" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(108, 142, 191);" />
+          </g>
+        </g>
+        <g data-cell-id="iBad4oLKPTVbEPz9L_AL-1563">
+          <g>
+            <ellipse cx="1322.62" cy="1508.65" rx="203.625" ry="203.625" fill="none" stroke="#b5739d" stroke-width="3" pointer-events="all" style="stroke: rgb(181, 115, 157);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 134px; height: 1px; padding-top: 503px; margin-left: 374px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #B5739D; ">
+                      <div style="display: inline-block; font-size: 14px; font-family: Iosevka; color: #B5739D; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span>
+                          <font>Domain Name System</font>
+                        </span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="441" y="507" fill="#B5739D" font-family="Iosevka" font-size="14px" text-anchor="middle">Domain Name System</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="iBad4oLKPTVbEPz9L_AL-1566">
+          <g>
+            <rect x="2239.5" y="699" width="309" height="36" fill="none" stroke="none" pointer-events="all" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 101px; height: 1px; padding-top: 239px; margin-left: 748px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #808080; ">
+                      <div style="display: inline-block; font-size: 7px; font-family: Iosevka; color: #808080; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="font-style: normal; letter-spacing: normal; text-align: center; text-indent: 0px; text-transform: none; word-spacing: 0px; display: inline; float: none;">https://ciprnode.example.com</span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="798" y="241" fill="#808080" font-family="Iosevka" font-size="7px" text-anchor="middle">https://ciprnode.example.com</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="iBad4oLKPTVbEPz9L_AL-1585">
+          <g>
+            <rect x="1609.5" y="93" width="309" height="36" fill="none" stroke="none" pointer-events="all" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 101px; height: 1px; padding-top: 37px; margin-left: 538px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #808080; ">
+                      <div style="display: inline-block; font-size: 7px; font-family: Iosevka; color: #808080; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="font-style: normal; letter-spacing: normal; text-align: center; text-indent: 0px; text-transform: none; word-spacing: 0px; display: inline; float: none;">https://ciprnode.cipr.info<br /></span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="588" y="39" fill="#808080" font-family="Iosevka" font-size="7px" text-anchor="middle">https://ciprnode.cipr.info&#xa;</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="iBad4oLKPTVbEPz9L_AL-1586">
+          <g>
+            <rect x="549" y="331.5" width="309" height="36" fill="none" stroke="none" pointer-events="all" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 101px; height: 1px; padding-top: 117px; margin-left: 184px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #808080; ">
+                      <div style="display: inline-block; font-size: 7px; font-family: Iosevka; color: #808080; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="font-style: normal; letter-spacing: normal; text-align: center; text-indent: 0px; text-transform: none; word-spacing: 0px; display: inline; float: none;">https://ciprnode.guasa.art</span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="235" y="119" fill="#808080" font-family="Iosevka" font-size="7px" text-anchor="middle">https://ciprnode.guasa.art</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="0SwVLsD_W-PExbp0aROk-1410">
+          <g>
+            <path d="M 309 1404 L 309 1359 L 789 1359 L 789 1404" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(218, 232, 252); stroke: rgb(108, 142, 191);" />
+            <path d="M 309 1404 L 309 1569 L 789 1569 L 789 1404" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="none" style="stroke: rgb(108, 142, 191);" />
+          </g>
+          <g>
+            <g fill="#66B2FF" font-family="Iosevka" text-anchor="middle" font-size="30px" style="fill: rgb(102, 178, 255);"><text x="549" y="1393.5">resource</text></g>
+          </g>
+          <g data-cell-id="0SwVLsD_W-PExbp0aROk-1411">
+            <g>
+              <rect x="309" y="1464" width="480" height="105" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 158px; height: 1px; padding-top: 506px; margin-left: 105px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 8px; font-family: Helvetica; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><i style="font-size: 8px;">
+                            <font style="font-size: 8px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</font>
+                          </i></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="105" y="508" fill="#66B2FF" font-family="Helvetica" font-size="8px">Lorem ipsum dolor sit amet, consectetur...</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+          <g data-cell-id="0SwVLsD_W-PExbp0aROk-1409">
+            <g>
+              <rect x="309" y="1404" width="480" height="60" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 158px; height: 1px; padding-top: 478px; margin-left: 105px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 12px; font-family: Iosevka; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="font-size: 12px; font-style: normal; letter-spacing: normal; text-indent: 0px; text-transform: none; word-spacing: 0px; display: inline; float: none;">https://cgi.guasa.art<br /></span></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="105" y="482" fill="#66B2FF" font-family="Iosevka" font-size="12px">https://cgi.guasa.art&#xa;</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="DmQUHHsNgsY2qNpxgz49-1438">
+          <g>
+            <path d="M 117 1134 L 117 1089 L 537 1089 L 537 1134" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(218, 232, 252); stroke: rgb(108, 142, 191);" />
+            <path d="M 117 1134 L 117 1329 L 537 1329 L 537 1134" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="none" style="stroke: rgb(108, 142, 191);" />
+          </g>
+          <g>
+            <g fill="#66B2FF" font-family="Iosevka" text-anchor="middle" font-size="30px" style="fill: rgb(102, 178, 255);"><text x="327" y="1123.5">resource</text></g>
+          </g>
+          <g data-cell-id="DmQUHHsNgsY2qNpxgz49-1435">
+            <g>
+              <rect x="117" y="1188" width="420" height="135" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 138px; height: 1px; padding-top: 419px; margin-left: 41px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 8px; font-family: Helvetica; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><i style="font-size: 8px;">
+                            <font style="font-size: 8px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</font>
+                          </i></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="41" y="421" fill="#66B2FF" font-family="Helvetica" font-size="8px">Lorem ipsum dolor sit amet, consec...</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+          <g data-cell-id="DmQUHHsNgsY2qNpxgz49-1427">
+            <g>
+              <rect x="117" y="1137" width="420" height="51" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 138px; height: 1px; padding-top: 388px; margin-left: 41px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 12px; font-family: Iosevka; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="font-size: 12px; font-style: normal; letter-spacing: normal; text-indent: 0px; text-transform: none; word-spacing: 0px; display: inline; float: none;">https://www.guasa.art<br /></span></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="41" y="391" fill="#66B2FF" font-family="Iosevka" font-size="12px">https://www.guasa.art&#xa;</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="0SwVLsD_W-PExbp0aROk-1406">
+          <g>
+            <path d="M 9 864 L 9 819 L 369 819 L 369 864" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(218, 232, 252); stroke: rgb(108, 142, 191);" />
+            <path d="M 9 864 L 9 1029 L 369 1029 L 369 864" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="none" style="stroke: rgb(108, 142, 191);" />
+          </g>
+          <g>
+            <g fill="#66B2FF" font-family="Iosevka" text-anchor="middle" font-size="30px" style="fill: rgb(102, 178, 255);"><text x="189" y="853.5">resource</text></g>
+          </g>
+          <g data-cell-id="0SwVLsD_W-PExbp0aROk-1407">
+            <g>
+              <rect x="9" y="924" width="360" height="105" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 118px; height: 1px; padding-top: 326px; margin-left: 5px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 8px; font-family: Helvetica; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><i style="font-size: 8px;">
+                            <font style="font-size: 8px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</font>
+                          </i></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="5" y="328" fill="#66B2FF" font-family="Helvetica" font-size="8px">Lorem ipsum dolor sit amet, c...</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+          <g data-cell-id="0SwVLsD_W-PExbp0aROk-1408">
+            <g>
+              <rect x="9" y="879" width="360" height="45" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 118px; height: 1px; padding-top: 301px; margin-left: 5px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 12px; font-family: Iosevka; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="font-size: 12px; font-style: normal; letter-spacing: normal; text-indent: 0px; text-transform: none; word-spacing: 0px; display: inline; float: none;">https://guasa.art<br /></span></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="5" y="304" fill="#66B2FF" font-family="Iosevka" font-size="12px">https://guasa.art&#xa;</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="0SwVLsD_W-PExbp0aROk-1414">
+          <g>
+            <path d="M 687 736.5 L 327 1089" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(108, 142, 191);" />
+          </g>
+        </g>
+        <g data-cell-id="0SwVLsD_W-PExbp0aROk-1415">
+          <g>
+            <path d="M 687 736.5 L 369 924" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(108, 142, 191);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1414">
+          <g>
+            <path d="M 802.5 586.5 L 519 549" fill="none" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(179, 179, 179);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1415">
+          <g>
+            <path d="M 1764 399 L 1641 334.5" fill="none" stroke="#999999" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(153, 153, 153);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1426">
+          <g>
+            <path d="M 1740 192.6 C 1740 180.67 1773.58 171 1815 171 C 1834.89 171 1853.97 173.28 1868.03 177.33 C 1882.1 181.38 1890 186.87 1890 192.6 L 1890 291.9 C 1890 303.83 1856.42 313.5 1815 313.5 C 1773.58 313.5 1740 303.83 1740 291.9 Z" fill="#fff2cc" stroke="#d6b656" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(255, 242, 204); stroke: rgb(214, 182, 86);" />
+            <path d="M 1890 192.6 C 1890 204.53 1856.42 214.2 1815 214.2 C 1773.58 214.2 1740 204.53 1740 192.6" fill="none" stroke="#d6b656" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="stroke: rgb(214, 182, 86);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 48px; height: 1px; padding-top: 87px; margin-left: 581px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                      <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="border-color: var(--border-color);">
+                          <font style="color: rgb(214, 182, 86);">ciprdup</font>
+                        </span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="605" y="90" fill="light-dark(#000000, #ffffff)" font-family="Iosevka" font-size="10px" text-anchor="middle">ciprdup</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1427">
+          <g>
+            <path d="M 1566 248.1 C 1566 237.83 1599.58 229.5 1641 229.5 C 1660.89 229.5 1679.97 231.46 1694.03 234.95 C 1708.1 238.44 1716 243.17 1716 248.1 L 1716 315.9 C 1716 326.17 1682.42 334.5 1641 334.5 C 1599.58 334.5 1566 326.17 1566 315.9 Z" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(218, 232, 252); stroke: rgb(108, 142, 191);" />
+            <path d="M 1716 248.1 C 1716 258.37 1682.42 266.7 1641 266.7 C 1599.58 266.7 1566 258.37 1566 248.1" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="stroke: rgb(108, 142, 191);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 48px; height: 1px; padding-top: 99px; margin-left: 523px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                      <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span>
+                          <font style="color: rgb(108, 142, 191);">resindex</font>
+                        </span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="547" y="102" fill="light-dark(#000000, #ffffff)" font-family="Iosevka" font-size="10px" text-anchor="middle">resindex</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1429">
+          <g>
+            <path d="M 2559 921.36 L 2289 936.39" fill="none" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(179, 179, 179);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1430">
+          <g>
+            <path d="M 2397 972.39 L 2289 936.39" fill="none" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(179, 179, 179);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1431">
+          <g>
+            <path d="M 2289 936.39 L 2397 901.89" fill="none" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(179, 179, 179);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1432">
+          <g>
+            <path d="M 1764 399 L 1959 279" fill="none" stroke="#999999" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(153, 153, 153);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1433">
+          <g>
+            <path d="M 991.37 584.96 L 1710.13 460.54" fill="none" stroke="#00cc00" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(0, 204, 0);" />
+            <ellipse cx="982.5" cy="586.5" rx="9" ry="9" fill="#00cc00" stroke="#00cc00" stroke-width="3" pointer-events="all" style="fill: rgb(0, 204, 0); stroke: rgb(0, 204, 0);" />
+            <ellipse cx="1719" cy="459" rx="9" ry="9" fill="#00cc00" stroke="#00cc00" stroke-width="3" pointer-events="all" style="fill: rgb(0, 204, 0); stroke: rgb(0, 204, 0);" />
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1454">
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 1px; height: 1px; padding-top: 164px; margin-left: 383px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #000000; background-color: #ffffff; ">
+                        <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; font-weight: bold; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); white-space: nowrap; ">
+                          <font style="font-size: 7px;"><span style="color: rgb(0, 204, 0);">Reliability validation (QUERY)<br /></span>
+                            <font color="#00cc00" style="color: rgb(0, 204, 0);">Availability validation (HEAD)</font><br />
+                            <font style="color: rgb(214, 182, 86);">Ciprdup sync (GET / PUT / DELETE)</font>
+                          </font>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="383" y="167" fill="light-dark(#000000, #ffffff)" font-family="Helvetica" font-size="11px" font-weight="bold">Reliability validation (QUERY)...</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1435">
+          <g>
+            <path d="M 687 631.5 L 802.5 586.5" fill="none" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(179, 179, 179);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1436">
+          <g>
+            <path d="M 802.5 586.5 L 702 535.5" fill="none" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(179, 179, 179);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1437">
+          <g>
+            <path d="M 1764 399 L 1815 313.5" fill="none" stroke="#999999" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(153, 153, 153);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1438">
+          <g>
+            <path d="M 2322 780.99 C 2322 769.06 2355.58 759.39 2397 759.39 C 2416.89 759.39 2435.97 761.67 2450.03 765.72 C 2464.1 769.77 2472 775.26 2472 780.99 L 2472 880.29 C 2472 892.22 2438.42 901.89 2397 901.89 C 2355.58 901.89 2322 892.22 2322 880.29 Z" fill="#fff2cc" stroke="#d6b656" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(255, 242, 204); stroke: rgb(214, 182, 86);" />
+            <path d="M 2472 780.99 C 2472 792.92 2438.42 802.59 2397 802.59 C 2355.58 802.59 2322 792.92 2322 780.99" fill="none" stroke="#d6b656" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="stroke: rgb(214, 182, 86);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 48px; height: 1px; padding-top: 283px; margin-left: 775px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                      <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="border-color: var(--border-color);">
+                          <font style="color: rgb(214, 182, 86);">ciprdup</font>
+                        </span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="799" y="286" fill="light-dark(#000000, #ffffff)" font-family="Iosevka" font-size="10px" text-anchor="middle">ciprdup</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1439">
+          <g>
+            <path d="M 627 414.6 C 627 402.67 660.58 393 702 393 C 721.89 393 740.97 395.28 755.03 399.33 C 769.1 403.38 777 408.87 777 414.6 L 777 513.9 C 777 525.83 743.42 535.5 702 535.5 C 660.58 535.5 627 525.83 627 513.9 Z" fill="#fff2cc" stroke="#d6b656" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(255, 242, 204); stroke: rgb(214, 182, 86);" />
+            <path d="M 777 414.6 C 777 426.53 743.42 436.2 702 436.2 C 660.58 436.2 627 426.53 627 414.6" fill="none" stroke="#d6b656" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="stroke: rgb(214, 182, 86);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 48px; height: 1px; padding-top: 161px; margin-left: 210px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                      <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="border-color: var(--border-color);">
+                          <font style="color: rgb(214, 182, 86);">ciprdup</font>
+                        </span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="234" y="164" fill="light-dark(#000000, #ffffff)" font-family="Iosevka" font-size="10px" text-anchor="middle">ciprdup</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1441">
+          <g>
+            <path d="M 2322 990.99 C 2322 980.72 2355.58 972.39 2397 972.39 C 2416.89 972.39 2435.97 974.35 2450.03 977.84 C 2464.1 981.33 2472 986.06 2472 990.99 L 2472 1058.79 C 2472 1069.06 2438.42 1077.39 2397 1077.39 C 2355.58 1077.39 2322 1069.06 2322 1058.79 Z" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(218, 232, 252); stroke: rgb(108, 142, 191);" />
+            <path d="M 2472 990.99 C 2472 1001.26 2438.42 1009.59 2397 1009.59 C 2355.58 1009.59 2322 1001.26 2322 990.99" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="stroke: rgb(108, 142, 191);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 48px; height: 1px; padding-top: 347px; margin-left: 775px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                      <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span>
+                          <font style="color: rgb(108, 142, 191);">resindex</font>
+                        </span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="799" y="350" fill="light-dark(#000000, #ffffff)" font-family="Iosevka" font-size="10px" text-anchor="middle">resindex</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1442">
+          <g>
+            <path d="M 612 650.1 C 612 639.83 645.58 631.5 687 631.5 C 706.89 631.5 725.97 633.46 740.03 636.95 C 754.1 640.44 762 645.17 762 650.1 L 762 717.9 C 762 728.17 728.42 736.5 687 736.5 C 645.58 736.5 612 728.17 612 717.9 Z" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(218, 232, 252); stroke: rgb(108, 142, 191);" />
+            <path d="M 762 650.1 C 762 660.37 728.42 668.7 687 668.7 C 645.58 668.7 612 660.37 612 650.1" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="stroke: rgb(108, 142, 191);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 48px; height: 1px; padding-top: 233px; margin-left: 205px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                      <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span>
+                          <font style="color: rgb(108, 142, 191);">resindex</font>
+                        </span></div>
+                    </div>
+                  </div>
+                </foreignObject><text x="229" y="236" fill="light-dark(#000000, #ffffff)" font-family="Iosevka" font-size="10px" text-anchor="middle">resindex</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1455">
+          <g>
+            <path d="M 991.16 588.96 L 2100.34 903.93" fill="none" stroke="#00cc00" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(0, 204, 0);" />
+            <ellipse cx="982.5" cy="586.5" rx="9" ry="9" fill="#00cc00" stroke="#00cc00" stroke-width="3" pointer-events="all" style="fill: rgb(0, 204, 0); stroke: rgb(0, 204, 0);" />
+            <ellipse cx="2109" cy="906.39" rx="9" ry="9" fill="#00cc00" stroke="#00cc00" stroke-width="3" pointer-events="all" style="fill: rgb(0, 204, 0); stroke: rgb(0, 204, 0);" />
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1456">
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 1px; height: 1px; padding-top: 224px; margin-left: 357px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #000000; background-color: #ffffff; ">
+                        <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; font-weight: bold; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); white-space: nowrap; "><span style="color: rgb(0, 204, 0); font-size: 7px;">Reliability validation (QUERY)<br /></span><span style="color: rgb(0, 204, 0); font-size: 7px;">Availability validation (HEAD)</span><span style="font-size: 7px;"><br />
+                            <font style="color: rgb(214, 182, 86);">Ciprdup s</font>
+                          </span>
+                          <font style="color: rgb(214, 182, 86);"><span style="font-size: 7px;">ync </span><span style="font-size: 7px;">(GET / PUT / DELETE)</span></font>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="357" y="228" fill="light-dark(#000000, #ffffff)" font-family="Helvetica" font-size="11px" font-weight="bold">Reliability validation (QUERY)...</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1457">
+          <g>
+            <path d="M 1805.84 467.66 L 2103.88 898.99" fill="none" stroke="#00cc00" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(0, 204, 0);" />
+            <ellipse cx="1800.72" cy="460.26" rx="9" ry="9" fill="#00cc00" stroke="#00cc00" stroke-width="3" pointer-events="all" style="fill: rgb(0, 204, 0); stroke: rgb(0, 204, 0);" />
+            <ellipse cx="2109" cy="906.39" rx="9" ry="9" fill="#00cc00" stroke="#00cc00" stroke-width="3" pointer-events="all" style="fill: rgb(0, 204, 0); stroke: rgb(0, 204, 0);" />
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1458">
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 1px; height: 1px; padding-top: 212px; margin-left: 583px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #000000; background-color: #ffffff; ">
+                        <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; font-weight: bold; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); white-space: nowrap; "><span style="color: rgb(0, 204, 0); font-size: 7px;">Reliability validation (QUERY)<br /></span><span style="color: rgb(0, 204, 0); font-size: 7px;">Availability validation (HEAD)</span><span style="font-size: 7px;"><br />
+                            <font style="color: rgb(214, 182, 86);">Ciprdup s</font>
+                          </span>
+                          <font style="color: rgb(214, 182, 86);"><span style="font-size: 7px;">ync </span><span style="font-size: 7px;">(GET / PUT / DELETE)</span></font>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="583" y="215" fill="light-dark(#000000, #ffffff)" font-family="Helvetica" font-size="11px" font-weight="bold">Reliability validation (QUERY)...</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1462">
+          <g>
+            <path d="M 2139 1433.64 L 2139 1388.64 L 2589 1388.64 L 2589 1433.64" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(218, 232, 252); stroke: rgb(108, 142, 191);" />
+            <path d="M 2139 1433.64 L 2139 1628.64 L 2589 1628.64 L 2589 1433.64" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="none" style="stroke: rgb(108, 142, 191);" />
+          </g>
+          <g>
+            <g fill="#66B2FF" font-family="Iosevka" text-anchor="middle" font-size="30px" style="fill: rgb(102, 178, 255);"><text x="2364" y="1423.14">resource</text></g>
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1463">
+            <g>
+              <rect x="2139" y="1493.64" width="450" height="135" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 148px; height: 1px; padding-top: 520px; margin-left: 715px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 8px; font-family: Helvetica; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><i style="font-size: 8px;">
+                            <font style="font-size: 8px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</font>
+                          </i></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="715" y="523" fill="#66B2FF" font-family="Helvetica" font-size="8px">Lorem ipsum dolor sit amet, consectet...</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1464">
+            <g>
+              <rect x="2139" y="1430.64" width="450" height="102" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 148px; height: 1px; padding-top: 494px; margin-left: 715px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 12px; font-family: Iosevka; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="font-size: 12px; font-style: normal; letter-spacing: normal; text-indent: 0px; text-transform: none; word-spacing: 0px; display: inline; float: none;">https://www.example.com<br /></span></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="715" y="497" fill="#66B2FF" font-family="Iosevka" font-size="12px">https://www.example.com&#xa;</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1465">
+          <g>
+            <path d="M 2409 1193.64 L 2409 1148.64 L 2769 1148.64 L 2769 1193.64" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(218, 232, 252); stroke: rgb(108, 142, 191);" />
+            <path d="M 2409 1193.64 L 2409 1358.64 L 2769 1358.64 L 2769 1193.64" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="none" style="stroke: rgb(108, 142, 191);" />
+          </g>
+          <g>
+            <g fill="#66B2FF" font-family="Iosevka" text-anchor="middle" font-size="30px" style="fill: rgb(102, 178, 255);"><text x="2589" y="1183.14">resource</text></g>
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1466">
+            <g>
+              <rect x="2409" y="1253.64" width="360" height="105" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 118px; height: 1px; padding-top: 435px; margin-left: 805px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 8px; font-family: Helvetica; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><i style="font-size: 8px;">
+                            <font style="font-size: 8px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</font>
+                          </i></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="805" y="438" fill="#66B2FF" font-family="Helvetica" font-size="8px">Lorem ipsum dolor sit amet, c...</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1467">
+            <g>
+              <rect x="2409" y="1193.64" width="360" height="75" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 118px; height: 1px; padding-top: 410px; margin-left: 805px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 12px; font-family: Iosevka; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="font-size: 12px; font-style: normal; letter-spacing: normal; text-indent: 0px; text-transform: none; word-spacing: 0px; display: inline; float: none;">https://example.com<br /></span></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="805" y="414" fill="#66B2FF" font-family="Iosevka" font-size="12px">https://example.com&#xa;</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1477">
+          <g>
+            <path d="M 2397 1077.39 L 2364 1388.64" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(108, 142, 191);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1478">
+          <g>
+            <path d="M 2397 1077.39 L 2589 1148.64" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(108, 142, 191);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1479">
+          <g>
+            <path d="M 1059 54 L 1059 9 L 1419 9 L 1419 54" fill="#dae8fc" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(218, 232, 252); stroke: rgb(108, 142, 191);" />
+            <path d="M 1059 54 L 1059 219 L 1419 219 L 1419 54" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="none" style="stroke: rgb(108, 142, 191);" />
+          </g>
+          <g>
+            <g fill="#66B2FF" font-family="Iosevka" text-anchor="middle" font-size="30px" style="fill: rgb(102, 178, 255);"><text x="1239" y="43.5">resource</text></g>
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1480">
+            <g>
+              <rect x="1059" y="114" width="360" height="105" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 118px; height: 1px; padding-top: 56px; margin-left: 355px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 8px; font-family: Helvetica; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><i style="font-size: 8px;">
+                            <font style="font-size: 8px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</font>
+                          </i></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="355" y="58" fill="#66B2FF" font-family="Helvetica" font-size="8px">Lorem ipsum dolor sit amet, c...</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1481">
+            <g>
+              <rect x="1059" y="54" width="360" height="60" fill="none" stroke="none" pointer-events="all" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 118px; height: 1px; padding-top: 28px; margin-left: 355px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #66B2FF; ">
+                        <div style="display: inline-block; font-size: 12px; font-family: Iosevka; color: #66B2FF; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; "><span style="font-size: 12px; font-style: normal; letter-spacing: normal; text-indent: 0px; text-transform: none; word-spacing: 0px; display: inline; float: none;">https://cipr.info<br /></span></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="355" y="32" fill="#66B2FF" font-family="Iosevka" font-size="12px">https://cipr.info&#xa;</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1482">
+          <g>
+            <path d="M 1419 114 L 1641 229.5" fill="none" stroke="#6c8ebf" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(108, 142, 191);" />
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1447">
+          <g>
+            <path d="M 2191.09 970.69 L 1474.52 1360.37" fill="none" stroke="#b5739d" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(181, 115, 157);" />
+            <path d="M 2191.09 970.69 L 1474.52 1360.37" fill="none" stroke="none" pointer-events="stroke" />
+            <ellipse cx="2199" cy="966.39" rx="9" ry="9" fill="#b5739d" stroke="#b5739d" stroke-width="3" pointer-events="all" style="fill: rgb(181, 115, 157); stroke: rgb(181, 115, 157);" />
+            <ellipse cx="1466.61" cy="1364.67" rx="9" ry="9" fill="#b5739d" stroke="#b5739d" stroke-width="3" pointer-events="all" style="fill: rgb(181, 115, 157); stroke: rgb(181, 115, 157);" />
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1453">
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 1px; height: 1px; padding-top: 403px; margin-left: 539px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #B5739D; ">
+                        <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: #B5739D; line-height: 1.2; pointer-events: all; font-weight: bold; white-space: nowrap; "><span style="font-size: 7px; background-color: rgb(255, 255, 255);">Ownership validation (TXT record)</span></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="539" y="406" fill="#B5739D" font-family="Helvetica" font-size="11px" font-weight="bold">Ownership validation (TXT record)</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1450">
+          <g>
+            <path d="M 1750.74 468.46 L 1371.96 1303.35" fill="none" stroke="#b5739d" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(181, 115, 157);" />
+            <path d="M 1750.74 468.46 L 1371.96 1303.35" fill="none" stroke="none" pointer-events="stroke" />
+            <ellipse cx="1754.46" cy="460.26" rx="9" ry="9" fill="#b5739d" stroke="#b5739d" stroke-width="3" pointer-events="all" style="fill: rgb(181, 115, 157); stroke: rgb(181, 115, 157);" />
+            <ellipse cx="1368.24" cy="1311.55" rx="9" ry="9" fill="#b5739d" stroke="#b5739d" stroke-width="3" pointer-events="all" style="fill: rgb(181, 115, 157); stroke: rgb(181, 115, 157);" />
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1452">
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 1px; height: 1px; padding-top: 374px; margin-left: 445px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #B5739D; background-color: #ffffff; ">
+                        <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: #B5739D; line-height: 1.2; pointer-events: all; font-weight: bold; background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); white-space: nowrap; "><span style="font-size: 7px;">Ownership validation (TXT record)</span></div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="445" y="378" fill="#B5739D" font-family="Helvetica" font-size="11px" font-weight="bold">Ownership validation (TXT record)</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1449">
+          <g>
+            <path d="M 896.71 624.46 L 1256.52 1304.81" fill="none" stroke="#b5739d" stroke-width="3" stroke-miterlimit="10" pointer-events="stroke" style="stroke: rgb(181, 115, 157);" />
+            <path d="M 896.71 624.46 L 1256.52 1304.81" fill="none" stroke="none" pointer-events="stroke" />
+            <ellipse cx="892.5" cy="616.5" rx="9" ry="9" fill="#b5739d" stroke="#b5739d" stroke-width="3" pointer-events="all" style="fill: rgb(181, 115, 157); stroke: rgb(181, 115, 157);" />
+            <ellipse cx="1260.72" cy="1312.77" rx="9" ry="9" fill="#b5739d" stroke="#b5739d" stroke-width="3" pointer-events="all" style="fill: rgb(181, 115, 157); stroke: rgb(181, 115, 157);" />
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1451">
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 1px; height: 1px; padding-top: 356px; margin-left: 304px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #B5739D; ">
+                        <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: #B5739D; line-height: 1.2; pointer-events: all; font-weight: bold; white-space: nowrap; ">
+                          <font style=""><span style="background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));"><span style="font-size: 7px;">Ownership validation (TXT record)</span></span></font>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="304" y="359" fill="#B5739D" font-family="Helvetica" font-size="11px" font-weight="bold">Ownership validation (TXT record)</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1416">
+          <g>
+            <rect x="802.5" y="556.5" width="180" height="60" rx="9" ry="9" fill="#f5f5f5" stroke="#666666" stroke-width="3" pointer-events="all" style="fill: rgb(245, 245, 245); stroke: rgb(102, 102, 102);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 196px; margin-left: 298px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #333333; ">
+                      <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: #333333; line-height: 1.2; pointer-events: all; white-space: nowrap; ">CiprAPI</div>
+                    </div>
+                  </div>
+                </foreignObject><text x="298" y="199" fill="#333333" font-family="Iosevka" font-size="10px" text-anchor="middle">CiprAPI</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1428">
+          <g>
+            <rect x="1674" y="399" width="180" height="60" rx="9" ry="9" fill="#f5f5f5" stroke="#666666" stroke-width="3" pointer-events="all" style="fill: rgb(245, 245, 245); stroke: rgb(102, 102, 102);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 143px; margin-left: 588px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #333333; ">
+                      <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: #333333; line-height: 1.2; pointer-events: all; white-space: nowrap; ">CiprAPI</div>
+                    </div>
+                  </div>
+                </foreignObject><text x="588" y="146" fill="#333333" font-family="Iosevka" font-size="10px" text-anchor="middle">CiprAPI</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1423">
+          <g>
+            <rect x="2109" y="906.39" width="180" height="60" rx="9" ry="9" fill="#f5f5f5" stroke="#666666" stroke-width="3" pointer-events="all" style="fill: rgb(245, 245, 245); stroke: rgb(102, 102, 102);" />
+          </g>
+          <g>
+            <g transform="scale(3)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 312px; margin-left: 733px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #333333; ">
+                      <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: #333333; line-height: 1.2; pointer-events: all; white-space: nowrap; ">CiprAPI</div>
+                    </div>
+                  </div>
+                </foreignObject><text x="733" y="315" fill="#333333" font-family="Iosevka" font-size="10px" text-anchor="middle">CiprAPI</text>
+              </switch>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1443">
+          <g>
+            <path d="M 309 511.5 L 309 466.5 L 519 466.5 L 519 511.5" fill="#b3b3b3" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(179, 179, 179); stroke: rgb(179, 179, 179);" />
+            <path d="M 309 511.5 L 309 631.5 L 519 631.5 L 519 511.5" fill="none" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="none" style="stroke: rgb(179, 179, 179);" />
+          </g>
+          <g>
+            <g fill="#808080" font-family="Iosevka" text-anchor="middle" font-size="24px" style="fill: rgb(128, 128, 128);"><text x="414" y="498">ciprface</text></g>
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1444">
+            <g>
+              <rect x="339" y="535.5" width="150" height="51" fill="none" stroke="#b3b3b3" stroke-width="3" pointer-events="all" style="stroke: rgb(179, 179, 179);" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 48px; height: 1px; padding-top: 187px; margin-left: 115px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #808080; ">
+                        <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: #808080; line-height: 1.2; pointer-events: all; font-style: italic; white-space: normal; word-wrap: normal; ">
+                          <font style="font-size: 6px;">Search</font>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="115" y="190" fill="#808080" font-family="Iosevka" font-size="10px" font-style="italic">Search</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1445">
+          <g>
+            <path d="M 2559 883.86 L 2559 838.86 L 2769 838.86 L 2769 883.86" fill="#b3b3b3" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(179, 179, 179); stroke: rgb(179, 179, 179);" />
+            <path d="M 2559 883.86 L 2559 1003.86 L 2769 1003.86 L 2769 883.86" fill="none" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="none" style="stroke: rgb(179, 179, 179);" />
+          </g>
+          <g>
+            <g fill="#808080" font-family="Iosevka" text-anchor="middle" font-size="24px" style="fill: rgb(128, 128, 128);"><text x="2664" y="870.36">ciprface</text></g>
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1446">
+            <g>
+              <rect x="2589" y="907.86" width="150" height="51" fill="none" stroke="#b3b3b3" stroke-width="3" pointer-events="all" style="stroke: rgb(179, 179, 179);" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 48px; height: 1px; padding-top: 311px; margin-left: 865px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #808080; ">
+                        <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: #808080; line-height: 1.2; pointer-events: all; font-style: italic; white-space: normal; word-wrap: normal; ">
+                          <font style="font-size: 6px;">Search</font>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="865" y="314" fill="#808080" font-family="Iosevka" font-size="10px" font-style="italic">Search</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1408">
+          <g>
+            <path d="M 1959 241.5 L 1959 196.5 L 2169 196.5 L 2169 241.5" fill="#b3b3b3" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="all" style="fill: rgb(179, 179, 179); stroke: rgb(179, 179, 179);" />
+            <path d="M 1959 241.5 L 1959 361.5 L 2169 361.5 L 2169 241.5" fill="none" stroke="#b3b3b3" stroke-width="3" stroke-miterlimit="10" pointer-events="none" style="stroke: rgb(179, 179, 179);" />
+          </g>
+          <g>
+            <g fill="#808080" font-family="Iosevka" text-anchor="middle" font-size="24px" style="fill: rgb(128, 128, 128);"><text x="2064" y="228">ciprface</text></g>
+          </g>
+          <g data-cell-id="uPwKVHlUyd4HTHL25o5A-1409">
+            <g>
+              <rect x="1989" y="265.5" width="150" height="51" fill="none" stroke="#b3b3b3" stroke-width="3" pointer-events="all" style="stroke: rgb(179, 179, 179);" />
+            </g>
+            <g>
+              <g transform="scale(3)">
+                <switch>
+                  <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 48px; height: 1px; padding-top: 97px; margin-left: 665px;">
+                      <div style="box-sizing: border-box; font-size: 0; text-align: left; color: #808080; ">
+                        <div style="display: inline-block; font-size: 10px; font-family: Iosevka; color: #808080; line-height: 1.2; pointer-events: all; font-style: italic; white-space: normal; word-wrap: normal; ">
+                          <font style="font-size: 6px;">Search</font>
+                        </div>
+                      </div>
+                    </div>
+                  </foreignObject><text x="665" y="100" fill="#808080" font-family="Iosevka" font-size="10px" font-style="italic">Search</text>
+                </switch>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <switch>
+    <g requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" /><a transform="translate(0,-5)" xlink:href="https://www.drawio.com/doc/faq/svg-export-text-problems" target="_blank"><text text-anchor="middle" font-size="10px" x="50%" y="100%">Text is not SVG - cannot display</text></a>
+  </switch>
+</svg>

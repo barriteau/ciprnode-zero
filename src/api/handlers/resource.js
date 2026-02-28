@@ -1,6 +1,6 @@
 /**
  * @file src/api/handlers/resource.js
- * @description Handlers for /ZA/ endpoints (GET, PUT, DELETE).
+ * @description Handlers for /za/ endpoints (GET, PUT, DELETE).
  */
 
 import { deleteEntry, getEntry, insertEntry } from '../../db/repo.js';
@@ -25,7 +25,7 @@ export const handleResource = (request, db, za) => {
 };
 
 /**
- * GET /ZA/
+ * GET /za/
  */
 const handleGetResource = (db, za) => {
   const entry = getEntry(db, za);
@@ -34,7 +34,7 @@ const handleGetResource = (db, za) => {
     return new Response('Not Found', { status: 404 });
   }
 
-  // TODO: Handle field filtering (e.g. /ZA/title/) if needed by spec in future iteration.
+  // TODO: Handle field filtering (e.g. /za/title/) if needed by spec in future iteration.
   // For now return full entry.
 
   return new Response(JSON.stringify(entry), {
@@ -43,7 +43,7 @@ const handleGetResource = (db, za) => {
 };
 
 /**
- * PUT /ZA/
+ * PUT /za/
  */
 const handlePutResource = async (request, db, za) => {
   // TODO: Validation logic (DNS TXT record check, timestamp check) per spec.
@@ -78,7 +78,7 @@ const handlePutResource = async (request, db, za) => {
 
     // Basic Validation
     if (!data.za || data.za !== za) {
-      return new Response('Bad Request: ZA mismatch or missing', { status: 400 });
+      return new Response('Bad Request: za mismatch or missing', { status: 400 });
     }
 
     const entry = {
@@ -102,7 +102,7 @@ const handlePutResource = async (request, db, za) => {
 };
 
 /**
- * DELETE /ZA/
+ * DELETE /za/
  */
 const handleDeleteResource = (db, za) => {
   // TODO: Validation logic (DNS TXT record check) per spec.

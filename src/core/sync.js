@@ -148,7 +148,7 @@ export const initialSync = async (config, db) => {
       let insertedCount = 0;
       for (const entry of entries) {
         if (!entry.za) {
-          if (config.debug) console.log(`[DBG] Sync < Skipping entry without ZA.`);
+          if (config.debug) console.log(`[DBG] Sync < Skipping entry without za.`);
           continue;
         }
 

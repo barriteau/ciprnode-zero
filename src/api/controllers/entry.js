@@ -1,6 +1,6 @@
 /**
  * @file src/api/controllers/entry.js
- * @description Controller for individual Cipr Entries (/ZA/).
+ * @description Controller for individual Cipr Entries (/za/).
  */
 
 import { deleteEntry, getEntry, insertEntry } from '../../db/repo.js';
@@ -10,7 +10,7 @@ import { htmlResponse, renderError } from '../views/html.js';
 // import { createSha256Hash } from '../../core/crypto.js'; // Replaced by generateCiprHash
 
 /**
- * Handles GET /ZA/ requests.
+ * Handles GET /za/ requests.
  */
 export const get = (req, db, _config, za) => {
   const entry = getEntry(db, za);
@@ -68,7 +68,7 @@ import { verifyNode } from '../../core/verification.js';
 import { generateCiprHash } from '../../core/utils.js';
 
 /**
- * Handles PUT /ZA/ requests (Upsert).
+ * Handles PUT /za/ requests (Upsert).
  */
 export const put = async (req, db, config, za) => {
   // 1. Parse Body
@@ -79,9 +79,9 @@ export const put = async (req, db, config, za) => {
     return new Response('Invalid JSON', { status: 400 });
   }
 
-  // 2. Validate Consistency (ZA in URL matches Body)
+  // 2. Validate Consistency (za in URL matches Body)
   if (body.za !== za) {
-    return new Response('ZA Mismatch', { status: 400 });
+    return new Response('za Mismatch', { status: 400 });
   }
 
   // 2.5 Ignore Self-Update (Per Spec)
@@ -138,7 +138,7 @@ export const put = async (req, db, config, za) => {
 };
 
 /**
- * Handles DELETE /ZA/ requests.
+ * Handles DELETE /za/ requests.
  */
 export const del = async (_req, db, config, za) => {
   // 1. Check if resource exists locally
@@ -193,7 +193,7 @@ export const del = async (_req, db, config, za) => {
 };
 
 /**
- * Handles Sub-field GET /ZA/field/
+ * Handles Sub-field GET /za/field/
  */
 export const getField = (_req, db, _config, za, field) => {
   const entry = getEntry(db, za);

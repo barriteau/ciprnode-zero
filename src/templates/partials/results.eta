@@ -12,14 +12,14 @@
     <p class="description"><%= item.description %></p>
     <small class="meta">
       <span class="za"><%= item.za %></span>
-      &bull; <time datetime="<%= new Date(item.timestamp * 1000).toISOString() %>"><%= new Date(item.timestamp * 1000).toLocaleString(it.locale === 'en' ? 'en-US' : it.locale, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) %></time>
-      &bull; OL: <%= item.ol || it.t('search.filters.ol_unknown') %> <% if (item.lang_name || item.lang_name_en) { %>
-      &bull; <%= item.lang_name || item.lang_name_en %><% if (item.lang_name && item.lang_name_en && item.lang_name !== item.lang_name_en) { %> / <%= item.lang_name_en %><% } %>
+      • <time datetime="<%= new Date(item.timestamp * 1000).toISOString() %>"><%= new Date(item.timestamp * 1000).toLocaleString(it.locale === 'en' ? 'en-US' : it.locale, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) %></time>
+      • OL: <%= item.ol || it.t('search.filters.ol_unknown') %> <% if (item.lang_name || item.lang_name_en) { %>
+      • <%= item.lang_name || item.lang_name_en %><% if (item.lang_name && item.lang_name_en && item.lang_name !== item.lang_name_en) { %> / <%= item.lang_name_en %><% } %>
       <% } %>
       <% if (item.latitude !== null && item.longitude !== null && item.latitude !== undefined) { %>
       <span class="reverse-geocode" data-lat="<%= item.latitude / 10000000 %>" data-lon="<%= item.longitude / 10000000 %>" data-prefix="<%= it.t('search.filters.near') %>"></span>
       <% } else { %>
-      <span class="location-universal">&bull; <%= it.t('results.universal') %></span><% } %>
+      <span class="location-universal">• <%= it.t('results.universal') %></span><% } %>
     </small>
   </article>
   <% }) %>

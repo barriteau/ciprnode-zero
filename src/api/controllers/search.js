@@ -251,15 +251,15 @@ export const query = async (req, db, config, scopeZa) => {
   // Only Global Search for now (scopeZa === null)
   // If scopeZa provided, we would check 'za' in DB or resindex?
   // Current repo `searchEntries` is global on ciprdup.
-  // Should we filter by ZA if scopeZa is set?
+  // Should we filter by za if scopeZa is set?
   if (scopeZa) {
-    // If searching /ZA/, we act on Resindex (Not implemented yet) OR just correct implementation for ciprdup?
-    // Spec: "QUERY /ZA/ - Queries the resindex"
+    // If searching /za/, we act on Resindex (Not implemented yet) OR just correct implementation for ciprdup?
+    // Spec: "QUERY /za/ - Queries the resindex"
     // "QUERY / - Queries the ciprdup"
     // We are in 'ciprdup' territory.
-    // If scopeZa is set, we strictly should query that ZA's resindex.
+    // If scopeZa is set, we strictly should query that za's resindex.
     // Since we don't have resindex yet, we return 501 Not Implemented or empty?
-    // Or maybe we treat it as searching *for* that ZA in ciprdup? No, that's GET /ZA/.
+    // Or maybe we treat it as searching *for* that za in ciprdup? No, that's GET /za/.
     // So for this task "QUERY /", scopeZa is null.
   }
 

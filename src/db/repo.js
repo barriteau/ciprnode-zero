@@ -54,7 +54,7 @@ export const insertEntry = (db, entry) => {
 };
 
 /**
- * Retrieves a single entry by its Zone Apex (ZA).
+ * Retrieves a single entry by its Zone Apex (za).
  * @param {import('@db/sqlite').Database} db
  * @param {string} za
  * @returns {CiprEntry|undefined}
@@ -73,7 +73,7 @@ export const getEntry = (db, za) => {
 };
 
 /**
- * Deletes an entry by its Zone Apex (ZA).
+ * Deletes an entry by its Zone Apex (za).
  * @param {import('@db/sqlite').Database} db
  * @param {string} za
  */
