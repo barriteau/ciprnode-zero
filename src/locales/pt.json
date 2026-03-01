@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "title": "Ciprnode - Índice Cósmico de Recursos Públicos",
+    "description": "Um índice de pesquisa descentralizado para recursos públicos."
+  },
+  "header": {
+    "mode_toggle": "Modo",
+    "help": "Ajuda",
+    "stats": "Última entrada de {count} adicionada em {date}"
+  },
+  "search": {
+    "title": "Índice Cósmico de Recursos Públicos",
+    "placeholder": "Pesquisar",
+    "operators_tooltip": "Operadores suportados:\n\n<palavra> AND <palavra>\n<palavra> OR <palavra>\n<palavra> NOT <palavra>\n<palavra>*\n^<palavra>\n\"<palavra> <palavra>\"\nNEAR(<palavra>, <palavra>, ...)\n<nome col> : <palavra>\n{<nome col> <nome col> ...} : <palavra>\n(<agrupamento dos itens acima>)",
+    "operators_tooltip_title": "Referência dos operadores de pesquisa",
+    "btn": "Pesquisar",
+    "advanced_filters": "Filtros de Pesquisa",
+    "filters": {
+      "date": "Tempo",
+      "after": "Depois",
+      "before": "Antes",
+      "location": "Local",
+      "near": "Perto de",
+      "near_placeholder": "Digite um lugar...",
+      "radius": "Distância Máx",
+      "language": "Idioma",
+      "language_placeholder": "Digite um idioma...",
+      "ol": "Nível de Ofensividade",
+      "ol_any": "Qualquer",
+      "ol_0": "Nenhum",
+      "ol_1": "Pessoal",
+      "ol_2": "Grupos",
+      "ol_3": "Universal",
+      "ol_unknown": "não declarado"
+    },
+    "options": {
+      "toggle": "Filtros de Pesquisa",
+      "reset": "Redefinir"
+    }
+  },
+  "results": {
+    "heading": "Resultados ({start}-{end})",
+    "none": "Nenhum resultado encontrado.",
+    "universal": "Universal"
+  },
+  "footer": {
+    "profile": "Perfil da API",
+    "get_indexed": "Seja indexado no Cipr",
+    "install": "Instalar App",
+    "install_desktop": "Cipr no seu desktop",
+    "install_mobile": "Cipr no seu celular",
+    "install_ios": "Para instalar o Cipr no seu dispositivo, toque no ícone de Compartilhar na parte inferior da tela e selecione 'Adicionar à Tela de Início'.",
+    "install_fallback": "Para instalar o Cipr, procure a opção 'Instalar' ou 'Adicionar à Tela de Início' no menu do seu navegador.",
+    "source_code": "Código Fonte"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Próximo",
+    "page": "Página {page}"
+  },
+  "error": {
+    "noscript": "O uso de ECMAScript/JavaScript não é opcional aqui porque este é um cliente simples para uma rede diversificada de recursos. Sem scripts, a busca não é possível. Por exemplo, esta ferramenta torna-se inútil nessas condições."
+  },
+  "help": {
+    "title": "Central de Ajuda",
+    "faq": {
+      "title": "Perguntas Frequentes",
+      "q1": "O que é o Cipr?",
+      "a1": "Cipr é uma rede descentralizada para indexação de recursos públicos.",
+      "q2": "O que é um ciprnode?",
+      "a2": "Um ciprnode é um servidor que executa o software Cipr e hospeda uma parte do índice.",
+      "q3": "Como usar o ciprnode?",
+      "a3": "Use a barra de pesquisa na página inicial para encontrar recursos indexados.",
+      "q4": "Como contribuir com o Cipr?",
+      "a4": "Você pode contribuir operando um nó ou desenvolvendo o software.",
+      "q5": "Como instalar o ciprnode?",
+      "a5": "Siga o guia de instalação na documentação oficial.",
+      "q6": "Como atualizar o ciprnode?",
+      "a6": "Use o comando de atualização integrado.",
+      "q7": "Como desinstalar o ciprnode?",
+      "a7": "Remova o diretório do aplicativo e a configuração do serviço.",
+      "q8": "Como obter ajuda?",
+      "a8": "Visite os fóruns da comunidade ou verifique a documentação."
+    },
+    "source": {
+      "title": "Código Fonte",
+      "content": "O código fonte é aberto e está disponível."
+    },
+    "license": {
+      "title": "Licença"
+    },
+    "privacy": {
+      "title": "Política de Privacidade",
+      "content": "Nós respeitamos a sua privacidade."
+    },
+    "terms": {
+      "title": "Termos de Serviço",
+      "content": "Use por sua própria conta e risco."
+    }
+  },
+  "pwa": {
+    "update_available": "Uma nova versão desta página está disponível.",
+    "reload": "Recarregar para Atualizar"
+  }
+}

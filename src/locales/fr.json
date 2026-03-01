@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "title": "Ciprnode - Index Cosmique des Ressources Publiques",
+    "description": "Un index de recherche décentralisé pour les ressources publiques."
+  },
+  "header": {
+    "mode_toggle": "Mode",
+    "help": "Aide",
+    "stats": "Dernière entrée de {count} ajoutée le {date}"
+  },
+  "search": {
+    "title": "Index Cosmique des Ressources Publiques",
+    "placeholder": "Rechercher",
+    "operators_tooltip": "Opérateurs pris en charge :\n\n<mot> AND <mot>\n<mot> OR <mot>\n<mot> NOT <mot>\n<mot>*\n^<mot>\n\"<mot> <mot>\"\nNEAR(<mot>, <mot>, ...)\n<nom col> : <mot>\n{<nom col> <nom col> ...} : <mot>\n(<regroupement des éléments ci-dessus>)",
+    "operators_tooltip_title": "Référence des opérateurs de recherche",
+    "btn": "Rechercher",
+    "advanced_filters": "Filtres de recherche",
+    "filters": {
+      "date": "Date",
+      "after": "Après",
+      "before": "Avant",
+      "location": "Emplacement",
+      "near": "Près de",
+      "near_placeholder": "Tapez un lieu...",
+      "radius": "Distance Max",
+      "language": "Langue",
+      "language_placeholder": "Tapez une langue...",
+      "ol": "Niveau d'Odieux",
+      "ol_any": "N'importe lequel",
+      "ol_0": "Aucun",
+      "ol_1": "Personnel",
+      "ol_2": "Groupes",
+      "ol_3": "Universel",
+      "ol_unknown": "non déclaré"
+    },
+    "options": {
+      "toggle": "Filtres de recherche",
+      "reset": "Réinitialiser"
+    }
+  },
+  "results": {
+    "heading": "Résultats ({start}-{end})",
+    "none": "Aucun résultat trouvé.",
+    "universal": "Universel"
+  },
+  "footer": {
+    "profile": "Profil API",
+    "get_indexed": "S'indexer dans le Cipr",
+    "install": "Installer l'Appli",
+    "install_desktop": "Cipr sur votre bureau",
+    "install_mobile": "Cipr sur votre mobile",
+    "install_ios": "Pour installer Cipr sur votre appareil, appuyez sur l'icône Partager en bas de votre écran et sélectionnez 'Sur l'écran d'accueil'.",
+    "install_fallback": "Pour installer Cipr, recherchez l'option 'Installer' ou 'Sur l'écran d'accueil' dans le menu de votre navigateur.",
+    "source_code": "Code Source"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {page}"
+  },
+  "error": {
+    "noscript": "L'utilisation d'ECMAScript/JavaScript n'est pas facultative ici car il s'agit d'un simple client pour un réseau diversifié de ressources. Sans script, la récupération n'est pas possible. Par exemple, cet outil devient inutile dans ces conditions."
+  },
+  "help": {
+    "title": "Centre d'aide",
+    "faq": {
+      "title": "Foire Aux Questions",
+      "q1": "Qu'est-ce que Cipr ?",
+      "a1": "Cipr est un réseau décentralisé d'indexation des ressources publiques.",
+      "q2": "Qu'est-ce qu'un ciprnode ?",
+      "a2": "Un ciprnode est un serveur qui exécute le logiciel Cipr et héberge une partie de l'index.",
+      "q3": "Comment utiliser le ciprnode ?",
+      "a3": "Utilisez la barre de recherche sur la page d'accueil pour trouver des ressources indexées.",
+      "q4": "Comment contribuer à Cipr ?",
+      "a4": "Vous pouvez contribuer en gérant un nœud ou en développant le logiciel.",
+      "q5": "Comment installer le ciprnode ?",
+      "a5": "Suivez le guide d'installation dans la documentation officielle.",
+      "q6": "Comment mettre à jour le ciprnode ?",
+      "a6": "Utilisez la commande de mise à jour intégrée.",
+      "q7": "Comment désinstaller le ciprnode ?",
+      "a7": "Supprimez le répertoire de l'application et la configuration du service.",
+      "q8": "Comment obtenir de l'aide ?",
+      "a8": "Visitez les forums communautaires ou consultez la documentation."
+    },
+    "source": {
+      "title": "Code Source",
+      "content": "Le code source est ouvert et disponible."
+    },
+    "license": {
+      "title": "Licence"
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "content": "Nous respectons votre vie privée."
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "content": "Utilisez à vos propres risques."
+    }
+  },
+  "pwa": {
+    "update_available": "Une nouvelle version de cette page est disponible.",
+    "reload": "Recharger pour mettre à jour"
+  }
+}
