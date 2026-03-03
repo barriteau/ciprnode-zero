@@ -1,4 +1,4 @@
-  <nav id="toolbar">
+  <nav id="toolbar" class="wide">
     <div>
       <small id="stats-info">
         <a href="<%= it.parentUrl || '/' %>" id="ciprnode-za"><%= it.parentUrl || it.configZa %></a>

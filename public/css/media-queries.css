@@ -19,7 +19,7 @@
     max-width: 45vw;
   }
 
-  main#wide-main-matter {
+  main#wide {
     max-width: 80vw;
   }
 }
@@ -33,7 +33,7 @@
     max-width: 85vw;
   }
 
-  main#wide-main-matter {
+  main#wide {
     max-width: 90vw;
   }
 
@@ -85,7 +85,7 @@
     max-width: 95vw;
   }
 
-  main#wide-main-matter {
+  main#wide {
     max-width: 95vw;
   }
 }

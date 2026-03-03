@@ -24,12 +24,12 @@
 <body>
   <%~ include('../partials/header.eta', it) %>
   <noscript>
-    <div class="noscript-warning">
+    <p id="noscript">
       <%= it.t('error.noscript') %>
-    </div>
+    </p>
   </noscript>
 
-  <main id="wide-main-matter">
+  <main id="wide">
     <%~ it.body %>
   </main>
 

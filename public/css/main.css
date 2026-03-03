@@ -159,6 +159,86 @@ table td {
     padding-bottom: 0;
 }
 
+/* --- Forms ---*/
+
+input,
+button,
+select,
+textarea {
+    /* : Check for media query variations */
+    border-radius: 4px;
+    border: 2px solid #dcdcdc;
+    cursor: pointer;
+    color: #444444;
+}
+
+button,
+select {
+    background-color: #ededed;
+    font-weight: bold;
+    vertical-align: text-bottom;
+    padding: 4px;
+}
+
+button {
+    color: #015F6B;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+input,
+textarea {
+    background-color: var(--body-background-color);
+    border-radius: 4px;
+    border: 2px solid #dcdcdc;
+    padding: 4px 0 4px 4px;
+}
+
+select,
+select:focus,
+textarea,
+textarea:focus,
+input,
+input:focus,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"] {
+    font-size: var(--base-font-size);
+    min-height: var(--base-font-size);
+    line-height: var(--base-line-height);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    vertical-align: text-top;
+}
+
+fieldset legend {
+    padding: 0 0.5rem;
+    vertical-align: text-bottom;
+}
+
+label {
+    font-size: 1rem;
+    vertical-align: text-bottom;
+}
+
+form fieldset {
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+}
+
 /* --- Scrollbar --- */
 
 * {
@@ -186,7 +266,7 @@ nav#toolbar {
     left: 0;
     min-width: 360px;
     width: 100vw;
-    /* padding: 0 calc(50vw - 320px); */
+    padding: 0 calc(50vw - 320px);
     height: 3.4rem;
     display: flex;
     flex-direction: row;
@@ -198,6 +278,10 @@ nav#toolbar {
     border-bottom: 1px solid #aaaaaa;
 }
 
+nav#toolbar.wide {
+    padding: 0;
+}
+
 nav#toolbar>div {
     margin: 0;
     padding: 8px;
@@ -206,10 +290,7 @@ nav#toolbar>div {
 nav#toolbar>div>a,
 nav#toolbar>div>label {
     display: inline-block;
-}
-
-nav#toolbar>div>a,
-nav#toolbar>div>label {
+    vertical-align: middle;
     margin: 0 1rem 0 0;
 }
 
@@ -224,7 +305,11 @@ main {
     /* : Check for media query variations */
     margin: 0 auto;
     padding: 2rem 0.5rem 0 0.5rem;
-    min-height: calc(100vh - 13em);
+    min-height: calc(100vh - 16em);
+}
+
+main#wide {
+    min-height: calc(100vh - 10em);
 }
 
 main.support {
@@ -750,6 +835,156 @@ ol#annotations-list>li>figure>figcaption>span.actions {
     color: #00bad3;
 }
 
+/* --- search panel --- */
+
+aside#search-panel {
+    position: fixed;
+    top: 0;
+    right: -100vw;
+    height: 100vh;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0;
+    padding: 0;
+    transition: right 0.2s ease;
+}
+
+nav#toolbar label input#search-toggle {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+
+nav#toolbar label svg-icon.search {
+    cursor: pointer;
+}
+
+aside#search-panel button#search-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 0;
+    padding: .33rem;
+    margin: 0;
+    cursor: pointer;
+    background-color: transparent;
+    color: #777777;
+    font-size: 1.66rem;
+    z-index: 0;
+}
+
+aside#search-panel>button#search-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    opacity: 0.65;
+    background-size: 6px 6px;
+    background-image: repeating-linear-gradient(45deg, #000000 0, #000000 0.6px, #00000077 0, #00000077 50%);
+    display: none;
+}
+
+aside#search-panel>#search-body {
+    position: absolute;
+    top: 3.4rem;
+    right: 0;
+    height: calc(100vh - 3.4rem);
+    width: 80vw;
+    max-width: 1024px;
+    margin: 0;
+    padding: 0;
+    background: #dddddd;
+    border-radius: 0 4px 4px 0;
+    overflow-y: scroll;
+}
+
+body:has(input[form="search-form"]:checked) aside#search-panel {
+    right: 0;
+}
+
+body:has(input[form="search-form"]:checked) aside#search-panel #search-overlay {
+    display: block;
+}
+
+body:has(input[form="search-form"]:checked) label svg-icon.search {
+    /* background-color: #00bad3; */
+    filter: invert(66%) sepia(96%) saturate(2549%) hue-rotate(142deg) brightness(89%) contrast(103%);
+}
+
+#search-body>h2 {
+    margin: 0;
+    padding: 2em 0 1em 1em;
+}
+
+ol#search-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    /* decimal-leading-zero; */
+}
+
+#search-list>li {
+    margin: 1em 0 1em 0.5em;
+    padding: 0;
+}
+
+ol#search-list>li.here {
+    border-left: 8px solid #ccff00;
+}
+
+#search-list>li.not-here {
+    border-left: 8px solid #c5c5c5;
+}
+
+#search-list>li>figure {
+    margin: 0;
+    padding: 0 0 0 0.5em;
+}
+
+
+ol#search-list>li>figure>figcaption {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+}
+
+ol#search-list>li>figure>figcaption>span.actions {
+    font-size: 1.3rem;
+}
+
+#search-list>li>figure>div.excerpt {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    font-size: 1.25rem;
+    font-style: italic;
+}
+
+#search-list>li>figure>div.excerpt>a {
+    color: #888888;
+    transition: color 0.5s;
+}
+
+#search-list>li>figure>div.excerpt>a:link {
+    color: #888888;
+}
+
+#search-list>li>figure>div.excerpt>a:hover {
+    color: #00bad3;
+}
+
+#search-list>li>figure>div.excerpt>a:active {
+    color: #00bad3;
+}
+
 /* --- Dialog --- */
 
 dialog {
@@ -980,7 +1215,7 @@ p.math-equation-block:before {
 ::highlight(hl) {
     background-color: #ccff00;
     text-decoration: underline 1px solid #00ff00;
-    text-underline-position: above;
+    text-underline-position: auto;
     text-underline-offset: 1px;
     stroke-width: 10px;
     /*
@@ -996,7 +1231,7 @@ p.math-equation-block:before {
 ::target-text {
     background-color: #ff00ff;
     text-decoration: underline solid #ff0000;
-    text-underline-position: above;
+    text-underline-position: auto;
     text-underline-offset: 1px;
     stroke-width: 10px;
 }
@@ -1024,7 +1259,8 @@ aside#annotations-panel>button#annotations-overlay {
     z-index: 1;
 }
 
-aside#annotations-panel {
+aside#annotations-panel,
+aside#search-panel {
     z-index: 2;
 }
 
@@ -1087,85 +1323,7 @@ ol.toc li:last-child:before {
 }
 */
 
-/* --- Forms ---*/
-
-input,
-button,
-select,
-textarea {
-    /* : Check for media query variations */
-    border-radius: 4px;
-    border: 2px solid #dcdcdc;
-    cursor: pointer;
-    color: #444444;
-}
-
-button,
-select {
-    background-color: #ededed;
-    font-weight: bold;
-    vertical-align: text-bottom;
-    padding: 4px;
-}
-
-button {
-    color: #015F6B;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-input,
-textarea {
-    background-color: var(--body-background-color);
-    border-radius: 4px;
-    border: 2px solid #dcdcdc;
-    padding: 4px 0 4px 4px;
-}
-
-select,
-select:focus,
-textarea,
-textarea:focus,
-input,
-input:focus,
-input[type="text"],
-input[type="password"],
-input[type="datetime"],
-input[type="datetime-local"],
-input[type="date"],
-input[type="month"],
-input[type="time"],
-input[type="week"],
-input[type="number"],
-input[type="email"],
-input[type="url"],
-input[type="search"],
-input[type="tel"],
-input[type="color"] {
-    font-size: var(--base-font-size);
-    min-height: var(--base-font-size);
-    line-height: var(--base-line-height);
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-    vertical-align: text-top;
-}
-
-fieldset legend {
-    padding: 0 0.5rem;
-    vertical-align: text-bottom;
-}
-
-label {
-    font-size: 1rem;
-    vertical-align: text-bottom;
-}
-
-form fieldset {
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-}
+/* --- Search form ---*/
 
 #search-bar {
     display: flex;
