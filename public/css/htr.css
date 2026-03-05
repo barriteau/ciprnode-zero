@@ -1,7 +1,7 @@
 @charset "utf-8";
 
-/* --- Normalization --- */
-@import "./modern-normalize.css";
+/* --- Reset --- */
+@import "./reset.css";
 
 /* --- Fonts --- */
 @import "./font-Libertinus.css";

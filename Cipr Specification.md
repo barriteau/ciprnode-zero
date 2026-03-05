@@ -58,9 +58,9 @@ Second function of a ciprnode is to act as an entry point for search requests to
 
 Each ciprnode must be published following this pattern:
 
-`https://ciprnode.za`
+`https://ciprnode.{za}`
 
-Where `za` is the same as `sldl.tldl`. The literal *ciprnode* **must** be the *third level domain* (3LD) label assigned to the demon, for example:
+Where `{za}` is the same as `sldl.tldl`. The literal *ciprnode* **must** be the *third level domain* (3LD) label assigned to the demon, for example:
 
 `https://ciprnode.cipr.info`
 
@@ -239,23 +239,23 @@ The CiprAPI exposes the following endpoints:
 
 - `HEAD /` - Verifies the presence of a ciprnode in the Cipr.
 - `GET /` - Retrieves the contents of the ciprdup.
-- `GET /za/` - Retrieves all fields for a specific cipred resource.
-- `GET /za/title/` - Retrieves the title of a specific cipred resource.
-- `GET /za/description/` - Retrieves the description of a specific cipred resource.
-- `GET /za/ol/` - Retrieves the value of the offensiveness level of a specific cipred resource.
-- `GET /za/language/` - Retrieves the value of the language of a specific cipred resource.
-- `GET /za/latitude/` - Retrieves the latitude of a specific cipred resource.
-- `GET /za/longitude/` - Retrieves the longitude of a specific cipred resource.
-- `GET /za/timestamp/` - Retrieves the timestamp of a specific cipred resource.
+- `GET /{za}/` - Retrieves all fields for a specific cipred resource.
+- `GET /{za}/title/` - Retrieves the title of a specific cipred resource.
+- `GET /{za}/description/` - Retrieves the description of a specific cipred resource.
+- `GET /{za}/ol/` - Retrieves the value of the offensiveness level of a specific cipred resource.
+- `GET /{za}/language/` - Retrieves the value of the language of a specific cipred resource.
+- `GET /{za}/latitude/` - Retrieves the latitude of a specific cipred resource.
+- `GET /{za}/longitude/` - Retrieves the longitude of a specific cipred resource.
+- `GET /{za}/timestamp/` - Retrieves the timestamp of a specific cipred resource.
 - `GET /languages/` - Retrieves the contents of the languages database table. Only to be called from the local ciprface.
-- `PUT /za/` - Adds a new cipred resource to the Cipr.
-- `DELETE /za/` - Removes a cipred resource from the Cipr.
+- `PUT /{za}/` - Adds a new cipred resource to the Cipr.
+- `DELETE /{za}/` - Removes a cipred resource from the Cipr.
 - `QUERY /` - Queries the ciprdup of the ciprnode with a given `FTS expression+filters`.
-- `QUERY /za/` - Queries the resindex of the cipred resource with a given `FTS expression+filters`.
+- `QUERY /ri/` - Queries the resindex (ri) of the cipred resource with a given `FTS expression+filters`.
 
 #### Use of the `GET` method
 
-A `GET` request to `/` accepts the `pages[size]` query parameter, being `size` an integer (n) indicating the expected number of entries. The entries in the Cipr are not expected to be ordered, so pagination is not feasible. A `GET` request to `/za/` will retrieve only one row with all the fields for a specific cipred resource or only one row with a specific field. Examples:
+A `GET` request to `/` accepts the `pages[size]` query parameter, being `size` an integer (n) indicating the expected number of entries. The entries in the Cipr are not expected to be ordered, so pagination is not feasible. A `GET` request to `/{za}/` will retrieve only one row with all the fields for a specific cipred resource or only one row with a specific field. Examples:
 
 This request asks the Cipr to retrieve the full Cipr^[Limits and default pagination settings of the ciprnode will apply.]:
 
@@ -303,7 +303,7 @@ Host: ciprnode.example.com
 
 #### Use of the `PUT` method
 
-A `PUT` request to `za` will add a new cipred resource to the Cipr if it doesn't exist or update it if it does. The request body must contain at least all the required fields for a cipred resource. Example:
+A `PUT` request to `{za}` will add a new cipred resource to the Cipr if it doesn't exist or update it if it does. The request body must contain at least all the required fields for a cipred resource. Example:
 
 ```http
 PUT /guasa.art/ HTTP/1.1
@@ -341,14 +341,14 @@ Before proceeding with the effective insertion/update of a `PUT`ed entry in the 
 
 0. **Currentness Validation**: check that the value in the `timestamp` field is not older than 24 hours.
 1. **Ownership Validation**: DNS query to check if the TXT record for the new cipred resource exists and is valid.
-2. **Availability Validation**: `HEAD /` request to the `https://ciprnode.za` to check if the cipred resource is responding.
-3. **Reliability Validation**: `QUERY /` to `https://ciprnode.za` to validate the correctness of the resource's query results.
+2. **Availability Validation**: `HEAD /` request to the `https://ciprnode.{za}` to check if the cipred resource is responding.
+3. **Reliability Validation**: `QUERY /` to `https://ciprnode.{za}` to validate the correctness of the resource's query results.
 
 The insertion won't be effective if at least one of those checks fails.
 
 #### Use of the `DELETE` method
 
-A `DELETE` request to `za` will remove a cipred resource from the Cipr if it exists. Example:
+A `DELETE` request to `{za}` will remove a cipred resource from the Cipr if it exists. Example:
 
 ```http
 DELETE /example.com/ HTTP/1.1
@@ -358,8 +358,8 @@ Host: ciprnode.barriteau.net
 Before proceeding with the effective deletion of a `DELETE`d entry in the ciprdup, a ciprnode must execute the **Deletion Validation Sequence**:
 
 1. **Ownership Validation**: DNS query to check if the TXT record for the new cipred resource exists and is valid.
-2. **Availability Validation**: `HEAD /` request to the `https://ciprnode.za` to check if the cipred resource is responding.
-3. **Reliability Validation**: `QUERY /` to `https://ciprnode.za` to validate the correctness of the resource's query results.
+2. **Availability Validation**: `HEAD /` request to the `https://ciprnode.{za}` to check if the cipred resource is responding.
+3. **Reliability Validation**: `QUERY /` to `https://ciprnode.{za}` to validate the correctness of the resource's query results.
 
 The *Reliability Validation* requires the use of a random `FTS expression` and random `pages[num]` and random `pages[size]` query parameters, it also could reuse FTS expressions received from users of the ciprface, this implies that the ciprnode must be able to store and retrieve FTS expressions received from users of the ciprface.
 
@@ -367,12 +367,12 @@ The deletion of an entry won't be effective if all of the three checks are succe
 
 #### Use of the `QUERY` method
 
-A `QUERY` request must be able to receive the `pages[num]` and `pages[size]` query parameters, being `num` an array of integers (n) and/or ranges (n-m) indicating which page numbers are expected, and `size` an array of integers (n) indicating the expected number of entries per page. For example:
+A `QUERY /` request must be able to receive the `pages[num]` and `pages[size]` query parameters, being `num` an array of integers (n) and/or ranges (n-m) indicating which page numbers are expected, and `size` an array of integers (n) indicating the expected number of entries per page. For example:
 
-This queries the first page of search results with the number of entries defaulted by the ciprnode:
+This queries the first page of search results with the number of entries defaulted in the ciprnode's configuration:
 
 ```http
-QUERY /za/ HTTP/1.1
+QUERY / HTTP/1.1
 Host: ciprnode.example.com
 Content-Type: text/plain; charset=utf-8
 Accept: application/x-www-form-urlencoded; charset=utf-8
@@ -387,10 +387,10 @@ before=timestamp
 after=timestamp
 ```
 
-This queries the fifth page of search results with the number of entries defaulted by the ciprnode:
+This queries the fifth page of search results with the number of entries defaulted in the ciprnode's configuration:
 
 ```http
-QUERY /za/?pages[num]=5 HTTP/1.1
+QUERY /?pages[num]=5 HTTP/1.1
 Host: ciprnode.example.com
 Content-Type: text/plain; charset=utf-8
 Accept: application/x-www-form-urlencoded; charset=utf-8
@@ -408,7 +408,7 @@ after=timestamp
 This queries the first page of search results with 30 entries:
 
 ```http
-QUERY /za/?pages[size]=30 HTTP/1.1
+QUERY /?pages[size]=30 HTTP/1.1
 Host: ciprnode.example.com
 Content-Type: application/hal+json; charset=utf-8
 Accept: application/hal+json; charset=utf-8
@@ -432,7 +432,7 @@ Accept: application/hal+json; charset=utf-8
 This queries the first page of search results with 10 entries:
 
 ```http
-QUERY /za/?pages[num]=1&pages[size]=10 HTTP/1.1
+QUERY /?pages[num]=1&pages[size]=10 HTTP/1.1
 Host: ciprnode.example.com
 Content-Type: application/x-www-form-urlencoded; charset=utf-8
 Accept: application/x-www-form-urlencoded; charset=utf-8
@@ -452,7 +452,7 @@ query="FTS expression"
 This queries the second, sixth and tenth pages of search results with 20 entries each:
 
 ```http
-QUERY /za/?pages[num]=[2,6,10]&pages[size]=[20] HTTP/1.1
+QUERY /?pages[num]=[2,6,10]&pages[size]=[20] HTTP/1.1
 Host: ciprnode.example.com
 Content-Type: application/hal+json; charset=utf-8
 Accept: application/hal+json; charset=utf-8
@@ -476,7 +476,7 @@ Accept: application/hal+json; charset=utf-8
 This queries the fourth to eighth pages of search results with 10 entries each:
 
 ```http
-QUERY /za/?pages[num]=[4-8]&pages[size]=10 HTTP/1.1
+QUERY /?pages[num]=[4-8]&pages[size]=10 HTTP/1.1
 Host: ciprnode.example.com
 Content-Type: application/x-www-form-urlencoded; charset=utf-8
 Accept: application/x-www-form-urlencoded; charset=utf-8
@@ -496,7 +496,7 @@ after=timestamp
 This queries the eleventh to twentieth and the twenty-first to forty pages of search results with 10 entries the first group and 20 entries the second group:
 
 ```http
-QUERY /za/?pages[num]=[11-20,21-40]&pages[size]=[10,20] HTTP/1.1
+QUERY /?pages[num]=[11-20,21-40]&pages[size]=[10,20] HTTP/1.1
 Host: ciprnode.example.com
 Content-Type: application/x-www-form-urlencoded; charset=utf-8
 Accept: text/html; charset=utf-8
@@ -545,9 +545,9 @@ Content-Length: 845
 
 {
   "_links": {
-    "self": { "href": "/za/?pages[num]=1&pages[size]=10" },
-    "next": { "href": "/za/?pages[num]=2&pages[size]=10" },
-    "last": { "href": "/za/?pages[num]=5&pages[size]=10" }
+    "self": { "href": "/{za}/?pages[num]=1&pages[size]=10" },
+    "next": { "href": "/{za}/?pages[num]=2&pages[size]=10" },
+    "last": { "href": "/{za}/?pages[num]=5&pages[size]=10" }
   },
   "count": 42,
   "pages_num": [1],
@@ -602,10 +602,27 @@ HX-Trigger-After-Swap: update-pagination
 
 <div id="pagination-controls" hx-swap-oob="true">
     <button disabled>1</button>
-    <button hx-get="/za/?pages[num]=2&pages[size]=10">2</button>
-    <button hx-get="/za/?pages[num]=3&pages[size]=10">3</button>
+    <button hx-get="/{za}/?pages[num]=2&pages[size]=10">2</button>
+    <button hx-get="/{za}/?pages[num]=3&pages[size]=10">3</button>
 </div>
 ```
+
+A `QUERY /ri/` request could receive `pages[num]` and `pages[size]` query parameters, and could also receive filters, but those are not mandatory and is up to the resource owner to decide if they want to use them.
+
+This queries the first page of search results from the resindex with the number of entries defaulted in the ciprnode's configuration:
+
+```http
+QUERY /ri/ HTTP/1.1
+Host: ciprnode.example.com
+Content-Type: text/plain; charset=utf-8
+Accept: application/x-www-form-urlencoded; charset=utf-8
+
+query="search expression"
+```
+
+Even when desirable, the resindex ranking algorithm for search results doesn't need to adhere to the one specified for the ciprdup/Cipr. Every resource owner is free to implement their own ranking algorithm at their own convenience, they have the last word about what is more relevant for their users when a search query is sent to their resindex.
+
+A ciprnode must provide a set of minimum mechanisms to allow resource owners creating adapters for the `QUERY /ri/` endpoint act as a client to whatever they have as their resource's search system, being it client-side site search tools, static site search tools, lightweight server-side search tools, enterprise/heavyweight search tools, search-as-a-service (hosted) tools, etc.
 
 ### 4. Ciprpulse
 
@@ -627,7 +644,7 @@ Every ciprnode must start one of the following actions every $I$ minutes: random
 
 A ciprface is a front-end for the human interaction with the Cipr, its default client application. At least one ciprface must be available in every ciprnode and it must be accesible from any browser as:
 
-`https://ciprnode.za`
+`https://ciprnode.{za}`
 
 Non-TLS requests to a ciprface must be always ignored, rejected or redirected.
 
@@ -635,13 +652,13 @@ There are no checks to verify the presence of the ciprface in a ciprnode, so it 
 
 There is a **minimal set of features** that a ciprface must have in order to be considered compliant with this specification:
 
-1. When accessed via a simple `GET` request, it must display a first list of randomly selected ZAs from the ciprdup.
+1. When accessed via a simple `GET` request, it must display a first list of randomly selected zas from the ciprdup.
 2. There must be a form at the top of the page that helps build FTS expressions (e.g. a form with checkboxes) for the operators and text fields for the search terms.
 3. Must offer at least one of the following capabilities:
    1. Controls for pagination of `QUERY` results
    2. Controls for *Load More* `QUERY` results
    3. Infinite scroll of `QUERY` results
-4. Must be able to *lazy load* the results of querying the user's FTS expression to the resindexes of the different ZAs being listed in a given moment.
+4. Must be able to *lazy load* the results of querying the user's FTS expression to the resindexes of the different zas being listed in a given moment.
 
 There are no restrictions regarding the use of additional features or elements in the ciprface, as long as they don't conflict with the minimal set of features. The domain holder has the final say about design, UI enhancements, ads, tracking, telemetry, fingerprinting, self-promotion, etc., in a healthy Cipr, the abundance of choices make irrelevant any wrongdoings in a particular ciprface.
 
@@ -734,30 +751,45 @@ The process to incorporate a ciprnode to the Cipr is the same process that allow
 
 ### Ciprnode deployment
 
-This step is done after a ciprnode has been installed and is able to operate as `https://ciprnode.za`. It's not that it's yet operating as an effective node in the network.
+This step is done after a ciprnode has been installed and is able to operate as `https://ciprnode.{za}`. It's not that it's yet operating as an effective node in the network.
 
 ### Initial configuration
 
 Each ciprnode must be specifically configured before being added to the Cipr. At a minimum, the following parameters must be provided to be stored in a configuration file, database or something similar:
 
 ```toml
+[cipr_entry]
 # Minimal Cipr entry data
 za = "cipr.info"
 title = "Cosmic Index of Public Resources"
 description = "The home of the Cosmic Index of Public Resources, also known as the Cipr"
 keywords = "index directory search engine webring"
+primary_lang = "en"
+ol = 0
+latitude = 407128000
+longitude = -740060000
 
+[network]
 # Trusted bootstrap ciprnode to start syncing from
 bootstrap_node = "https://ciprnode.fsf.org/"
+
+# Expected time in milliseconds for a new or updated entry to infect the whole Cipr
+expected_propagation_time = 120000
+
+# A list of arbitrary words, not related with the keywords of your resource, used to
+# check the reliability of the ciprnodes in the Cipr.
+test_words = "dog el perro the casa amigo friend árboles social pero como"
+
 # DNS over UDP (Do53) used for bootstrapping DoH connections
 do53 = ["..."]
+
 # DNS over HTTPS (DoH) endpoints for regular queries
 doh = ["..."]
 ```
 
 ### Ciprdup population
 
-Once the ciprnode is deployed and has its initial configuration, next action is to populate its ciprdup, the retrieval of entries begins with a `GET /` to the `bootstrap_node` and then it's possible to keep going with the gradually obtained ZAs.
+Once the ciprnode is deployed and has its initial configuration, next action is to populate its ciprdup, the retrieval of entries begins with a `GET /` to the `bootstrap_node` and then it's possible to keep going with the gradually obtained zas.
 
 Note that, even when a `GET /` is a request for the whole Cipr, the response will always be paginated, it might be convenient to ask different nodes for different pages rather than just one.
 
@@ -778,7 +810,7 @@ ciprHash = createSha256HashFunction(
 By manual or automated means, a `TXT` record must be created in the corresponding DNS Zone namespace, something like:
 
 ```yaml
-Name: ciprnode.za
+Name: ciprnode.{za}
 Record Type: TXT
 Value: "_cipr=ciprHash"
 TTL: 1800
@@ -795,8 +827,6 @@ Regarding the tenancy preferences, two main types of ciprnode implementations ar
 ### ST Ciprnode
 
 *Single-tenant oriented* implementations, where everything is though to have the lowest possible hardware requirements and the lowest possible resource consumption. Ideal ST implementations runs smoothly in the simplest homelab, in a very light container, in a SBC or in a Tamagotchi.
-
-Even using embedded DBMS'^[SQLite, InfinityDB, Perst...], the main complication for this type of implementation is the size of an eventually well populated Cipr.
 
 No matter what, STs are the ideal implementations because they guarantee distribution, independence and decentralization.
 

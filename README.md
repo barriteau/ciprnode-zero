@@ -167,3 +167,44 @@ Built with minimalism in mind, relying mostly on the Deno Standard Library.
 | **`@std/encoding`** | Hex and Base64 encoding/decoding.                     |
 | **`@std/assert`**   | Assertion library for tests.                          |
 | **`@db/sqlite`**    | Zero-dependency SQLite driver for the local database. |
+
+---
+
+Here is a comprehensive list of software that brings search capabilities to websites and applications. Because your examples range from lightweight browser-based tools (Lunr, Pagefind) to massive enterprise servers (Solr, Elasticsearch), I have categorized them by architecture and use case to help you navigate the options.
+
+### 1. Client-Side & Static Site Search (Like Pagefind & Lunr)
+
+These tools run directly in the user's browser or at the edge. They are perfect for static websites (like blogs or documentation) because they don't require you to host a separate database or backend server.
+
+- **Fuse.js:** A powerful, lightweight fuzzy-search library with zero dependencies. It searches through JSON objects entirely in the browser and is great for small-to-medium datasets.
+- **FlexSearch:** Billed as the web's fastest full-text search library. It utilizes an advanced scoring mechanism and is highly optimized for memory and speed in the browser.
+- **Orama (formerly Lyra):** A fast, in-memory, typo-tolerant search engine written in TypeScript. It is optimized to run anywhere JavaScript runs, including the browser and edge networks (like Cloudflare Workers).
+- **Stork:** Very similar to Pagefind. It indexes content at build time and provides a WebAssembly (WASM) binary and a JavaScript wrapper to deliver fast, highly customized search to static sites.
+- **MiniSearch:** A tiny but powerful in-memory full-text search engine for JavaScript. It supports prefix search, fuzzy match, and boosting, making it a great alternative to Lunr.
+
+### 2. Modern, Lightweight Server-Side Search
+
+These are standalone search servers that you host yourself. They bridge the gap between simple client-side tools and complex enterprise engines like Elasticsearch. They are built to be developer-friendly, incredibly fast, and work beautifully out of the box without needing a PhD in search configurations.
+
+- **Meilisearch:** Written in Rust, it provides instant, typo-tolerant "search-as-you-type" experiences. It is incredibly easy to set up, has great defaults, and is highly popular for modern web apps.
+- **Typesense:** Written in C++, this is an open-source, typo-tolerant search engine optimized for instant sub-50ms searches. It was explicitly built to be a self-hosted, open-source alternative to Algolia.
+- **Manticore Search:** A high-performance, open-source C++ search engine (a fork of Sphinx). It is known for its speed and allows you to query your index using standard SQL, which makes integration very easy for backend developers.
+
+### 3. Enterprise & Heavyweight Search (Like Elasticsearch & Solr)
+
+These are robust, distributed search engines designed for massive scale, complex querying, and massive log analytics.
+
+- **OpenSearch:** A community-driven, open-source fork of Elasticsearch and Kibana, created and maintained by AWS after Elastic changed its licensing model. If you are looking at Elasticsearch today, you should also be looking at OpenSearch.
+- **Apache Lucene:** While not a standalone server you can just "plug in" to a website, it is the underlying Java library that actually powers both Elasticsearch and Solr.
+- **Vespa:** An open-source big data processing and serving engine developed by Yahoo. It is heavily focused on AI, vector search, and running complex machine learning models over large datasets at serving time.
+
+### 4. Search-as-a-Service (Hosted)
+
+If you don't want to manage indexes at compile time or host a search server yourself, these platforms provide search via an API.
+
+- **Algolia:** The industry standard for hosted search. It is incredibly fast, offers fantastic UI widgets for the frontend, and provides advanced analytics and AI-driven relevance tuning.
+- **Elastic Site Search (formerly Swiftype):** A managed service by the creators of Elasticsearch. It acts like a web crawler that automatically indexes your website and gives you a dashboard to manage search weights and synonyms without touching code.
+
+---
+
+Would you like me to help you narrow down this list based on your specific tech stack, dataset size, and hosting preferences?
