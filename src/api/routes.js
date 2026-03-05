@@ -60,6 +60,15 @@ export const handleRequest = (request, db, config) => {
     }
   }
 
+  // 1.8 Resindex querying /ri/
+  if (path === '/ri' || path === '/ri/') {
+    if (method === 'QUERY') {
+      return new Response('Not Implemented - Resindex proxying is a planned feature.', {
+        status: 501,
+      });
+    }
+  }
+
   // 2. Resource Operations /za/...
   if (parts.length >= 1) {
     const za = parts[0];
@@ -76,9 +85,6 @@ export const handleRequest = (request, db, config) => {
         }
         if (method === 'DELETE') {
           return EntryController.del(request, db, config, za);
-        }
-        if (method === 'QUERY') {
-          return SearchController.query(request, db, config, za);
         }
       }
 

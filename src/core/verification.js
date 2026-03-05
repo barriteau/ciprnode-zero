@@ -140,8 +140,8 @@ export const verifyReliability = async (
 ) => {
   const url = new URL(`https://ciprnode.${targetZa}/`);
   url.searchParams.set('q', ftsExpression);
-  url.searchParams.set('pages_num', paginationParams.num);
-  url.searchParams.set('pages_size', paginationParams.size);
+  url.searchParams.set('pages[num]', paginationParams.num);
+  url.searchParams.set('pages[size]', paginationParams.size);
 
   try {
     if (config.debug) {

@@ -10,7 +10,7 @@ import { captureSearchTerms } from '../../core/fts_generator.js';
 /**
  * Handles QUERY requests.
  */
-export const query = async (req, db, config, scopeZa) => {
+export const query = async (req, db, config) => {
   // 1. Parse Request Body & Query Params
   const params = new URLSearchParams();
   const contentType = req.headers.get('content-type') || '';
@@ -204,8 +204,9 @@ export const query = async (req, db, config, scopeZa) => {
   options.filters.primary_lang = options.primary_lang;
 
   // Pagination
-  const pNums = parseArray(params.get('pages_num') || '');
-  const pSizes = parseArray(params.get('pages_size') || '');
+  // Parse `pages[num]` and fallback to `pages_num`
+  const pNums = parseArray(params.get('pages[num]') || params.get('pages_num') || '');
+  const pSizes = parseArray(params.get('pages[size]') || params.get('pages_size') || '');
   const pages = [];
   const defaultSize = config.page_size || 50;
 
@@ -254,21 +255,7 @@ export const query = async (req, db, config, scopeZa) => {
   options.pages = pages;
 
   // 2. Search Execution (Repo)
-  // Only Global Search for now (scopeZa === null)
-  // If scopeZa provided, we would check 'za' in DB or resindex?
-  // Current repo `searchEntries` is global on ciprdup.
-  // Should we filter by za if scopeZa is set?
-  if (scopeZa) {
-    // If searching /za/, we act on Resindex (Not implemented yet) OR just correct implementation for ciprdup?
-    // Spec: "QUERY /za/ - Queries the resindex"
-    // "QUERY / - Queries the ciprdup"
-    // We are in 'ciprdup' territory.
-    // If scopeZa is set, we strictly should query that za's resindex.
-    // Since we don't have resindex yet, we return 501 Not Implemented or empty?
-    // Or maybe we treat it as searching *for* that za in ciprdup? No, that's GET /za/.
-    // So for this task "QUERY /", scopeZa is null.
-  }
-
+  // Global Search
   const items = searchEntries(db, options);
 
   // Attach localized language names
@@ -316,8 +303,8 @@ export const query = async (req, db, config, scopeZa) => {
         self: { href: req.url },
       },
       count: items.length, // Only this page count? Or total? Spec implies total 'count=42'
-      pages_num: allPageNums,
-      pages_size: pages.map((p) => p.limit), // simplified
+      'pages[num]': allPageNums,
+      'pages[size]': pages.map((p) => p.limit), // simplified
       _embedded: {
         results: enrichedItems,
       },
@@ -329,7 +316,6 @@ export const query = async (req, db, config, scopeZa) => {
 
   // B. HTML (Template)
   const templateData = {
-    scopeZa: scopeZa,
     configZa: config.za,
     parentUrl: config.parent_url || null,
     stats: { // potentially expensive to get real count every time?

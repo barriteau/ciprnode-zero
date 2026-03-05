@@ -799,11 +799,18 @@ Of course, it is perfectly possible to simply copy an entire ciprdup from an exi
 
 Having a populated ciprdup, the ciprnode must automatically generate the ciprHash, a SHA-256 hash using the existing info in the configuration concatenated using a broken vertical bar (`¦`) just to ease console debugging. Note that numeric values must be converted to strings. For example:
 
-```cpp
+```javascript
 ciprHash = createSha256HashFunction(
-  'za¦title¦description¦keywords¦str(primary_lang)¦str(ol)¦str(latitude)¦str(longitude)'
+    za + "¦" + title + "¦" + description + "¦" + keywords + "¦" + primary_lang + "¦" + ol + "¦" + geo.latitude + "¦" + geo.longitude
 )
 ```
+
+**Note on numerical and nullable fields:**
+When concatenating the string for the hash:
+
+- Missing, empty, or nullable numerical fields (such as `ol`, `geo.latitude`, and `geo.longitude`) must fallback to `"0"`.
+- Empty string values (such as an absent `primary_lang`) must fallback to an empty string `""`.
+- Array values like keywords must be joined by a single space before being concatenated.
 
 ### TXT record creation
 

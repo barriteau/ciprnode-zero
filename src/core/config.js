@@ -91,8 +91,15 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
       keywords: typeof ciprEntry.keywords === 'string'
         ? ciprEntry.keywords.split(' ').filter((k) => k.length > 0)
         : (Array.isArray(ciprEntry.keywords) ? ciprEntry.keywords : []),
-      primary_lang: typeof ciprEntry.primary_lang === 'string' ? ciprEntry.primary_lang.trim() : '',
-      ol: Number(ciprEntry.ol) || 0,
+      primary_lang:
+        (typeof ciprEntry.primary_lang === 'string' && ciprEntry.primary_lang.trim() !== '')
+          ? ciprEntry.primary_lang.trim()
+          : null,
+      ol:
+        (Number(ciprEntry.ol) === 0 || ciprEntry.ol === '' || ciprEntry.ol === null ||
+            ciprEntry.ol === undefined)
+          ? null
+          : Number(ciprEntry.ol),
       latitude: parseCoord(ciprEntry.latitude),
       longitude: parseCoord(ciprEntry.longitude),
       bootstrap_node: network.bootstrap_node || '',
@@ -136,8 +143,8 @@ const getDefaultConfig = () => {
     title: 'Default Node',
     description: 'Unconfigured Cipr Node',
     keywords: [],
-    primary_lang: '',
-    ol: 0,
+    primary_lang: null,
+    ol: null,
     latitude: 0,
     longitude: 0,
     bootstrap_node: '',

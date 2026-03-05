@@ -85,13 +85,13 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
   }
 
   // 5. Validate OL
-  // 0, 1, 2, 3
-  const validOl = [0, 1, 2, 3];
+  // 1, 2, 3 or explicitly null (representing 0 or safe)
+  const validOl = [1, 2, 3, null];
   check(
     'Offensiveness Level',
     config.ol,
     validOl.includes(config.ol),
-    `Must be 0, 1, 2, or 3. Current Value: ${config.ol}`,
+    `Must be 1, 2, 3 or empty. Current Value: ${config.ol}`,
   );
 
   // 6. Coordinate Consistency (Latitude & Longitude)
