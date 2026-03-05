@@ -105,6 +105,16 @@ const build = async () => {
       );
     } catch { /* ignore */ }
 
+    // Copy External Integrations Plugins
+    try {
+      console.log('  Copying external integrations...');
+      await copy(join(Deno.cwd(), 'integrations'), join(bundleDir, 'integrations'), {
+        overwrite: true,
+      });
+    } catch (e) {
+      console.warn('  [WARN] Failed to copy external integrations:', e.message);
+    }
+
     // Copy Templates & Locales for SSR
     try {
       // Ensure src dir exists

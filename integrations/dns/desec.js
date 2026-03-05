@@ -4,13 +4,16 @@
  */
 
 /**
- * Updates a TXT record for the ciprnode hash on deSEC.io.
- *
- * @param {import("../../core/config.js").CiprNodeConfig} config
+ * @typedef {import('../../src/core/config.js').CiprNodeConfig} CiprNodeConfig
+ */
+
+/**
+ * Updates the _cipr TXT record on deSEC.io.
+ * @param {CiprNodeConfig} config
  * @param {string} hash - The calculated ciprHash to set.
  * @returns {Promise<boolean>} True if updated/created, false if error or no change needed.
  */
-export const updateDesecRecord = async (config, hash) => {
+export const updateRecord = async (config, _expectedHash) => {
   const token = config.dns_provider.api_token;
   // If zone_id is not provided, we might try to infer it from config.za
   // deSEC uses the domain name as the identifier in the URL.

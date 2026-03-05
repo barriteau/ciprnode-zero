@@ -3,17 +3,21 @@
  * @description Cloudflare DNS Provider integration for automated updates.
  */
 
-import { logKeyValueTable } from '../../core/logger.js';
+import { log } from '../../src/core/logger.js';
 
 const CF_API_URL = 'https://api.cloudflare.com/client/v4';
 
 /**
+ * @typedef {import('../../src/core/config.js').CiprNodeConfig} CiprNodeConfig
+ */
+
+/**
  * Updates the _cipr TXT record on Cloudflare.
- * @param {import('../../core/config.js').CiprNodeConfig} config
+ * @param {CiprNodeConfig} config
  * @param {string} expectedHash
  * @returns {Promise<boolean>} True if updated successfully.
  */
-export const updateCloudflareRecord = async (config, expectedHash) => {
+export const updateRecord = async (config, expectedHash) => {
   const { api_token, zone_id } = config.dns_provider;
   // Cloudflare usually expects the record name to be relative or absolute.
   // Generally using the FQDN is safest.

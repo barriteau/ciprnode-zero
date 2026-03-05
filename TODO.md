@@ -4,7 +4,11 @@ Improve the console logging: silent, regular and debugging.
 
 ---
 
-There is the /src/integrations/ directory which actually only has dns integrations. Our goal now is to facilitate people creating their own integrations. Right now, the only type of integration we have is the dns integration, we need you to create have the /integrations/ directory moved to the root of the project and keept it out of the bundled binaries, the idea
+There is the /src/integrations/ directory which actually only has dns integrations. Our goal now is to facilitate people creating their own integrations. Right now, the only type of integration we have is the dns integration, we need you to rethink those files in a generic way and even provide a template file for any programmer wanting to create new integrations with different dns services, is this possible?
+
+My proposal is to move /integrations/ to the root of the project and keep it out of the bundled binaries, what's your take about this? Does it makes sense? Any suggested different approach?
+
+---
 
 Implement Pagefind (<https://pagefind.app/>) in the HTR and use the created index as the resindex.
 

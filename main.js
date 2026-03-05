@@ -183,16 +183,20 @@ if (import.meta.main) {
 
           // Trigger DNS Update
           let updated = false;
-
-          if (config.dns_provider?.name === 'cloudflare') {
-            const { updateCloudflareRecord } = await import('./src/integrations/dns/cloudflare.js');
-            console.warn(`Local configuration changed. Updating Cloudflare TXT DNS record...`);
-            updated = await updateCloudflareRecord(config, ciprHash);
-          } else if (config.dns_provider?.name === 'desec') {
-            const { updateDesecRecord } = await import('./src/integrations/dns/desec.js');
-            console.warn(`Local configuration changed. Updating deSEC TXT DNS record...`);
-            // deSEC returns true/false directly
-            updated = await updateDesecRecord(config, ciprHash);
+          if (config.dns_provider?.name) {
+            try {
+              const providerName = config.dns_provider.name;
+              const { updateRecord } = await import(`./integrations/dns/${providerName}.js`);
+              console.warn(
+                `Local configuration changed. Updating ${providerName} TXT DNS record...`,
+              );
+              updated = await updateRecord(config, ciprHash);
+            } catch (e) {
+              console.error(
+                `[MAIN] Failed to dynamically load or run DNS provider '${config.dns_provider.name}':`,
+                e.message,
+              );
+            }
           }
 
           if (updated) {
@@ -225,21 +229,25 @@ if (import.meta.main) {
       // Auto-Repair Logic
       if (
         !isVerified &&
-        (config.dns_provider?.name === 'cloudflare' || config.dns_provider?.name === 'desec')
+        config.dns_provider?.name // Check if a provider is configured
       ) {
         let updated = false;
         console.warn(
           `DNS Entry verification failed. Attempting automated repair for ${config.dns_provider.name}...`,
         );
-
-        if (config.dns_provider?.name === 'cloudflare') {
-          const { updateCloudflareRecord } = await import('./src/integrations/dns/cloudflare.js');
-          updated = await updateCloudflareRecord(config, ciprHash);
-        } else if (config.dns_provider?.name === 'desec') {
-          const { updateDesecRecord } = await import('./src/integrations/dns/desec.js');
-          updated = await updateDesecRecord(config, ciprHash);
+        if (config.dns_provider?.name) {
+          try {
+            const providerName = config.dns_provider.name;
+            const { updateRecord } = await import(`./integrations/dns/${providerName}.js`);
+            console.warn(`Fixing bad remote TXT via Provider (${providerName}) ...`);
+            updated = await updateRecord(config, ciprHash);
+          } catch (e) {
+            console.error(
+              `[MAIN] Failed to fix TXT record via DNS provider '${config.dns_provider.name}':`,
+              e.message,
+            );
+          }
         }
-
         if (updated) {
           txtUpdated = true;
           // DNS Propagation Retry Loop
