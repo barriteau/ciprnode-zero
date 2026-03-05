@@ -13,7 +13,9 @@ title = "Proyec.top Network"
 # A brief description of the resource, max 256 characters
 description = "Network node for Proyec.top"
 
-# Space separated list of keywords, max 512 characters, case insensitive
+# Space separated list of keywords, max 512 characters, case insensitive.
+# Alternatively, keywords can be provided as an array of strings:
+# keywords = ["proyec", "top", "network", "infrastructure"]
 keywords = "proyec top network infrastructure"
 
 primary_lang = ""

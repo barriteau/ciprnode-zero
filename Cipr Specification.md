@@ -810,7 +810,7 @@ When concatenating the string for the hash:
 
 - Missing, empty, or nullable numerical fields (such as `ol`, `geo.latitude`, and `geo.longitude`) must fallback to `"0"`.
 - Empty string values (such as an absent `primary_lang`) must fallback to an empty string `""`.
-- Array values like keywords must be joined by a single space before being concatenated.
+- If fields like `keywords` were provided as an array in the configuration or API payload, they must be joined into a single string separated by a space before being concatenated.
 
 ### TXT record creation
 
