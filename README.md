@@ -108,11 +108,6 @@ It is **highly recommended** to use environment variables for `api_token` rather
 
 ## Running the Node
 
-### Manual Start
-
-- **Windows**: Double-click `start.bat`.
-- **Linux/Mac**: Run `./start.sh`.
-
 ### As a Background Service
 
 A helper script `service.js` is provided to install Ciprnode as a system service (Windows Service, Systemd, LaunchAgent).

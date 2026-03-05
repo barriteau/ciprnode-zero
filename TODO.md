@@ -4,6 +4,8 @@ Improve the console logging: silent, regular and debugging.
 
 ---
 
+There is the /src/integrations/ directory which actually only has dns integrations. Our goal now is to facilitate people creating their own integrations. Right now, the only type of integration we have is the dns integration, we need you to create have the /integrations/ directory moved to the root of the project and keept it out of the bundled binaries, the idea
+
 Implement Pagefind (<https://pagefind.app/>) in the HTR and use the created index as the resindex.
 
 Create the cipr.info HTR with the Specification and a friendly guide to get indexed in the Cipr.
@@ -14,7 +16,7 @@ Update Alps again
 
 Improve the texts in the Help page.
 
-Create page "Random Entries" in the ciprface to show randomly selected entries with filtering.
+Create the "Discover" page with random entries from the ciprdup.
 
 Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml.
 

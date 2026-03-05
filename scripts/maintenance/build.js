@@ -99,12 +99,6 @@ const build = async () => {
       await Deno.mkdir(join(bundleDir, 'data'), { recursive: true });
     } catch { /* ignore */ }
     try {
-      await Deno.copyFile(join(Deno.cwd(), 'start.bat'), join(bundleDir, 'start.bat'));
-    } catch { /* ignore */ }
-    try {
-      await Deno.copyFile(join(Deno.cwd(), 'start.sh'), join(bundleDir, 'start.sh'));
-    } catch { /* ignore */ }
-    try {
       await Deno.copyFile(
         join(Deno.cwd(), 'scripts', 'core', 'service.js'),
         join(bundleDir, 'service.js'),

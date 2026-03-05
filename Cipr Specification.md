@@ -251,7 +251,7 @@ The CiprAPI exposes the following endpoints:
 - `PUT /{za}/` - Adds a new cipred resource to the Cipr.
 - `DELETE /{za}/` - Removes a cipred resource from the Cipr.
 - `QUERY /` - Queries the ciprdup of the ciprnode with a given `FTS expression+filters`.
-- `QUERY /ri/` - Queries the resindex (ri) of the cipred resource with a given `FTS expression+filters`.
+- `QUERY /ri/` - Queries the resindex (ri) of the cipred resource with a given `expression`.
 
 #### Use of the `GET` method
 
