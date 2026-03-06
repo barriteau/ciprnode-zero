@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFtsValidation();
   initSearchHelp();
   initServiceWorker();
+  initResindexCheck();
 });
 
 document.addEventListener('htmx:load', (_evt) => {
@@ -414,10 +415,9 @@ const initReverseGeocoding = () => {
 
     if (lat && lon) {
       setTimeout(() => {
-        fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}`)
-          .then((res) => res.json())
+        fetchCached(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}`, 240000)
           .then((data) => {
-            if (data.features && data.features.length > 0) {
+            if (data && data.features && data.features.length > 0) {
               const props = data.features[0].properties;
               // Extract administrative geography, explicitly avoiding point-of-interest 'name' fields
               const parts = [];
@@ -435,6 +435,100 @@ const initReverseGeocoding = () => {
           .catch((err) => console.error('Reverse Geocoding error:', err));
       }, delay);
       delay += 1100; // Respect 1 request/second API rate limit
+    }
+  });
+};
+
+/**
+ * Generic cached wrapper for `fetch` using `sessionStorage`.
+ * @param {string} url - The URL to fetch
+ * @param {number} ttlMs - Time to live in milliseconds (e.g. 240000 for 4 mins)
+ * @returns {Promise<any>} JSON payload or null
+ */
+const fetchCached = async (url, ttlMs = 240000) => {
+  const cacheKey = `cipr_cache_${url}`;
+  const cachedItemStr = sessionStorage.getItem(cacheKey);
+
+  if (cachedItemStr) {
+    try {
+      const cachedItem = JSON.parse(cachedItemStr);
+      if (Date.now() < cachedItem.expiry) {
+        return cachedItem.data;
+      }
+    } catch (_e) {
+      sessionStorage.removeItem(cacheKey);
+    }
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    const item = {
+      data: data,
+      expiry: Date.now() + ttlMs,
+    };
+
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify(item));
+    } catch (e) {
+      console.warn('sessionStorage full, skipping cache write.');
+    }
+
+    return data;
+  } catch (e) {
+    console.error(`Failed to fetch ${url}`, e);
+    return null;
+  }
+};
+
+/**
+ * Pings `HEAD /ri/` on startup and caches the result for 4 minutes using SessionStorage.
+ */
+const initResindexCheck = async () => {
+  const cacheKey = 'cipr_ri_available';
+  const cachedItemStr = sessionStorage.getItem(cacheKey);
+  let isAvailable = false;
+
+  if (cachedItemStr) {
+    try {
+      const cachedItem = JSON.parse(cachedItemStr);
+      if (Date.now() < cachedItem.expiry) {
+        isAvailable = cachedItem.data;
+        toggleResindexUI(isAvailable);
+        return;
+      }
+    } catch (_e) {
+      sessionStorage.removeItem(cacheKey);
+    }
+  }
+
+  try {
+    const response = await fetch('/ri/', { method: 'HEAD' });
+    isAvailable = response.ok; // 200 OK means it has providers. 501 means it doesn't.
+
+    sessionStorage.setItem(
+      cacheKey,
+      JSON.stringify({
+        data: isAvailable,
+        expiry: Date.now() + 240000, // 4 minutes
+      }),
+    );
+  } catch (e) {
+    isAvailable = false;
+  }
+
+  toggleResindexUI(isAvailable);
+};
+
+const toggleResindexUI = (isAvailable) => {
+  const riElements = document.querySelectorAll('[data-requires-ri="true"]');
+  riElements.forEach((el) => {
+    if (isAvailable) {
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
     }
   });
 };

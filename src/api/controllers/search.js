@@ -8,6 +8,16 @@ import { render } from '../views/renderer.js';
 import { captureSearchTerms } from '../../core/fts_generator.js';
 
 /**
+ * Handles HEAD /ri/ requests to determine ISE availability.
+ */
+export const headRi = (_req, _db, config) => {
+  if (config.ise_provider && config.ise_provider.length > 0) {
+    return new Response(null, { status: 200 });
+  }
+  return new Response(null, { status: 501 }); // Not Implemented
+};
+
+/**
  * Handles QUERY requests.
  */
 export const query = async (req, db, config, isResindex = false) => {
@@ -347,7 +357,6 @@ export const query = async (req, db, config, isResindex = false) => {
   const templateData = {
     configZa: config.za,
     parentUrl: config.parent_url || null,
-    isResindex: isResindex,
     stats: { // potentially expensive to get real count every time?
       count: statsCount,
       last_insert: (() => {
