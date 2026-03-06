@@ -173,3 +173,11 @@ api_token = "YOUR_TOKEN_HERE"
 # name = "desec"
 # api_token = "YOUR_DESEC_TOKEN"
 # zone_id = "yourdomain.com" (The domain name registered in deSEC)
+
+#: Internal Search Engine (ISE) Providers (optional)
+# These represent external APIs used for executing `QUERY /ri/` equivalent searches.
+# You can define multiple `[[ise_provider]]` chunks for different search domains.
+# Example:
+# [[ise_provider]]
+# name = "pagefind"
+# url = "https://cgt.barriteau.net/"

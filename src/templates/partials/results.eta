@@ -7,7 +7,14 @@
   <p><%= it.t('results.none') %></p>
   <% } else { %>
   <% it.results.forEach(function(item) { %>
-  <article class="cipr-entry" data-za="<%= item.za %>">
+  <article class="cipr-entry" data-za="<%= item.za || '' %>">
+    <% if (it.isResindex) { %>
+    <h3><a href="<%= item.url %>"><%= item.title || item.url %></a></h3>
+    <p class="description"><%= item.description %></p>
+    <small class="meta">
+      <span class="url"><%= item.url %></span>
+    </small>
+    <% } else { %>
     <h3><a href="https://ciprnode.<%= item.za %>"><%= item.title %></a></h3>
     <p class="description"><%= item.description %></p>
     <small class="meta">
@@ -21,6 +28,7 @@
       <% } else { %>
       <span class="location-universal">• <%= it.t('results.universal') %></span><% } %>
     </small>
+    <% } %>
   </article>
   <% }) %>
   <% } %>

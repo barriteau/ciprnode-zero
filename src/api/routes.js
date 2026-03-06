@@ -63,9 +63,7 @@ export const handleRequest = (request, db, config) => {
   // 1.8 Resindex querying /ri/
   if (path === '/ri' || path === '/ri/') {
     if (method === 'QUERY') {
-      return new Response('Not Implemented - Resindex proxying is a planned feature.', {
-        status: 501,
-      });
+      return SearchController.query(request, db, config, true);
     }
   }
 

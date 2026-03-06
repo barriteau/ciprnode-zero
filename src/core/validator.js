@@ -185,6 +185,29 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     validations['Parent URL'] = 'Skipped (None provided)';
   }
 
+  // 11. Validate ISE Providers
+  if (config.ise_provider && config.ise_provider.length > 0) {
+    config.ise_provider.forEach((ise, index) => {
+      const hasName = typeof ise.name === 'string' && ise.name.trim().length > 0;
+      let isValidUrl = false;
+      try {
+        const url = new URL(ise.url);
+        isValidUrl = url.protocol === 'http:' || url.protocol === 'https:';
+      } catch {
+        isValidUrl = false;
+      }
+
+      check(
+        `ISE Provider [${index}]`,
+        ise,
+        hasName && isValidUrl,
+        `Must have a valid 'name' and HTTP/HTTPS 'url'. Provided: name="${ise.name}", url="${ise.url}"`,
+      );
+    });
+  } else {
+    validations['ISE Providers'] = 'Skipped (None provided)';
+  }
+
   if (isValid) {
     logKeyValueTable(validations);
     console.log(`[OK] All checks passed\n`);

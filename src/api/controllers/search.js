@@ -10,7 +10,7 @@ import { captureSearchTerms } from '../../core/fts_generator.js';
 /**
  * Handles QUERY requests.
  */
-export const query = async (req, db, config) => {
+export const query = async (req, db, config, isResindex = false) => {
   // 1. Parse Request Body & Query Params
   const params = new URLSearchParams();
   const contentType = req.headers.get('content-type') || '';
@@ -254,21 +254,50 @@ export const query = async (req, db, config) => {
   // Deduplicate and resolve actual pages
   options.pages = pages;
 
-  // 2. Search Execution (Repo)
-  // Global Search
-  const items = searchEntries(db, options);
+  // 2. Search Execution
+  let items = [];
+  let statsCount = 0;
 
-  // Attach localized language names
-  const langMap = getLanguageMap(db);
-  items.forEach((item) => {
-    if (item.primary_lang) {
-      const langData = langMap.get(item.primary_lang);
-      if (langData) {
-        item.lang_name = langData.lang_name;
-        item.lang_name_en = langData.lang_name_en;
-      }
+  if (isResindex) {
+    if (config.ise_provider && config.ise_provider.length > 0) {
+      // Execute all ISE plugins concurrently
+      const promises = config.ise_provider.map(async (provider) => {
+        try {
+          const { queryResindex } = await import(`../../integrations/ise/${provider.name}.js`);
+          return await queryResindex(provider, options);
+        } catch (e) {
+          console.error(
+            `[ISE] Failed to dynamically load or run ISE provider '${provider.name}':`,
+            e.message,
+          );
+          return { count: 0, items: [] };
+        }
+      });
+      const results = await Promise.all(promises);
+
+      // Aggregate results from all providers
+      results.forEach((res) => {
+        statsCount += res.count || 0;
+        if (Array.isArray(res.items)) items.push(...res.items);
+      });
     }
-  });
+  } else {
+    // Global Search (Repo)
+    items = searchEntries(db, options);
+    statsCount = countEntries(db);
+
+    // Attach localized language names
+    const langMap = getLanguageMap(db);
+    items.forEach((item) => {
+      if (item.primary_lang) {
+        const langData = langMap.get(item.primary_lang);
+        if (langData) {
+          item.lang_name = langData.lang_name;
+          item.lang_name_en = langData.lang_name_en;
+        }
+      }
+    });
+  }
 
   // 3. Render Response
   const accept = req.headers.get('accept') || '';
@@ -302,7 +331,7 @@ export const query = async (req, db, config) => {
       _links: {
         self: { href: req.url },
       },
-      count: items.length, // Only this page count? Or total? Spec implies total 'count=42'
+      count: isResindex ? statsCount : items.length, // Only this page count? Or total? Spec implies total 'count=42'
       'pages[num]': allPageNums,
       'pages[size]': pages.map((p) => p.limit), // simplified
       _embedded: {
@@ -318,8 +347,9 @@ export const query = async (req, db, config) => {
   const templateData = {
     configZa: config.za,
     parentUrl: config.parent_url || null,
+    isResindex: isResindex,
     stats: { // potentially expensive to get real count every time?
-      count: countEntries(db),
+      count: statsCount,
       last_insert: (() => {
         const latestTs = getLatestTimestamp(db);
         // The DB stores timestamp in seconds, so multiply by 1000 for JS Date

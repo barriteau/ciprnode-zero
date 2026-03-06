@@ -24,6 +24,8 @@ import { exists } from '@std/fs';
  * @property {string} [parent_url]
  * @property {string} [primary_lang]
  * @property {string[]} test_words
+ * @property {Object} [dns_provider]
+ * @property {Object[]} [ise_provider]
  */
 
 /**
@@ -95,11 +97,10 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
         (typeof ciprEntry.primary_lang === 'string' && ciprEntry.primary_lang.trim() !== '')
           ? ciprEntry.primary_lang.trim()
           : null,
-      ol:
-        (Number(ciprEntry.ol) === 0 || ciprEntry.ol === '' || ciprEntry.ol === null ||
-            ciprEntry.ol === undefined)
-          ? null
-          : Number(ciprEntry.ol),
+      ol: (Number(ciprEntry.ol) === 0 || ciprEntry.ol === '' || ciprEntry.ol === null ||
+          ciprEntry.ol === undefined)
+        ? null
+        : Number(ciprEntry.ol),
       latitude: parseCoord(ciprEntry.latitude),
       longitude: parseCoord(ciprEntry.longitude),
       bootstrap_node: network.bootstrap_node || '',
@@ -120,6 +121,9 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
         api_token: Deno.env.get('CIPR_DNS_API_TOKEN') || data.dns_provider?.api_token || '',
         zone_id: Deno.env.get('CIPR_DNS_ZONE_ID') || data.dns_provider?.zone_id || '',
       },
+      ise_provider: Array.isArray(data.ise_provider)
+        ? data.ise_provider
+        : (data.ise_provider ? [data.ise_provider] : []),
     };
 
     validateCiprConfig(config);
@@ -159,5 +163,6 @@ const getDefaultConfig = () => {
       api_token: '',
       zone_id: '',
     },
+    ise_provider: [],
   };
 };
