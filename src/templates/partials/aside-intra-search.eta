@@ -1,0 +1,16 @@
+  <aside id="search-panel">
+    <button id="search-overlay" tabindex="-1" form="search-form" type="reset" aria-label="Cerrar panel de búsqueda"></button>
+    <div id="search-body">
+      <button id="search-close" tabindex="-1" form="search-form" type="reset" aria-label="Abrir/Cerrar panel de búsqueda">
+        <svg-icon class="cross small"></svg-icon>
+      </button>
+
+      <h2>Search in</h2>
+
+      <form id="search-form">
+        <input id="search-input" type="search" placeholder="Buscar..." autocomplete="off" spellcheck="false" />
+      </form>
+
+      <ol id="search-results"></ol>
+    </div>
+  </aside>

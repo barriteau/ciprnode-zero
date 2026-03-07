@@ -21,7 +21,7 @@ export const queryResindex = async (provider, options) => {
 
     // Deno's native fetch requires absolute URLs. Pagefind's browser script uses relative URLs (e.g. "/pagefind/...")
     // We mock the global fetch to intercept relative requests and prepend the target's base URL.
-    globalThis.fetch = async (input, init) => {
+    globalThis.fetch = (input, init) => {
       let urlStr = input;
       if (typeof input === 'string' && input.startsWith('/')) {
         urlStr = baseUrl + input;
@@ -31,9 +31,8 @@ export const queryResindex = async (provider, options) => {
       return originalFetch(urlStr, init);
     };
 
-    let pagefind;
     // Dynamically import the remote Pagefind JS module
-    pagefind = await import(pagefindUrl);
+    const pagefind = await import(pagefindUrl);
 
     // Some versions of Pagefind respect baseUrl passed to options
     await pagefind.options({ baseUrl: baseUrl + '/' });

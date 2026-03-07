@@ -7,16 +7,11 @@
   <title><%= it.title || it.t('meta.title') %></title>
   <meta name="description" content="<%= it.description || it.t('meta.description') %>" />
 
-  <!-- PWA -->
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" href="/figures/apple-touch-icon.png" />
   <meta name="theme-color" content="#ffffff" />
-
-  <!-- CSS -->
   <link rel="stylesheet" href="/css/htr.css" />
-
-  <!-- HTMX -->
   <script src="/js/htmx.min.js"></script>
   <script src="/js/ciprnode.js" defer></script>
 </head>
@@ -28,14 +23,18 @@
       <%= it.t('error.noscript') %>
     </p>
   </noscript>
+  <p id="query-warning" class="hidden">
+    Your OS does not support the Cipr, try using this in any other mobile or desktop OS.
+  </p>
 
   <main id="wide">
     <%~ it.body %>
   </main>
 
+  <%~ include('../partials/aside-intra-search.eta', it) %>
+
   <%~ include('../partials/footer.eta', it) %>
 
-  <!-- PWA Update Toast -->
   <div id="pwa-update-toast" class="hidden" role="alert" aria-live="assertive">
     <span class="pwa-toast-message"><%= it.t('pwa.update_available') %></span>
     <button id="pwa-reload-btn" class="btn"><%= it.t('pwa.reload') %></button>

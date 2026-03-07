@@ -1,36 +1,62 @@
 # TODO: Pending tasks
 
+How to call that search?
+
+---
+
+Cache the HEAD or GET validation of the ri for n minutes
+
+---
+
+Cache the geolocation API calls for n minutes
+
+---
+
+Review HATEOAS in each endpoint, one by one
+
+---
+
+Update the README.md with the latest changes.
+
+---
+
 Improve the console logging: silent, regular and debugging.
 
 ---
 
-There is the /src/integrations/ directory which actually only has dns integrations. Our goal now is to facilitate people creating their own integrations. Right now, the only type of integration we have is the dns integration, we need you to rethink those files in a generic way and even provide a template file for any programmer wanting to create new integrations with different dns services, is this possible?
-
-My proposal is to move /integrations/ to the root of the project and keep it out of the bundled binaries, what's your take about this? Does it makes sense? Any suggested different approach?
+Create the cipr.info HTR with the Specification and a friendly guide to get indexed in the Cipr.
 
 ---
 
-Implement Pagefind (<https://pagefind.app/>) in the HTR and use the created index as the resindex.
+Update ALPS again
 
-Create the cipr.info HTR with the Specification and a friendly guide to get indexed in the Cipr.
+---
 
-Implement `QUERY /za/` to search in the resindex, it mimics `QUERY /` (ranking, filtering, pagination, ordering, tie-breaking, etc.).
+Create the "Discover" page with random entries from the ciprdup
 
-Update Alps again
+---
 
-Improve the texts in the Help page.
+Improve the texts in the "Help" page
 
-Create the "Discover" page with random entries from the ciprdup.
+---
 
 Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml.
 
+---
+
 Implementation of the leech mode.
 
+---
+
 Add Ukrainian and Arabic languages
+
+---
 
 Implement dark mode.
 
 ---
+
+## Diaporama
 
 To create a photo comic (fumetti, photonovel, picture movie; in Spanish: diaporama, fotonovela, fotohistoria...) I want you to create a sequence of 9 images as described bellow.
 
@@ -116,3 +142,5 @@ The legend at the bottom for this scene is:
 A final text appears in the center of the scene:
 
 «Now, instead of complaining, you can just move on ;)»
+
+---

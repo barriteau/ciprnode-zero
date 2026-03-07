@@ -5,20 +5,20 @@ debug = true
 [cipr_entry]
 
 # The Zone Apex for this resource:
-za = "proyec.top"
+za = "barriteau.net"
 
 # The title of the resource to index, max 64 characters
-title = "Proyec.top Network"
+title = "La red de Juan Barriteau"
 
 # A brief description of the resource, max 256 characters
-description = "Network node for Proyec.top"
+description = "Todo lo que Juan hace en red, redes con gente o sin ella"
 
 # Space separated list of keywords, max 512 characters, case insensitive.
 # Alternatively, keywords can be provided as an array of strings:
 # keywords = ["proyec", "top", "network", "infrastructure"]
-keywords = "proyec top network infrastructure"
+keywords = "red redes infra infraestructura network infrastructure connection conexión conexiones"
 
-primary_lang = ""
+primary_lang = "kn"
 
 # Offensiveness Level of the resource
 # 0: Non offensive content
@@ -29,11 +29,19 @@ ol = 0
 
 # Geographical coordinates in WGS 84 (EPSG:4326) format multiplied by 10000000 to obtain an integer value
 # 0 to skip, any precision level allowed
-latitude = 104806000
-longitude = -669036000
+latitude = 223027110
+longitude = 1141772160
 
 [ciprface]
 page_size = 5
+
+#: Internal Search Engine (ISE) Providers (optional)
+# These represent external APIs used for executing `QUERY /ri/` equivalent searches.
+# You can define multiple `[[ise_provider]]` chunks for different search domains.
+# Example:
+[[ise_provider]]
+name = "pagefind"
+url = "https://cgt.barriteau.net/"
 
 [network]
 
@@ -173,11 +181,3 @@ api_token = "YOUR_TOKEN_HERE"
 # name = "desec"
 # api_token = "YOUR_DESEC_TOKEN"
 # zone_id = "yourdomain.com" (The domain name registered in deSEC)
-
-#: Internal Search Engine (ISE) Providers (optional)
-# These represent external APIs used for executing `QUERY /ri/` equivalent searches.
-# You can define multiple `[[ise_provider]]` chunks for different search domains.
-# Example:
-# [[ise_provider]]
-# name = "pagefind"
-# url = "https://cgt.barriteau.net/"

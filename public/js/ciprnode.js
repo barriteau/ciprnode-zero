@@ -15,7 +15,29 @@ document.addEventListener('DOMContentLoaded', () => {
   initResindexCheck();
   initIntraSearch();
   initIntraSearchAvailability();
+  initQuerySupportCheck();
 });
+
+const initQuerySupportCheck = async () => {
+  // Test if this OS/Browser supports custom HTTP methods (specifically QUERY) securely retaining the request body.
+  // Apple WebKit engine strips bodies or blocks custom methods entirely.
+  try {
+    const isIosSafari = /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent);
+    const isMacSafari = /Macintosh.+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent) &&
+      !/Chrome/i.test(navigator.userAgent);
+
+    // Explicitly fallback to user agent for WebKit engines to immediately block them out, solving the problem efficiently
+    if (isIosSafari || isMacSafari) {
+      document.getElementById('query-warning')?.classList.remove('hidden');
+    } else {
+      // More advanced sanity check just in case
+      const testReq = new Request('/', { method: 'QUERY', body: 'ping' });
+      await testReq.text(); // will throw or yield empty string on unsupported strict engines
+    }
+  } catch (_e) {
+    document.getElementById('query-warning')?.classList.remove('hidden');
+  }
+};
 
 document.addEventListener('htmx:load', (_evt) => {
   initReverseGeocoding();
@@ -30,16 +52,7 @@ document.addEventListener('htmx:configRequest', (evt) => {
   // Handle custom HTTP methods explicitly declared via data-cipr-method attributes
   const customMethod = evt.detail.elt.getAttribute('data-cipr-method');
   if (customMethod) {
-    const isIosSafari = /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent);
-
-    // Apple WebKit Workaround: iOS Safari drops request body on custom HTTP methods like QUERY.
-    // By keeping the HTMX base request as a POST, we avoid data loss, and override the method via headers.
-    if (isIosSafari && customMethod.toUpperCase() === 'QUERY') {
-      evt.detail.verb = 'post';
-      evt.detail.headers['X-HTTP-Method-Override'] = customMethod.toUpperCase();
-    } else {
-      evt.detail.verb = customMethod.toLowerCase();
-    }
+    evt.detail.verb = customMethod.toLowerCase();
   }
 });
 
@@ -640,14 +653,12 @@ const initIntraSearch = () => {
 
     debounceTimer = setTimeout(async () => {
       try {
-        // Use POST with Method-Override to support tricky browsers like iOS Safari
-        // that drop the body on a custom QUERY method (mirrors our HTMX config logic).
+        // Native HTTP QUERY Method across all integrations
         const res = await fetch(
           `https://ciprnode.${currentZa}/ri/?q=${encodeURIComponent(query)}`,
           {
-            method: 'POST',
+            method: 'QUERY',
             headers: {
-              'X-HTTP-Method-Override': 'QUERY',
               'Accept': 'application/hal+json',
             },
           },

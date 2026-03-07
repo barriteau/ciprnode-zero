@@ -2,7 +2,7 @@
 
 # Cipr: Cosmic Index of Public Resources
 
-The *Cosmic^[Because Martians and Belters are welcome.] Index of Public Resources*, or *Cipr^[Probably best pronounced 'kee-per,' but I'm not good enough at English to decide.]*, is a decentralized, distributed, independent, public, universal, dynamic and queryable directory of websites and other reachable-by-DNS-resolution resources in the Internet.
+The *Cosmic^[Because Martians and Belters are welcome.] Index of Public Resources*, or *Cipr^[I like to pronounce it 'kee-per', but I'm not good enough at English to know, so do as you please.]*, is a decentralized, distributed, independent, public, universal, dynamic and queryable directory of websites and other reachable-by-DNS-resolution resources in the Internet.
 
 The Cipr shares some features with conventional search engines, web directories and webrings. However, adding entries to the Cipr does not require crawling the web or the approval of curators or editors, this is because of its decentralized and user-controlled nature.
 
@@ -12,7 +12,7 @@ With the Cipr, every content publisher *owns* their entries in the index, meanin
 
 The factors that determine the ranking position of search results cannot be obscured in the Cipr, they are standardized, public and auditable.
 
-The equivalent to the SEO^[Search Engine Optimization.] activity in the Cipr is very basic, a publisher only needs to use the right and consistent-in-time information about their resources (title, description, keywords, and localization data) to make them visible to their target audience, nothing else.
+The equivalent to the SEO^[Search Engine Optimization.] activity in the Cipr is very basic, a publisher only needs to use the right and consistent-in-time information about their resources (title, description, keywords, primary language and localization data) to make them visible to their target audience, nothing else.
 
 Censoring, banning, blocking or filtering a Cipr indexed resource is only possible through DNS censoring, banning, blocking or filtering.
 
@@ -237,7 +237,6 @@ No matter if it is requested or not, UTF-8 must be used always in any response a
 
 The CiprAPI exposes the following endpoints:
 
-- `HEAD /` - Verifies the presence of a ciprnode in the Cipr.
 - `GET /` - Retrieves the contents of the ciprdup.
 - `GET /{za}/` - Retrieves all fields for a specific cipred resource.
 - `GET /{za}/title/` - Retrieves the title of a specific cipred resource.
@@ -248,10 +247,16 @@ The CiprAPI exposes the following endpoints:
 - `GET /{za}/longitude/` - Retrieves the longitude of a specific cipred resource.
 - `GET /{za}/timestamp/` - Retrieves the timestamp of a specific cipred resource.
 - `GET /languages/` - Retrieves the contents of the languages database table. Only to be called from the local ciprface.
+
 - `PUT /{za}/` - Adds a new cipred resource to the Cipr.
+
 - `DELETE /{za}/` - Removes a cipred resource from the Cipr.
+
 - `QUERY /` - Queries the ciprdup of the ciprnode with a given `FTS expression+filters`.
 - `QUERY /ri/` - Queries the resindex (ri) of the cipred resource with a given `expression`.
+
+- `HEAD /` - Verifies the presence of a ciprnode in the Cipr.
+- `HEAD /ri/` - Verifies the presence of a resindex (ri) in the ciprnode.
 
 #### Use of the `GET` method
 
@@ -290,15 +295,6 @@ This request asks the Cipr to retrieve the list of languages matching with the `
 ```http
 GET /languages/?q=Spanish HTTP/1.1
 Host: ciprnode.cipr.info
-```
-
-#### Use of the `HEAD` method
-
-A `HEAD` request to `/` will verify the presence of a ciprnode in the Cipr. Example:
-
-```http
-HEAD / HTTP/1.1
-Host: ciprnode.example.com
 ```
 
 #### Use of the `PUT` method
@@ -623,6 +619,22 @@ query="search expression"
 Even when desirable, the resindex ranking algorithm for search results doesn't need to adhere to the one specified for the ciprdup/Cipr. Every resource owner is free to implement their own ranking algorithm at their own convenience, they have the last word about what is more relevant for their users when a search query is sent to their resindex.
 
 A ciprnode must provide a set of minimum mechanisms to allow resource owners creating adapters for the `QUERY /ri/` endpoint act as a client to whatever they have as their resource's search system, being it client-side site search tools, static site search tools, lightweight server-side search tools, enterprise/heavyweight search tools, search-as-a-service (hosted) tools, etc.
+
+#### Use of the `HEAD` method
+
+A `HEAD` request to `/` will verify the presence of a ciprnode in the Cipr. Example:
+
+```http
+HEAD / HTTP/1.1
+Host: ciprnode.example.com
+```
+
+A `HEAD` request to `/ri/` will verify the presence of a resindex in a ciprnode:
+
+```http
+HEAD /ri/ HTTP/1.1
+Host: ciprnode.example.com
+```
 
 ### 4. Ciprpulse
 

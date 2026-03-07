@@ -46,7 +46,8 @@ blockquote {
 }
 
 p#noscript,
-p#version-alert {
+p#version-alert,
+p#query-warning {
     font-size: 1rem;
     font-family: "Iosevka", monospace;
     background-color: #ffe46d62;
@@ -835,7 +836,7 @@ ol#annotations-list>li>figure>figcaption>span.actions {
     color: #00bad3;
 }
 
-/* --- search panel --- */
+/* --- Search panel --- */
 
 aside#search-panel {
     position: fixed;
@@ -849,13 +850,14 @@ aside#search-panel {
     transition: right 0.2s ease;
 }
 
-nav#toolbar label input#search-toggle {
+label input#search-toggle,
+label input.search-toggle {
     opacity: 0;
     visibility: hidden;
     display: none;
 }
 
-nav#toolbar label svg-icon.search {
+label svg-icon.search {
     cursor: pointer;
 }
 
@@ -901,6 +903,14 @@ aside#search-panel>#search-body {
     background: #dddddd;
     border-radius: 0 4px 4px 0;
     overflow-y: scroll;
+}
+
+#search-form {
+    padding: 1rem;
+}
+
+#search-form input {
+    width: 100%;
 }
 
 body:has(input[form="search-form"]:checked) aside#search-panel {
