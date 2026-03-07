@@ -9,12 +9,18 @@ import { captureSearchTerms } from '../../core/fts_generator.js';
 
 /**
  * Handles HEAD /ri/ requests to determine ISE availability.
+ * Requires CORS headers so other Ciprnodes can ping it via JS.
  */
 export const headRi = (_req, _db, config) => {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'HEAD, OPTIONS',
+  };
+
   if (config.ise_provider && config.ise_provider.length > 0) {
-    return new Response(null, { status: 200 });
+    return new Response(null, { status: 200, headers: corsHeaders });
   }
-  return new Response(null, { status: 501 }); // Not Implemented
+  return new Response(null, { status: 501, headers: corsHeaders }); // Not Implemented
 };
 
 /**
