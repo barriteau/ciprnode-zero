@@ -24,6 +24,21 @@ export const headRi = (_req, _db, config) => {
 };
 
 /**
+ * Handles OPTIONS /ri/ requests for CORS preflight.
+ */
+export const optionsRi = (_req, _db, _config) => {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'HEAD, POST, QUERY, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-HTTP-Method-Override, Content-Type, Accept',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
+};
+
+/**
  * Handles QUERY requests.
  */
 export const query = async (req, db, config, isResindex = false) => {
@@ -354,9 +369,13 @@ export const query = async (req, db, config, isResindex = false) => {
         results: enrichedItems,
       },
     };
-    return new Response(JSON.stringify(response), {
-      headers: { 'Content-Type': 'application/hal+json; charset=utf-8' },
-    });
+
+    const headers = { 'Content-Type': 'application/hal+json; charset=utf-8' };
+    if (isResindex) {
+      headers['Access-Control-Allow-Origin'] = '*';
+    }
+
+    return new Response(JSON.stringify(response), { headers });
   }
 
   // B. HTML (Template)

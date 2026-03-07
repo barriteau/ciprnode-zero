@@ -62,6 +62,9 @@ export const handleRequest = (request, db, config) => {
 
   // 1.8 Resindex querying /ri/
   if (path === '/ri' || path === '/ri/') {
+    if (method === 'OPTIONS') {
+      return SearchController.optionsRi(request, db, config);
+    }
     if (method === 'HEAD') {
       return SearchController.headRi(request, db, config);
     }
