@@ -294,7 +294,7 @@ export const query = async (req, db, config, isResindex = false) => {
       // Execute all ISE plugins concurrently
       const promises = config.ise_provider.map(async (provider) => {
         try {
-          const { queryResindex } = await import(`../../integrations/ise/${provider.name}.js`);
+          const { queryResindex } = await import(`../../../integrations/ise/${provider.name}.js`);
           return await queryResindex(provider, options);
         } catch (e) {
           console.error(
