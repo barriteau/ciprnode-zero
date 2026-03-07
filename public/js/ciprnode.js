@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearchHelp();
   initServiceWorker();
   initResindexCheck();
+  initIntraSearch();
 });
 
 document.addEventListener('htmx:load', (_evt) => {
@@ -530,6 +531,98 @@ const toggleResindexUI = (isAvailable) => {
     } else {
       el.classList.add('hidden');
     }
+  });
+};
+
+const initIntraSearch = () => {
+  const searchInput = document.getElementById('search-input');
+  const searchResults = document.getElementById('search-results');
+  let currentZa = null;
+  let debounceTimer;
+
+  if (!searchInput || !searchResults) return;
+
+  // Listen for clicks on the newly injected .search-toggle
+  document.body.addEventListener('change', (e) => {
+    if (e.target && e.target.classList.contains('search-toggle')) {
+      if (e.target.checked) {
+        // Uncheck all other toggles so only one panel context is visually active
+        document.querySelectorAll('.search-toggle').forEach((el) => {
+          if (el !== e.target) el.checked = false;
+        });
+
+        const entry = e.target.closest('.cipr-entry');
+        if (entry && entry.dataset.za) {
+          currentZa = entry.dataset.za;
+          searchInput.value = '';
+          searchResults.innerHTML = '';
+          // Allow offscreen CSS transition to start before focusing
+          setTimeout(() => searchInput.focus(), 100);
+        }
+      } else {
+        currentZa = null;
+      }
+    }
+  });
+
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    clearTimeout(debounceTimer);
+
+    if (query.length < 3) {
+      searchResults.innerHTML = '';
+      return;
+    }
+
+    if (!currentZa) return;
+
+    debounceTimer = setTimeout(async () => {
+      try {
+        // Use POST with Method-Override to support tricky browsers like iOS Safari
+        // that drop the body on a custom QUERY method (mirrors our HTMX config logic).
+        const res = await fetch(
+          `https://ciprnode.${currentZa}/ri/?q=${encodeURIComponent(query)}`,
+          {
+            method: 'POST',
+            headers: {
+              'X-HTTP-Method-Override': 'QUERY',
+              'Accept': 'application/hal+json',
+            },
+          },
+        );
+
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+
+        searchResults.innerHTML = '';
+
+        if (data._embedded && data._embedded.results) {
+          data._embedded.results.forEach((item) => {
+            const li = document.createElement('li');
+            li.className = 'cipr-entry';
+
+            const h3 = document.createElement('h3');
+            const a = document.createElement('a');
+            const itemUrl = item.url.startsWith('/') ? item.url : `/${item.url}`;
+            a.href = `https://ciprnode.${currentZa}${itemUrl}`;
+            a.textContent = item.title;
+            h3.appendChild(a);
+
+            const excerpt = document.createElement('div');
+            excerpt.className = 'excerpt';
+            excerpt.innerHTML = item.description || '';
+
+            li.appendChild(h3);
+            li.appendChild(excerpt);
+            searchResults.appendChild(li);
+          });
+        }
+      } catch (err) {
+        console.error('Intra-search error:', err);
+        searchResults.innerHTML =
+          '<li class="cipr-entry"><div class="excerpt">Error performing search.</div></li>';
+      }
+    }, 300);
   });
 };
 
