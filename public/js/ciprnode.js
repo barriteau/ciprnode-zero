@@ -14,10 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initServiceWorker();
   initResindexCheck();
   initIntraSearch();
+  initIntraSearchAvailability();
 });
 
 document.addEventListener('htmx:load', (_evt) => {
   initReverseGeocoding();
+  initIntraSearchAvailability();
 });
 
 // Manage HTMX async requests globally
@@ -473,7 +475,7 @@ const fetchCached = async (url, ttlMs = 240000) => {
 
     try {
       sessionStorage.setItem(cacheKey, JSON.stringify(item));
-    } catch (e) {
+    } catch (_e) {
       console.warn('sessionStorage full, skipping cache write.');
     }
 
@@ -516,7 +518,7 @@ const initResindexCheck = async () => {
         expiry: Date.now() + 240000, // 4 minutes
       }),
     );
-  } catch (e) {
+  } catch (_e) {
     isAvailable = false;
   }
 
@@ -530,6 +532,66 @@ const toggleResindexUI = (isAvailable) => {
       el.classList.remove('hidden');
     } else {
       el.classList.add('hidden');
+    }
+  });
+};
+
+const initIntraSearchAvailability = () => {
+  const entries = document.querySelectorAll('.cipr-entry:not([data-ri-checked="true"])');
+  if (entries.length === 0) return;
+
+  const zaSet = new Set();
+  entries.forEach((entry) => {
+    entry.dataset.riChecked = 'true';
+    if (entry.dataset.za) {
+      zaSet.add(entry.dataset.za);
+    }
+  });
+
+  zaSet.forEach(async (za) => {
+    const cacheKey = `cipr_ri_available_${za}`;
+    const cachedItemStr = sessionStorage.getItem(cacheKey);
+    let isAvailable = false;
+
+    if (cachedItemStr) {
+      try {
+        const cachedItem = JSON.parse(cachedItemStr);
+        if (Date.now() < cachedItem.expiry) {
+          isAvailable = cachedItem.data;
+          toggleIntraSearchUI(za, isAvailable);
+          return;
+        }
+      } catch (_e) {
+        sessionStorage.removeItem(cacheKey);
+      }
+    }
+
+    try {
+      const response = await fetch(`https://ciprnode.${za}/ri/`, { method: 'HEAD' });
+      isAvailable = response.ok; // 200 OK means it has providers.
+
+      sessionStorage.setItem(
+        cacheKey,
+        JSON.stringify({
+          data: isAvailable,
+          expiry: Date.now() + 240000, // 4 minutes
+        }),
+      );
+    } catch (_e) {
+      isAvailable = false;
+    }
+
+    toggleIntraSearchUI(za, isAvailable);
+  });
+};
+
+const toggleIntraSearchUI = (za, isAvailable) => {
+  if (!isAvailable) return;
+  const entries = document.querySelectorAll(`.cipr-entry[data-za="${za}"]`);
+  entries.forEach((entry) => {
+    const label = entry.querySelector('.intra-search-label');
+    if (label) {
+      label.classList.remove('hidden', 'disabled');
     }
   });
 };
