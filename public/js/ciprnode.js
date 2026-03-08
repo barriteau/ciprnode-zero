@@ -52,7 +52,7 @@ const initQuerySupportCheck = async () => {
 
     const searchInput = document.getElementById('location-search');
     if (searchInput) searchInput.disabled = true;
-    const searchInputMain = document.getElementById('search-input');
+    const searchInputMain = document.getElementById('cipr-search');
     if (searchInputMain) searchInputMain.disabled = true;
   }
 };
