@@ -18,21 +18,20 @@ document.addEventListener('DOMContentLoaded', () => {
   initQuerySupportCheck();
 });
 
-const initQuerySupportCheck = async () => {
-  // Test if this OS/Browser supports custom HTTP methods (specifically QUERY) securely retaining the request body.
-  // Apple WebKit engine strips bodies or blocks custom methods entirely.
+const initQuerySupportCheck = () => {
   try {
-    const isIosSafari = /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent);
-    const isMacSafari = /Macintosh.+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent) &&
-      !/Chrome/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    const isIos = /iP(ad|hone|od)/i.test(ua) || (ua.includes('Mac') && 'ontouchend' in document);
+    const isMacSafari = /Macintosh.+Version\/[\d\.]+.*Safari/i.test(ua) && !/Chrome/i.test(ua);
 
-    // Explicitly fallback to user agent for WebKit engines to immediately block them out, solving the problem efficiently
-    if (isIosSafari || isMacSafari) {
-      document.getElementById('query-warning')?.classList.remove('hidden');
-    } else {
-      // More advanced sanity check just in case
-      const testReq = new Request('/', { method: 'QUERY', body: 'ping' });
-      await testReq.text(); // will throw or yield empty string on unsupported strict engines
+    if (isIos || isMacSafari) {
+      const warning = document.getElementById('query-warning');
+      if (warning) warning.classList.remove('hidden');
+
+      const searchInput = document.getElementById('location-search');
+      if (searchInput) searchInput.disabled = true;
+      const searchInputMain = document.getElementById('search-input');
+      if (searchInputMain) searchInputMain.disabled = true;
     }
   } catch (_e) {
     document.getElementById('query-warning')?.classList.remove('hidden');
