@@ -18,7 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initQuerySupportCheck();
 });
 
-let querySupportFailed = sessionStorage.getItem('cipr_query_failed') === 'true';
+let querySupportFailed = false;
+try {
+  querySupportFailed = sessionStorage.getItem('cipr_query_failed') === 'true';
+} catch (_e) {
+  /* ignore security errors in strict/private modes */
+}
 
 const disableSearchInterfaces = () => {
   const warning = document.getElementById('query-warning');
@@ -59,13 +64,17 @@ const initQuerySupportCheck = async () => {
     if (!res.ok) throw new Error('Network failed');
 
     const data = await res.json();
-    if (!data['pages[num]'] || data['pages[num]'][0] !== 99) {
+    if (!data['pages[num]'] || Number(data['pages[num]'][0]) !== 99) {
       throw new Error('OS strictly stripped payload');
     }
   } catch (_e) {
     // Reached if fetch aborted (hanging), HTTP method refused, or payload explicitly stripped.
     querySupportFailed = true;
-    sessionStorage.setItem('cipr_query_failed', 'true');
+    try {
+      sessionStorage.setItem('cipr_query_failed', 'true');
+    } catch (_e) {
+      /* ignore security errors in strict/private modes */
+    }
     disableSearchInterfaces();
   }
 };
