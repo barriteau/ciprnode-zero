@@ -14,11 +14,11 @@
     <p class="description"><%= item.description %></p>
 
     <div class="actions">
-      <a href="https://ciprnode.<%= item.za %>">Visit</a>
+      <a href="https://ciprnode.<%= item.za %>">visit ciprnode.<%= item.za %></a>
 
       <label title="Búsqueda" tabindex="0" class="js-req disabled hidden intra-search-label">
-        Intra-search
-        <input class="search-toggle" type="checkbox" role="button" form="search-form" aria-pressed="true" />
+        • intra-search at *.<%= item.za %>
+        <input class="search-toggle" type="checkbox" role="button" form="ri-search-form" aria-pressed="true" />
       </label>
     </div>
 

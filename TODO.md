@@ -1,14 +1,14 @@
 # TODO: Pending tasks
 
-How to call that search?
+resindeeeeeeex
 
 ---
 
-Cache the HEAD or GET validation of the ri for n minutes
+i18n faltante
 
 ---
 
-Cache the geolocation API calls for n minutes
+Margin bottom to Results (n-m)
 
 ---
 
@@ -53,6 +53,10 @@ Add Ukrainian and Arabic languages
 ---
 
 Implement dark mode.
+
+---
+
+Vaina simple para mecenazgo con criptomonedas.
 
 ---
 

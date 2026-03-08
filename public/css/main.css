@@ -861,7 +861,8 @@ label svg-icon.search {
     cursor: pointer;
 }
 
-aside#search-panel button#search-close {
+aside#search-panel button#search-close,
+aside#search-panel button#ri-search-close {
     position: absolute;
     top: 0;
     right: 0;
@@ -891,7 +892,8 @@ aside#search-panel>button#search-overlay {
     display: none;
 }
 
-aside#search-panel>#search-body {
+aside#search-panel>#search-body,
+aside#search-panel>#ri-search-body {
     position: absolute;
     top: 3.4rem;
     right: 0;
@@ -905,37 +907,43 @@ aside#search-panel>#search-body {
     overflow-y: scroll;
 }
 
-#search-form {
+#search-form,
+#ri-search-form {
     padding: 1rem;
 }
 
-#search-form input {
+#search-form input,
+#ri-search-form input {
     width: 100%;
 }
 
-body:has(input[form="search-form"]:checked) aside#search-panel {
+body:has(input[form="search-form"]:checked) aside#search-panel,
+body:has(input[form="ri-search-form"]:checked) aside#search-panel {
     right: 0;
 }
 
-body:has(input[form="search-form"]:checked) aside#search-panel #search-overlay {
+body:has(input[form="search-form"]:checked) aside#search-panel #search-overlay,
+body:has(input[form="ri-search-form"]:checked) aside#search-panel #search-overlay {
     display: block;
 }
 
-body:has(input[form="search-form"]:checked) label svg-icon.search {
+body:has(input[form="search-form"]:checked) label svg-icon.search,
+body:has(input[form="ri-search-form"]:checked) label svg-icon.search {
     /* background-color: #00bad3; */
     filter: invert(66%) sepia(96%) saturate(2549%) hue-rotate(142deg) brightness(89%) contrast(103%);
 }
 
-#search-body>h2 {
+#search-body>h2,
+#ri-search-body>h2 {
     margin: 0;
     padding: 2em 0 1em 1em;
 }
-
+/*
 ol#search-list {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    /* decimal-leading-zero; */
+    / * decimal-leading-zero; * /
 }
 
 #search-list>li {
@@ -994,7 +1002,7 @@ ol#search-list>li>figure>figcaption>span.actions {
 #search-list>li>figure>div.excerpt>a:active {
     color: #00bad3;
 }
-
+*/
 /* --- Dialog --- */
 
 dialog {

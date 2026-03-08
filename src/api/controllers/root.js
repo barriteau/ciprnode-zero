@@ -3,6 +3,8 @@
  * @description Controller for the Root Resource (Home/Index).
  */
 
+import { countEntries } from '../../db/repo.js';
+
 /**
  * Handles HEAD / requests.
  * @param {Request} _req
