@@ -18,23 +18,42 @@ document.addEventListener('DOMContentLoaded', () => {
   initQuerySupportCheck();
 });
 
-const initQuerySupportCheck = () => {
+const initQuerySupportCheck = async () => {
   try {
-    const ua = navigator.userAgent;
-    const isIos = /iP(ad|hone|od)/i.test(ua) || (ua.includes('Mac') && 'ontouchend' in document);
-    const isMacSafari = /Macintosh.+Version\/[\d\.]+.*Safari/i.test(ua) && !/Chrome/i.test(ua);
+    // We physically test whether the OS network stack supports sending bodies with custom methods.
+    // iOS WebKit NSURLSession drops bodies for 'QUERY', hanging the server's streaming parser.
+    // We send a tiny payload overriding a URL parameter. If the server reads the payload,
+    // the returned JSON will reflect the overridden value. If it drops the payload,
+    // we'll get the URL's value instead, OR it will hang until our 3s timeout aborts it.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-    if (isIos || isMacSafari) {
-      const warning = document.getElementById('query-warning');
-      if (warning) warning.classList.remove('hidden');
+    const res = await fetch('/?page=1', {
+      method: 'QUERY',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/hal+json',
+      },
+      body: JSON.stringify({ page: 99 }),
+      signal: controller.signal,
+    });
 
-      const searchInput = document.getElementById('location-search');
-      if (searchInput) searchInput.disabled = true;
-      const searchInputMain = document.getElementById('search-input');
-      if (searchInputMain) searchInputMain.disabled = true;
+    clearTimeout(timeoutId);
+    if (!res.ok) throw new Error('Network failed');
+
+    const data = await res.json();
+    if (!data['pages[num]'] || data['pages[num]'][0] !== 99) {
+      throw new Error('OS strictly stripped payload');
     }
   } catch (_e) {
-    document.getElementById('query-warning')?.classList.remove('hidden');
+    // Reached if fetch aborted (hanging), HTTP method refused, or payload explicitly stripped.
+    const warning = document.getElementById('query-warning');
+    if (warning) warning.classList.remove('hidden');
+
+    const searchInput = document.getElementById('location-search');
+    if (searchInput) searchInput.disabled = true;
+    const searchInputMain = document.getElementById('search-input');
+    if (searchInputMain) searchInputMain.disabled = true;
   }
 };
 
