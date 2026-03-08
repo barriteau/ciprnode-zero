@@ -18,7 +18,24 @@ document.addEventListener('DOMContentLoaded', () => {
   initQuerySupportCheck();
 });
 
+let querySupportFailed = sessionStorage.getItem('cipr_query_failed') === 'true';
+
+const disableSearchInterfaces = () => {
+  const warning = document.getElementById('query-warning');
+  if (warning) warning.classList.remove('hidden');
+
+  ['location-search', 'cipr-search', 'cipr-search-submit', 'ri-search'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = true;
+  });
+};
+
 const initQuerySupportCheck = async () => {
+  if (querySupportFailed) {
+    disableSearchInterfaces();
+    return;
+  }
+
   try {
     // We physically test whether the OS network stack supports sending bodies with custom methods.
     // iOS WebKit NSURLSession drops bodies for 'QUERY', hanging the server's streaming parser.
@@ -47,19 +64,16 @@ const initQuerySupportCheck = async () => {
     }
   } catch (_e) {
     // Reached if fetch aborted (hanging), HTTP method refused, or payload explicitly stripped.
-    const warning = document.getElementById('query-warning');
-    if (warning) warning.classList.remove('hidden');
-
-    const searchInput = document.getElementById('location-search');
-    if (searchInput) searchInput.disabled = true;
-    const searchInputMain = document.getElementById('cipr-search');
-    if (searchInputMain) searchInputMain.disabled = true;
+    querySupportFailed = true;
+    sessionStorage.setItem('cipr_query_failed', 'true');
+    disableSearchInterfaces();
   }
 };
 
 document.addEventListener('htmx:load', (_evt) => {
   initReverseGeocoding();
   initIntraSearchAvailability();
+  if (querySupportFailed) disableSearchInterfaces();
 });
 
 // Manage HTMX async requests globally
@@ -628,8 +642,8 @@ const toggleIntraSearchUI = (za, isAvailable) => {
 };
 
 const initIntraSearch = () => {
-  const searchInput = document.getElementById('search-input');
-  const searchResults = document.getElementById('search-results');
+  const searchInput = document.getElementById('ri-search');
+  const searchResults = document.getElementById('ri-search-results');
   let currentZa = null;
   let debounceTimer;
 
