@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" href="/figures/apple-touch-icon.png" />
   <meta name="theme-color" content="#ffffff" />
   <link rel="stylesheet" href="/css/htr.css" />
-  <script src="/js/htmx.min.js"></script>
+  <script src="/js/htmx.js"></script>
   <script src="/js/ciprnode.js" defer></script>
 </head>
 
@@ -23,9 +23,6 @@
       <%= it.t('error.noscript') %>
     </p>
   </noscript>
-  <p id="query-warning" class="hidden">
-    Your OS does not support the Cipr, try using this in any other mobile or desktop OS.
-  </p>
 
   <main id="wide">
     <%~ it.body %>

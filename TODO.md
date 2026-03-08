@@ -1,6 +1,14 @@
 # TODO: Pending tasks
 
+Validation for resindex availability
+
+---
+
 resindeeeeeeex
+
+---
+
+Auto update versioning in sw.js
 
 ---
 

@@ -31,8 +31,8 @@ export const optionsRi = (_req, _db, _config) => {
     status: 204,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'HEAD, POST, QUERY, OPTIONS',
-      'Access-Control-Allow-Headers': 'X-HTTP-Method-Override, Content-Type, Accept',
+      'Access-Control-Allow-Methods': 'HEAD, QUERY, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Accept',
       'Access-Control-Max-Age': '86400',
     },
   });

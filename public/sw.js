@@ -1,13 +1,16 @@
-const CACHE_NAME = 'ciprface-v2';
+const CACHE_NAME = 'ciprface-v4';
 const STATIC_ASSETS = [
   '/',
-  '/css/htr.css',
-  '/css/main.css',
-  '/css/modern-normalize.css',
+  '/css/reset.css',
+  '/css/font-Libertinus.css',
+  '/css/font-Poller-One.css',
+  '/css/font-Iosevka.css',
   '/css/typography.css',
-  '/css/icons.css',
+  '/css/highlight.js/xcode.css',
+  '/css/main.css',
+  '/css/media-queries.css',
   '/js/ciprnode.js',
-  '/js/htmx.min.js',
+  '/js/htmx.js',
   '/favicon.ico',
   '/manifest.webmanifest',
 ];

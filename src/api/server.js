@@ -93,7 +93,7 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
       if (config.debug) {
         let reqBody = '';
         try {
-          if (request.body && (request.method === 'POST' || request.method === 'PUT')) {
+          if (request.body && (request.method === 'QUERY' || request.method === 'PUT')) {
             const reqClone = request.clone();
             reqBody = await reqClone.text();
           }

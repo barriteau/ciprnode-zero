@@ -15,95 +15,18 @@ document.addEventListener('DOMContentLoaded', () => {
   initResindexCheck();
   initIntraSearch();
   initIntraSearchAvailability();
-  initQuerySupportCheck();
 });
-
-let querySupportFailed = false;
-try {
-  querySupportFailed = sessionStorage.getItem('cipr_query_failed') === 'true';
-} catch (_e) {
-  /* ignore security errors in strict/private modes */
-}
-
-const disableSearchInterfaces = () => {
-  const warning = document.getElementById('query-warning');
-  if (warning) warning.classList.remove('hidden');
-
-  ['location-search', 'cipr-search', 'cipr-search-submit', 'ri-search'].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.disabled = true;
-  });
-};
-
-const initQuerySupportCheck = async () => {
-  if (querySupportFailed) {
-    disableSearchInterfaces();
-    return;
-  }
-
-  try {
-    // We physically test whether the OS network stack supports sending bodies with custom methods.
-    // iOS WebKit NSURLSession drops bodies for 'QUERY', hanging the server's streaming parser.
-    // We send a tiny payload overriding a URL parameter. If the server reads the payload,
-    // the returned JSON will reflect the overridden value. If it drops the payload,
-    // we'll get the URL's value instead, OR it will hang until our 3s timeout aborts it.
-    // We must test exactly using XMLHttpRequest because HTMX uses XHR under the hood.
-    // iOS WebKit might allow bodies in fetch() but silently strip them in XHR for unknown HTTP methods.
-    const data = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('QUERY', '/?page=1');
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.setRequestHeader('Accept', 'application/hal+json');
-      xhr.timeout = 3000;
-
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try {
-            resolve(JSON.parse(xhr.responseText));
-          } catch (e) {
-            reject(new Error('Invalid JSON response'));
-          }
-        } else {
-          reject(new Error(`HTTP error ${xhr.status}`));
-        }
-      };
-
-      xhr.onerror = () => reject(new Error('Network error'));
-      xhr.ontimeout = () => reject(new Error('Timeout'));
-
-      xhr.send(JSON.stringify({ page: 99 }));
-    });
-
-    if (!data['pages[num]'] || Number(data['pages[num]'][0]) !== 99) {
-      throw new Error('OS strictly stripped payload in XHR');
-    }
-  } catch (_e) {
-    // Reached if fetch aborted (hanging), HTTP method refused, or payload explicitly stripped.
-    querySupportFailed = true;
-    try {
-      sessionStorage.setItem('cipr_query_failed', 'true');
-    } catch (_e) {
-      /* ignore security errors in strict/private modes */
-    }
-    disableSearchInterfaces();
-  }
-};
 
 document.addEventListener('htmx:load', (_evt) => {
   initReverseGeocoding();
   initIntraSearchAvailability();
-  if (querySupportFailed) disableSearchInterfaces();
 });
 
 // Manage HTMX async requests globally
-document.addEventListener('htmx:configRequest', (evt) => {
+document.addEventListener('htmx:config:request', (evt) => {
   // Insert Accept-Language
-  evt.detail.headers['Accept-Language'] = document.documentElement.lang;
-
-  // Handle custom HTTP methods explicitly declared via data-cipr-method attributes
-  const customMethod = evt.detail.elt.getAttribute('data-cipr-method');
-  if (customMethod) {
-    evt.detail.verb = customMethod.toLowerCase();
+  if (evt.detail && evt.detail.headers) {
+    evt.detail.headers['Accept-Language'] = document.documentElement.lang;
   }
 });
 

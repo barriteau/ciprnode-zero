@@ -5,7 +5,7 @@
   </p>
 </h1>
 
-<form id="main-search-form" action="/" method="QUERY" hx-post="/" data-cipr-method="QUERY" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML">
+<form id="main-search-form" action="/" method="QUERY" hx-method="QUERY" hx-action="/" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML">
 
   <div id="search-bar">
     <input id="cipr-search" type="text" name="q" value="<%= it.query || '' %>" placeholder="<%= it.t('search.placeholder') %>" autocomplete="off" spellcheck="false" />
