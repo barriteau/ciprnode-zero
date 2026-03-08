@@ -47,25 +47,35 @@ const initQuerySupportCheck = async () => {
     // We send a tiny payload overriding a URL parameter. If the server reads the payload,
     // the returned JSON will reflect the overridden value. If it drops the payload,
     // we'll get the URL's value instead, OR it will hang until our 3s timeout aborts it.
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    // We must test exactly using XMLHttpRequest because HTMX uses XHR under the hood.
+    // iOS WebKit might allow bodies in fetch() but silently strip them in XHR for unknown HTTP methods.
+    const data = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('QUERY', '/?page=1');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Accept', 'application/hal+json');
+      xhr.timeout = 3000;
 
-    const res = await fetch('/?page=1', {
-      method: 'QUERY',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/hal+json',
-      },
-      body: JSON.stringify({ page: 99 }),
-      signal: controller.signal,
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch (e) {
+            reject(new Error('Invalid JSON response'));
+          }
+        } else {
+          reject(new Error(`HTTP error ${xhr.status}`));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error('Network error'));
+      xhr.ontimeout = () => reject(new Error('Timeout'));
+
+      xhr.send(JSON.stringify({ page: 99 }));
     });
 
-    clearTimeout(timeoutId);
-    if (!res.ok) throw new Error('Network failed');
-
-    const data = await res.json();
     if (!data['pages[num]'] || Number(data['pages[num]'][0]) !== 99) {
-      throw new Error('OS strictly stripped payload');
+      throw new Error('OS strictly stripped payload in XHR');
     }
   } catch (_e) {
     // Reached if fetch aborted (hanging), HTTP method refused, or payload explicitly stripped.
