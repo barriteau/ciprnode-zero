@@ -1,0 +1,9 @@
+<% layout('../layouts/base.eta', it) %>
+
+<div id="search-results-wrapper">
+  <div class="error">
+    <h1><%= it.errorTitle || 'Error' %></h1>
+    <p><%= it.errorMessage || 'An unknown error occurred.' %></p>
+    <a href="/" class="btn">Go Home</a>
+  </div>
+</div>

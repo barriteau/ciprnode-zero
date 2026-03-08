@@ -3,7 +3,7 @@ import { serveDir } from 'jsr:@std/http@^1.0.24/file-server';
 import { startScheduler } from '../bot/scheduler.js';
 import { logDebug } from '../core/logger.js';
 import { isWithinRadius } from '../db/geo.js';
-import { initRenderer } from './views/renderer.js';
+import { initRenderer, render } from './views/renderer.js';
 
 /**
  * Wraps a Response with a CompressionStream if compressible and accepted by client.
@@ -194,32 +194,16 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
     } catch (err) {
       console.error(`[FATAL] Request Handler Error: ${err.message}`, err);
 
-      const errorHtml = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>500 - Server Error</title>
-          <style>
-              body { font-family: sans-serif; background: #f4f4f4; color: #333; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-              .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 500px; text-align: center; }
-              h1 { color: #d9534f; margin-top: 0; }
-              p { line-height: 1.6; }
-              .btn { display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: #333; color: white; text-decoration: none; border-radius: 4px; }
-              .btn:hover { background: #555; }
-          </style>
-      </head>
-      <body>
-          <div class="container">
-              <h1>500 - Server Error</h1>
-              <p>Oops! Something went wrong on our end.</p>
-              <p>We are experiencing a temporary issue. Please try refreshing the page or come back later.</p>
-              <a href="/" class="btn">Return Home</a>
-          </div>
-      </body>
-      </html>
-      `;
+      let errorHtml;
+      try {
+        errorHtml = render('error', {
+          errorTitle: '500 - Server Error',
+          errorMessage:
+            'Oops! Something went wrong on our end. We are experiencing a temporary issue.',
+        });
+      } catch (_renderErr) {
+        errorHtml = '<h1>500 - Server Error (Renderer Failed)</h1>';
+      }
 
       return new Response(errorHtml, {
         status: 500,

@@ -1,0 +1,20 @@
+<% layout('../layouts/base.eta', it) %>
+
+<div id="search-results-wrapper">
+  <article class="entry-detail cipr-entry">
+    <header>
+      <h1><%= it.entry.title %></h1>
+      <code class="za"><%= it.entry.za %></code>
+    </header>
+    <div class="meta">
+      <span class="badge">OL: <%= it.entry.ol || 0 %></span>
+      <span class="timestamp">Updated: <%= new Date(it.entry.timestamp * 1000).toLocaleString() %></span>
+    </div>
+    <p class="description"><%= it.entry.description %></p>
+    <div class="keywords">Tags: <%= it.entry.keywords %></div>
+
+    <div class="actions">
+      <a href="/" class="btn">Back</a>
+    </div>
+  </article>
+</div>

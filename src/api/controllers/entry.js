@@ -5,7 +5,7 @@
 
 import { deleteEntry, getEntry, insertEntry } from '../../db/repo.js';
 import { halResponse } from '../views/hal.js';
-import { htmlResponse, renderError } from '../views/html.js';
+import { render } from '../views/renderer.js';
 // import { verifyCiprHash } from '../../core/dns.js'; // Replaced by verifyNode
 // import { createSha256Hash } from '../../core/crypto.js'; // Replaced by generateCiprHash
 
@@ -19,7 +19,19 @@ export const get = (req, db, _config, za) => {
 
   if (!entry) {
     if (accept.includes('text/html')) {
-      return renderError('Not Found', `Entry ${za} not found in this node.`, isFragment);
+      const errorHtml = render(
+        'error',
+        {
+          errorTitle: 'Not Found',
+          errorMessage: `Entry ${za} not found in this node.`,
+        },
+        isFragment,
+        { title: 'Not Found' },
+      );
+      return new Response(errorHtml, {
+        status: 404,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
     }
     return new Response('Not Found', { status: 404 });
   }
@@ -38,27 +50,11 @@ export const get = (req, db, _config, za) => {
 
   // HTML
   if (accept.includes('text/html') || accept.includes('*/*')) {
-    const body = `
-            <article class="entry-detail">
-                <header>
-                    <h1>${entry.title}</h1>
-                    <code class="za">${entry.za}</code>
-                </header>
-                <div class="meta">
-                    <span class="badge">OL: ${entry.ol || 0}</span>
-                    <span class="timestamp">Updated: ${
-      new Date(entry.timestamp * 1000).toLocaleString()
-    }</span>
-                </div>
-                <p class="description">${entry.description}</p>
-                <div class="keywords">Tags: ${entry.keywords}</div>
-
-                <div class="actions">
-                    <a href="/" class="btn">Back</a>
-                </div>
-            </article>
-        `;
-    return htmlResponse(entry.title, body, isFragment);
+    const entryHtml = render('entry', { entry: data }, isFragment, { title: entry.title });
+    return new Response(entryHtml, {
+      status: 200,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
   }
 
   return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
