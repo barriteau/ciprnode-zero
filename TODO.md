@@ -12,6 +12,7 @@ Legend:
 
 - [✔] Completar head en \src\templates\layouts\base.eta
 - […] Improve the console logging: silent, regular and debugging
+- […] Reorder footer
 - […] Review HATEOAS in each endpoint, one by one
 - […] Create the "Explore" page with random entries from the ciprdup
 - […] Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml
