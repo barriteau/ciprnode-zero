@@ -3,7 +3,7 @@
  * @description Launches Windows Terminal with 8 split panes in a 2x4 grid for the local ciprnodes.
  */
 
-import { join } from 'jsr:@std/path';
+import { join } from 'jsr:@std/path@^1.1.4';
 
 const CIPR_NODES_ROOT = 'D:\\Proyectos_VSCode\\Cipr\\ciprnodes';
 

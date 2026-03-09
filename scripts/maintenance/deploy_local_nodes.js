@@ -4,8 +4,8 @@
  *              PRESERVES: .env, ciprnode.toml, /data/
  */
 
-import { copy, ensureDir, exists } from 'jsr:@std/fs';
-import { join } from 'jsr:@std/path';
+import { copy, ensureDir, exists } from 'jsr:@std/fs@^1.0.22';
+import { join } from 'jsr:@std/path@^1.1.4';
 
 const CIPR_NODES_ROOT = 'D:\\Proyectos_VSCode\\Cipr\\ciprnodes';
 const DIST_ARTEFACT = 'dist/ciprnode-zero-win-x64.zip';
@@ -51,7 +51,7 @@ const main = async () => {
   console.log('Extracting artifact...');
   try {
     await Deno.remove(TEMP_EXTRACT_DIR, { recursive: true });
-  } catch {}
+  } catch { /* dir may not exist on first run — ignore */ }
   await ensureDir(TEMP_EXTRACT_DIR);
 
   // Use tar to extract zip (Windows tar supports -xf)
@@ -82,36 +82,45 @@ const main = async () => {
   // Cleanup
   try {
     await Deno.remove(TEMP_EXTRACT_DIR, { recursive: true });
-  } catch {}
+  } catch { /* temp dir may already be gone — ignore */ }
 
   console.log('\nDeployment Complete!');
 };
 
+/**
+ * Directories that are fully replaced on every deploy (stale files removed).
+ * Everything else is copied with overwrite.
+ */
+const REPLACE_DIRS = ['public', 'src'];
+
 const deployToNode = async (source, target) => {
-  // Sync Logic: Copy overwrite everything EXCEPT ignored list.
   const files = Deno.readDir(source);
   for await (const file of files) {
     const srcPath = join(source, file.name);
     const destPath = join(target, file.name);
 
-    // IGNORE LIST
+    // NEVER touch live config, env or database
     if (file.name === 'ciprnode.toml' || file.name === '.env') {
-      // Check existence at dest. If they have a live config/env, don't overwrite it!
       if (await exists(destPath)) {
         console.log(`  Skipping config: ${file.name}`);
         continue;
       }
     }
     if (file.name === 'data') {
-      // Check existence at dest
       if (await exists(destPath)) {
         console.log(`  Skipping data dir: ${file.name}`);
         continue;
       }
     }
 
-    // Copy (Overwrite)
-    // console.log(`  Copying ${file.name}...`);
+    // Asset directories: wipe destination first so deleted files don't linger
+    if (file.isDirectory && REPLACE_DIRS.includes(file.name)) {
+      if (await exists(destPath)) {
+        console.log(`  Replacing dir: ${file.name}/`);
+        await Deno.remove(destPath, { recursive: true });
+      }
+    }
+
     await copy(srcPath, destPath, { overwrite: true });
   }
 };

@@ -3,17 +3,102 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= it.title || it.t('meta.title') %></title>
+
+  <% if (it.meta?.author) { %>
+  <meta name="author" content="<%= it.meta.author %>" />
+  <% } %>
   <meta name="description" content="<%= it.description || it.t('meta.description') %>" />
+  <% if (it.meta?.description) { %>
+  <meta name="summary" content="<%= it.meta.description %>" />
+  <% } %>
+  <% if (it.meta?.currentDate) { %>
+  <meta name="revised" content="<%= it.meta.currentDate %>" />
+  <% } %>
+  <% if (it.meta?.subject) { %>
+  <meta name="topic" content="<%= it.meta.subject %>" />
+  <% } %>
+  <% if (it.meta?.keywords) { %>
+  <meta name="keywords" content="<%= it.meta.keywords %>" />
+  <% } %>
+
+  <meta name="generator" content="Ciprnode zero" />
+  <% if (it.meta?.lang) { %>
+  <meta name="content-language" content="<%= it.meta.lang %>" />
+  <% } %>
+  <% if (it.meta?.geoPosition) { %>
+  <meta name="geo.position" content="<%= it.meta.geoPosition %>" />
+  <meta name="ICBM" content="<%= it.meta.geoPosition %>" />
+  <% } %>
+
+  <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+  <% if (it.meta?.title) { %>
+  <meta name="DC.Title" content="<%= it.meta.title %>" />
+  <% } %>
+  <% if (it.meta?.author) { %>
+  <meta name="DC.Creator" content="<%= it.meta.author %>" />
+  <% } %>
+  <% if (it.meta?.subject) { %>
+  <meta name="DC.Subject" content="<%= it.meta.subject %>" />
+  <% } %>
+  <% if (it.meta?.description) { %>
+  <meta name="DC.Description" content="<%= it.meta.description %>" />
+  <% } %>
+  <% if (it.meta?.publisher) { %>
+  <meta name="DC.Publisher" content="<%= it.meta.publisher %>" />
+  <% } %>
+  <% if (it.meta?.contributor) { %>
+  <meta name="DC.Contributor" content="<%= it.meta.contributor %>" />
+  <% } %>
+  <% if (it.meta?.currentDate) { %>
+  <meta name="DC.Date" content="<%= it.meta.currentDate %>" />
+  <% } %>
+  <meta name="DC.Type" content="Text" />
+  <meta name="DC.Format" content="text/html" />
+  <% if (it.meta?.isbn) { %>
+  <meta name="DC.Identifier" content="<%= it.meta.isbn %>" />
+  <% } %>
+  <% if (it.meta?.za) { %>
+  <meta name="DC.Source" content="https://<%= it.meta.za %>/" />
+  <meta name="DC.Relation" content="https://<%= it.meta.za %>/" />
+  <% } %>
+  <% if (it.meta?.lang) { %>
+  <meta name="DC.Language" content="<%= it.meta.lang %>" />
+  <% } %>
+  <% if (it.meta?.coverage) { %>
+  <meta name="DC.Coverage" content="<%= it.meta.coverage %>" />
+  <% } %>
+  <% if (it.meta?.rightsUrl) { %>
+  <meta name="DC.Rights" content="<%= it.meta.rightsUrl %>" />
+  <% } %>
+
+  <meta name="robots" content="index, follow, notranslate" />
+  <meta name="notranslate" content="true" />
+  <meta name="noimageindex" content="false" />
+  <% if (it.meta?.unavailableAfter) { %>
+  <meta name="unavailable_after" content="<%= it.meta.unavailableAfter %>" />
+  <% } %>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <% if (it.meta?.authorUrl) { %>
+  <link href="<%= it.meta.authorUrl %>" rel="author"<% if (it.meta?.author) { %> title="<%= it.meta.author %>"<% } %> />
+  <% } %>
+  <% if (it.meta?.rightsUrl) { %>
+  <link href="<%= it.meta.rightsUrl %>" rel="license"<% if (it.meta?.rights) { %> title="<%= it.meta.rights %>"<% } %> />
+  <% } %>
 
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" href="/figures/apple-touch-icon.png" />
+
   <meta name="theme-color" content="#ffffff" />
+
   <link rel="stylesheet" href="/css/htr.css" />
   <script src="/js/htmx.js"></script>
-  <script src="/js/ciprnode.js" defer></script>
+  <script src="/js/ciprnode.js" defer="defer"></script>
+
+  <title><%= it.title || it.t('meta.title') %></title>
 </head>
 
 <body>

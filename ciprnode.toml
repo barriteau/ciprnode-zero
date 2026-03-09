@@ -38,10 +38,48 @@ page_size = 5
 #: Internal Search Engine (ISE) Providers (optional)
 # These represent external APIs used for executing `QUERY /ri/` equivalent searches.
 # You can define multiple `[[ise_provider]]` chunks for different search domains.
-# Example:
 [[ise_provider]]
 name = "pagefind"
 url = "https://cgt.barriteau.net/"
+
+# [[ise_provider]]
+# name = "pagefind"
+# url = "https://juan.barriteau.net/"
+
+# This is extra metadata for the ciprface. It is not part of the
+# indexed data; it just makes the ciprnode easier to find on the web.
+[meta_data]
+
+# Full name of the author/owner of the site
+author = "Juan Barriteau"
+
+# URL of an author page or profile (used in rel="author" link and DC.Creator)
+author_url = "https://juan.barriteau.net/"
+
+# Topic / subject summary of the site (used in meta[name=topic] and DC.Subject)
+subject = "Redes, infraestructura, conexiones y proyectos de Juan Barriteau"
+
+# Publisher name (DC.Publisher)
+publisher = "Juan Barriteau"
+
+# Contributor(s) (DC.Contributor, comma-separated if multiple)
+# contributor = ""
+
+# DC.Identifier: ISBN, DOI, or other formal identifier (optional)
+# isbn = ""
+
+# DC.Coverage: spatial/temporal coverage description (optional)
+# coverage = ""
+
+
+# License/rights short label (used in rel="license" link title)
+rights = "CC BY 4.0"
+
+# URL to the rights / license document (used in meta[name=DC.Rights] and rel="license")
+rights_url = "https://creativecommons.org/licenses/by/4.0/"
+
+# Date after which the page should be considered unavailable (RFC 7231 HTTP-date format)
+# unavailable_after = "31 Dec 2099 23:59:59 GMT"
 
 [network]
 

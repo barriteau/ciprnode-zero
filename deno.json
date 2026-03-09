@@ -22,6 +22,7 @@
     "@std/dotenv": "jsr:@std/dotenv@^0.225.2"
   },
   "lint": {
+    "exclude": ["public/js/htmx.js"],
     "rules": {
       "tags": ["recommended"]
     }

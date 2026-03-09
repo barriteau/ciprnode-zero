@@ -1,11 +1,5 @@
 <footer>
   <span>
-    <a id="to-help" href="/help" title="<%= it.t('header.help') %>">
-      <%= it.t('header.help') %>
-    </a>
-  </span>
-
-  <span>
     <a href="/profiles/cipr.json"><%= it.t('footer.profile') %></a>
   </span>
 

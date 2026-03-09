@@ -110,6 +110,8 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
         ? data.test_words.split(/\s+/).filter((k) => k.length > 0)
         : (Array.isArray(data.test_words) ? data.test_words : []),
       debug: Deno.args.includes('--debug') || data.debug === true || false,
+      // Optional [meta_data] section — passed through as-is; individual keys may be absent.
+      meta_data: data.meta_data && typeof data.meta_data === 'object' ? data.meta_data : null,
       dns: {
         do53: Array.isArray(network.do53)
           ? network.do53
@@ -154,6 +156,7 @@ const getDefaultConfig = () => {
     bootstrap_node: '',
     page_size: 50,
     test_words: [],
+    meta_data: null,
     dns: {
       do53: [],
       doh: [],

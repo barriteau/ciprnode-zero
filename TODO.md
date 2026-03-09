@@ -1,62 +1,38 @@
-# TODO: Pending tasks
+# TODO
 
-Validation for resindex availability
+Legend:
 
----
+[…] tarea pendiente
+[¿?] tarea que requiere información adicional para ejecutarse
+[¡!] tarea a riesgo de ser descartada
+[🗙] tarea descartada
+[✔] tarea finalizada
 
-completar head ensrc\templates\layouts\base.eta
+## General tasks
 
----
+- [✔] Completar head en \src\templates\layouts\base.eta
+- […] Improve the console logging: silent, regular and debugging
+- […] Review HATEOAS in each endpoint, one by one
+- […] Create the "Explore" page with random entries from the ciprdup
+- […] Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml
+- […] Implementation of the leech mode
+- […] Add Ukrainian, Farsi and Arabic languages
+- […] Implement dark mode
+- […] Update ALPS
+- […] Update the README.md with the latest changes
+- [🗙] Improve the texts in the "Help" page
 
-Review HATEOAS in each endpoint, one by one
+## External tasks
 
----
+- […] Finish the HTRGen
+- […] Create the cipr.info HTR with the Specification, the usage guide and the FAQ, and publish its ciprnode
+- […] Create the guasa.art HTR and publish its ciprnode
+- […] Create the juan.barriteau.net and cgt.barriteau.net HTRs and publish their ciprnode
+- […] Simple self hosted payment processor for mecenazgo with cryptomoney
 
-Update the README.md with the latest changes.
+## Special tasks
 
----
-
-Improve the console logging: silent, regular and debugging.
-
----
-
-Create the cipr.info HTR with the Specification and a friendly guide to get indexed in the Cipr.
-
----
-
-Update ALPS again
-
----
-
-Create the "Discover" page with random entries from the ciprdup
-
----
-
-Improve the texts in the "Help" page
-
----
-
-Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml.
-
----
-
-Implementation of the leech mode.
-
----
-
-Add Ukrainian, Farsi and Arabic languages
-
----
-
-Implement dark mode.
-
----
-
-Vaina simple para mecenazgo con criptomonedas.
-
----
-
-## Diaporama
+### Diaporama
 
 To create a photo comic (fumetti, photonovel, picture movie; in Spanish: diaporama, fotonovela, fotohistoria...) I want you to create a sequence of 9 images as described bellow.
 

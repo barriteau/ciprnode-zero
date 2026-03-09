@@ -1,5 +1,5 @@
 import { Database } from 'jsr:@db/sqlite@^0.12.0';
-import { dirname, resolve } from 'jsr:@std/path@^1.0.8';
+import { resolve } from 'jsr:@std/path@^1.0.8';
 import { existsSync } from 'jsr:@std/fs@^1.0.6';
 
 const RAW_CODE_STRING =
@@ -9,7 +9,7 @@ const jsonPath = resolve(Deno.cwd(), 'src', 'db', 'languages.json');
 let existingLangs = [];
 try {
   existingLangs = JSON.parse(Deno.readTextFileSync(jsonPath));
-} catch (e) {}
+} catch { /* file doesn't exist yet — start fresh */ }
 
 const existingDict = {};
 existingLangs.forEach((l) => existingDict[l.lang_code] = l.lang_name);

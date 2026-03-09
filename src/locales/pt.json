@@ -5,7 +5,6 @@
   },
   "header": {
     "mode_toggle": "Modo",
-    "help": "Ajuda",
     "stats": "Última entrada de {count} adicionada em {date}"
   },
   "search": {
@@ -61,43 +60,6 @@
   },
   "error": {
     "noscript": "O uso de ECMAScript/JavaScript não é opcional aqui porque este é um cliente simples para uma rede diversificada de recursos. Sem scripts, a busca não é possível. Por exemplo, esta ferramenta torna-se inútil nessas condições."
-  },
-  "help": {
-    "title": "Central de Ajuda",
-    "faq": {
-      "title": "Perguntas Frequentes",
-      "q1": "O que é o Cipr?",
-      "a1": "Cipr é uma rede descentralizada para indexação de recursos públicos.",
-      "q2": "O que é um ciprnode?",
-      "a2": "Um ciprnode é um servidor que executa o software Cipr e hospeda uma parte do índice.",
-      "q3": "Como usar o ciprnode?",
-      "a3": "Use a barra de pesquisa na página inicial para encontrar recursos indexados.",
-      "q4": "Como contribuir com o Cipr?",
-      "a4": "Você pode contribuir operando um nó ou desenvolvendo o software.",
-      "q5": "Como instalar o ciprnode?",
-      "a5": "Siga o guia de instalação na documentação oficial.",
-      "q6": "Como atualizar o ciprnode?",
-      "a6": "Use o comando de atualização integrado.",
-      "q7": "Como desinstalar o ciprnode?",
-      "a7": "Remova o diretório do aplicativo e a configuração do serviço.",
-      "q8": "Como obter ajuda?",
-      "a8": "Visite os fóruns da comunidade ou verifique a documentação."
-    },
-    "source": {
-      "title": "Código Fonte",
-      "content": "O código fonte é aberto e está disponível."
-    },
-    "license": {
-      "title": "Licença"
-    },
-    "privacy": {
-      "title": "Política de Privacidade",
-      "content": "Nós respeitamos a sua privacidade."
-    },
-    "terms": {
-      "title": "Termos de Serviço",
-      "content": "Use por sua própria conta e risco."
-    }
   },
   "pwa": {
     "update_available": "Uma nova versão desta página está disponível.",

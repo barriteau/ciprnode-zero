@@ -1581,7 +1581,7 @@ div.actions>label>a {
     font-family: "Libertinus Sans", sans-serif;
     background-color: transparent;
     color: #e47900;
-    border: 1px solid orange;
+    border: 1px solid #ffa500;
     padding: 0 4px;
     border-radius: 4px;
     display: inline-block;

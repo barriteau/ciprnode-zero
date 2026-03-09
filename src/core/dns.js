@@ -218,7 +218,7 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
       } finally {
         try {
           tlsConn.close();
-        } catch {}
+        } catch { /* connection already closed — ignore */ }
       }
     } else {
       throw new Error('No IP resolved');

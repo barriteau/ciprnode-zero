@@ -726,8 +726,24 @@ const initServiceWorker = () => {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (!refreshing) {
         refreshing = true;
-        globalThis.location.reload();
+        // Navigate with a cache-busting query param so the browser fetches fresh
+        // HTML from the network rather than returning a cached copy.
+        // The SW's network-first handler will re-cache all assets once loaded.
+        const url = new URL(globalThis.location.href);
+        url.searchParams.set('v', Date.now());
+        globalThis.location.replace(url.toString());
       }
     });
+
+    // Strip the ?v= param from the URL after the cache-busted reload so it
+    // doesn't appear in the address bar, analytics, or HTMX history.
+    const params = new URLSearchParams(globalThis.location.search);
+    if (params.has('v')) {
+      params.delete('v');
+      const clean = params.toString()
+        ? `${globalThis.location.pathname}?${params}`
+        : globalThis.location.pathname;
+      history.replaceState(null, '', clean);
+    }
   }
 };

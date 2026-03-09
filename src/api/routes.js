@@ -6,8 +6,6 @@
 import * as RootController from './controllers/root.js';
 import * as EntryController from './controllers/entry.js';
 import * as SearchController from './controllers/search.js';
-import * as HelpController from './controllers/help.js';
-// import { logDebug } from '../core/logger.js';
 
 /**
  * Routes the incoming request to the appropriate handler.
@@ -40,11 +38,6 @@ export const handleRequest = (request, db, config) => {
     if (method === 'HEAD') {
       return RootController.head(request, db, config);
     }
-  }
-
-  // Help Page
-  if (path === '/help') {
-    return HelpController.get(request, db, config);
   }
 
   // 1.5 Languages autocomplete endpoint

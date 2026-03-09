@@ -412,6 +412,39 @@ export const query = async (req, db, config, isResindex = false) => {
       hasPrevPage: currentPageUI > 1,
       hasNextPage: items.length >= defaultSize && currentPageUI < 100, // naive peek
     },
+    // Optional metadata from [meta_data] section in ciprnode.toml.
+    // Also includes derived values from [cipr_entry] for convenience in base.eta.
+    meta: (() => {
+      const md = config.meta_data || {};
+      // geo.position: only if both coordinates are present and non-zero
+      const lat = config.latitude;
+      const lon = config.longitude;
+      const geoPosition = (lat && lon)
+        ? `${(lat / 10_000_000).toFixed(7)};${(lon / 10_000_000).toFixed(7)}`
+        : null;
+      return {
+        // From cipr_entry (always available when set in config)
+        title: config.title || null,
+        description: config.description || null,
+        keywords: config.keywords?.length ? config.keywords.join(', ') : null,
+        lang: config.primary_lang || null,
+        za: config.za || null,
+        geoPosition,
+        // Current date in ISO 8601 format (YYYY-MM-DD), for meta[name=revised] and DC.Date
+        currentDate: new Date().toISOString().substring(0, 10),
+        // From [meta_data] — all optional
+        author: md.author || null,
+        authorUrl: md.author_url || null,
+        subject: md.subject || null,
+        publisher: md.publisher || null,
+        contributor: md.contributor || null,
+        isbn: md.isbn || null,
+        coverage: md.coverage || null,
+        rights: md.rights || null,
+        rightsUrl: md.rights_url || null,
+        unavailableAfter: md.unavailable_after || null,
+      };
+    })(),
   };
 
   let html;

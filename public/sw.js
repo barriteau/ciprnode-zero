@@ -1,14 +1,15 @@
-const CACHE_NAME = 'ciprface-20260308215841';
+const CACHE_NAME = 'ciprface-20260309143941';
 const STATIC_ASSETS = [
-  '/',
+  '/css/htr.css',
   '/css/reset.css',
   '/css/font-Libertinus.css',
   '/css/font-Poller-One.css',
   '/css/font-Iosevka.css',
   '/css/typography.css',
-  '/css/highlight.js/xcode.css',
+  '/css/icons.css',
   '/css/main.css',
   '/css/media-queries.css',
+  '/css/highlight.js/xcode.css',
   '/js/ciprnode.js',
   '/js/htmx.js',
   '/favicon.ico',
@@ -31,7 +32,9 @@ self.addEventListener('activate', (event) => {
           }
         }),
       );
-    }),
+    // Take control of all open tabs immediately so we don't
+    // need a second page load after SKIP_WAITING + controllerchange.
+    }).then(() => self.clients.claim()),
   );
 });
 

@@ -3,7 +3,7 @@
  * @description Cloudflare DNS Provider integration for automated updates.
  */
 
-import { log } from '../../src/core/logger.js';
+
 
 const CF_API_URL = 'https://api.cloudflare.com/client/v4';
 
