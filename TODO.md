@@ -4,19 +4,7 @@ Validation for resindex availability
 
 ---
 
-resindeeeeeeex
-
----
-
-Auto update versioning in sw.js
-
----
-
-i18n faltante
-
----
-
-Margin bottom to Results (n-m)
+completar head ensrc\templates\layouts\base.eta
 
 ---
 
@@ -56,7 +44,7 @@ Implementation of the leech mode.
 
 ---
 
-Add Ukrainian and Arabic languages
+Add Ukrainian, Farsi and Arabic languages
 
 ---
 

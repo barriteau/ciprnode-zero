@@ -627,6 +627,8 @@ const initIntraSearch = () => {
         const entry = e.target.closest('.cipr-entry');
         if (entry && entry.dataset.za) {
           currentZa = entry.dataset.za;
+          const zaLabel = document.getElementById('ri-search-za');
+          if (zaLabel) zaLabel.textContent = `*.${currentZa}`;
           searchInput.value = '';
           searchResults.innerHTML = '';
           // Allow offscreen CSS transition to start before focusing

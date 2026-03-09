@@ -5,7 +5,7 @@
         <svg-icon class="cross small"></svg-icon>
       </button>
 
-      <h2><%= it.t('intra_search.heading') %></h2>
+      <h2><%= it.t('intra_search.heading') %> <span id="ri-search-za"></span></h2>
 
       <form id="ri-search-form">
         <input id="ri-search" type="search" placeholder="<%= it.t('intra_search.placeholder') %>" autocomplete="off" spellcheck="false" />
