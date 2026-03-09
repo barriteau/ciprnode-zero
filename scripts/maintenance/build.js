@@ -60,6 +60,7 @@ const build = async () => {
       '--allow-write',
       '--allow-env',
       '--allow-ffi',
+      '--allow-import',
       '--target',
       t.target,
       '--output',

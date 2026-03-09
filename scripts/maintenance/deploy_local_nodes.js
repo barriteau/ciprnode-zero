@@ -11,8 +11,28 @@ const CIPR_NODES_ROOT = 'D:\\Proyectos_VSCode\\Cipr\\ciprnodes';
 const DIST_ARTEFACT = 'dist/ciprnode-zero-win-x64.zip';
 const TEMP_EXTRACT_DIR = 'dist/temp_extract';
 
+const SW_PATH = 'public/sw.js';
+
+/**
+ * Patches the CACHE_NAME constant in sw.js with a timestamp-based value.
+ * Format: ciprface-YYYYMMDDHHMMSS
+ */
+const patchSwCacheName = async () => {
+  const now = new Date();
+  const ts = now.toISOString().replace(/[-T:.Z]/g, '').slice(0, 14); // YYYYMMDDHHmmss
+  const cacheName = `ciprface-${ts}`;
+  const src = await Deno.readTextFile(SW_PATH);
+  const patched = src.replace(/const CACHE_NAME = '[^']*'/, `const CACHE_NAME = '${cacheName}'`);
+  await Deno.writeTextFile(SW_PATH, patched);
+  console.log(`  CACHE_NAME set to: ${cacheName}`);
+};
+
 const main = async () => {
   console.log('Starting Local Deployment...');
+
+  // 0. Patch sw.js cache name with a fresh timestamp
+  console.log('Patching service worker cache name...');
+  await patchSwCacheName();
 
   // 1. Always Build (Ensure latest code)
   console.log('Building project...');

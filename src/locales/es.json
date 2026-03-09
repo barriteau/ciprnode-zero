@@ -29,8 +29,7 @@
       "ol_0": "Ninguno",
       "ol_1": "Personal",
       "ol_2": "Grupos",
-      "ol_3": "Universal",
-      "ol_unknown": "no declarado"
+      "ol_3": "Universal"
     },
     "options": {
       "toggle": "Filtros de búsqueda",
@@ -40,7 +39,9 @@
   "results": {
     "heading": "Resultados ({start}-{end})",
     "none": "No se encontraron resultados.",
-    "universal": "Universal"
+    "universal": "Universal",
+    "visit_ciprnode": "visita ciprnode.",
+    "intra_search": "intrabuscar en"
   },
   "footer": {
     "profile": "Perfil API",
@@ -100,5 +101,11 @@
   "pwa": {
     "update_available": "Hay una nueva versión de esta página disponible.",
     "reload": "Recargar para actualizar"
+  },
+  "intra_search": {
+    "close": "Cerrar panel de búsqueda",
+    "toggle": "Abrir/Cerrar panel de búsqueda",
+    "heading": "Buscar en",
+    "placeholder": "Buscar..."
   }
 }

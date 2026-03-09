@@ -2,7 +2,9 @@
   <% const start = it.results.length === 0 ? 0 : ((it.pagination.currentPage - 1) * it.pagination.pageSize) + 1; %>
   <% const end = it.results.length === 0 ? 0 : start + it.results.length - 1; %>
 
-  <h2><%= it.t('results.heading', { start: start, end: end }) %></h2>
+  <h2>
+    <%= it.t('results.heading', { start: start, end: end }) %>
+  </h2>
 
   <% if (it.results.length === 0) { %>
   <p><%= it.t('results.none') %></p>
@@ -11,33 +13,45 @@
   <% it.results.forEach(function(item) { %>
   <article class="cipr-entry" data-za="<%= item.za %>">
     <h3><%= item.title %></h3>
+
     <p class="description"><%= item.description %></p>
 
-    <div class="actions">
-      <a href="https://ciprnode.<%= item.za %>">visit ciprnode.<%= item.za %></a>
+    <small class="meta">
+      <time datetime="<%= new Date(item.timestamp * 1000).toISOString() %>">
+        <%= new Date(item.timestamp * 1000).toLocaleString(it.locale === 'en' ? 'en-US' : it.locale, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) %>
+      </time>
+      •
+      <code>OL<%= item.ol ?? 0 %></code>
+      •
+      <% if (item.lang_name || item.lang_name_en) { %>
+        <%= item.lang_name || item.lang_name_en %>
+        <% if (item.lang_name && item.lang_name_en && item.lang_name !== item.lang_name_en) { %>
+          &nbsp;<i><%= item.lang_name_en %></i>
+        <% } %>
+      <% } %>
 
-      <label title="Búsqueda" tabindex="0" class="js-req disabled hidden intra-search-label">
-        • intra-search at *.<%= item.za %>
-        <input class="search-toggle" type="checkbox" role="button" form="ri-search-form" aria-pressed="true" />
+      <% if (item.latitude !== null && item.longitude !== null && item.latitude !== undefined) { %>
+      <b><span class="reverse-geocode" data-lat="<%= item.latitude / 10000000 %>" data-lon="<%= item.longitude / 10000000 %>" data-prefix="<%= it.t('search.filters.near') %>"></span></b>
+      <% } else { %>
+      •
+      <b><span class="location-universal"><%= it.t('results.universal') %></span></b>
+      <% } %>
+    </small>
+
+    <div class="actions">
+      <a href="https://ciprnode.<%= item.za %>"><%= it.t('results.visit_ciprnode') %> <%= item.za %></a>
+
+      <label id="intra-search-label-<%= item.za %>" tabindex="0" class="js-req disabled hidden intra-search-label">
+        <a>
+          <%= it.t('results.intra_search') %> *.<%= item.za %>
+          <input id="intra-search-toggle-<%= item.za %>" class="search-toggle" type="checkbox" role="button" form="ri-search-form" aria-pressed="true" />
+        </a>
       </label>
     </div>
-
-    <small class="meta">
-      <span class="za"><%= item.za %></span>
-      • <time datetime="<%= new Date(item.timestamp * 1000).toISOString() %>"><%= new Date(item.timestamp * 1000).toLocaleString(it.locale === 'en' ? 'en-US' : it.locale, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) %></time>
-      • OL: <%= item.ol || it.t('search.filters.ol_unknown') %> <% if (item.lang_name || item.lang_name_en) { %>
-      • <%= item.lang_name || item.lang_name_en %><% if (item.lang_name && item.lang_name_en && item.lang_name !== item.lang_name_en) { %> / <%= item.lang_name_en %><% } %>
-      <% } %>
-      <% if (item.latitude !== null && item.longitude !== null && item.latitude !== undefined) { %>
-      <span class="reverse-geocode" data-lat="<%= item.latitude / 10000000 %>" data-lon="<%= item.longitude / 10000000 %>" data-prefix="<%= it.t('search.filters.near') %>"></span>
-      <% } else { %>
-      <span class="location-universal">• <%= it.t('results.universal') %></span><% } %>
-    </small>
   </article>
   <% }) %>
   <% } %>
 
-  <!-- Pagination -->
   <% if (it.pagination && (it.pagination.hasPrevPage || it.pagination.hasNextPage)) { %>
   <div class="pagination">
     <%

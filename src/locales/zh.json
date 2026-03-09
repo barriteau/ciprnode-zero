@@ -29,8 +29,7 @@
       "ol_0": "无",
       "ol_1": "个人",
       "ol_2": "群体",
-      "ol_3": "普遍",
-      "ol_unknown": "未声明"
+      "ol_3": "普遍"
     },
     "options": {
       "toggle": "搜索过滤",
@@ -40,7 +39,9 @@
   "results": {
     "heading": "结果 ({start}-{end})",
     "none": "未找到结果。",
-    "universal": "普遍"
+    "universal": "普遍",
+    "visit_ciprnode": "访问 ciprnode.",
+    "intra_search": "内部搜索"
   },
   "footer": {
     "profile": "API 资料",
@@ -100,5 +101,11 @@
   "pwa": {
     "update_available": "有新版本的页面可用。",
     "reload": "重新加载以更新"
+  },
+  "intra_search": {
+    "close": "关闭搜索面板",
+    "toggle": "打开/关闭搜索面板",
+    "heading": "搜索",
+    "placeholder": "搜索..."
   }
 }

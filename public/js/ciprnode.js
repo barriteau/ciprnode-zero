@@ -17,12 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
   initIntraSearchAvailability();
 });
 
-document.addEventListener('htmx:load', (_evt) => {
+const reinitDynamicContent = () => {
   initReverseGeocoding();
   initIntraSearchAvailability();
-});
+};
 
-// Manage HTMX async requests globally
+// HTMX 4 fires `htmx:after:process` after newly swapped elements have been
+// fully initialized. This is safer than `htmx:after:settle` (which fires
+// before htmx calls process() on new elements).
+document.addEventListener('htmx:after:process', reinitDynamicContent);
+// Also catch history navigation restores:
+document.addEventListener('htmx:before:restore:history', reinitDynamicContent);
+
+// Manage HTMX async requests globally (event name is same in HTMX 4)
 document.addEventListener('htmx:config:request', (evt) => {
   // Insert Accept-Language
   if (evt.detail && evt.detail.headers) {
@@ -523,51 +530,68 @@ const toggleResindexUI = (isAvailable) => {
   });
 };
 
+/**
+ * Checks availability of each ciprnode's intra-search (ISE) endpoint.
+ * Caches results in sessionStorage. Also re-applies cached results on every
+ * call so that paginated/swapped content gets the correct visibility state.
+ */
 const initIntraSearchAvailability = () => {
-  const entries = document.querySelectorAll('.cipr-entry:not([data-ri-checked="true"])');
-  if (entries.length === 0) return;
+  const allEntries = document.querySelectorAll('.cipr-entry[data-za]');
+  if (allEntries.length === 0) return;
 
-  const zaSet = new Set();
-  entries.forEach((entry) => {
-    entry.dataset.riChecked = 'true';
-    if (entry.dataset.za) {
-      zaSet.add(entry.dataset.za);
+  const zaAll = new Set();
+  const zaNew = new Set();
+
+  allEntries.forEach((entry) => {
+    const za = entry.dataset.za;
+    if (!za) return;
+    zaAll.add(za);
+    if (!entry.dataset.riChecked) {
+      entry.dataset.riChecked = 'true';
+      zaNew.add(za);
     }
   });
 
-  zaSet.forEach(async (za) => {
+  // Re-apply any cached results to ALL entries (handles pagination DOM replacement)
+  zaAll.forEach((za) => {
     const cacheKey = `cipr_ri_available_${za}`;
     const cachedItemStr = sessionStorage.getItem(cacheKey);
-    let isAvailable = false;
-
     if (cachedItemStr) {
       try {
         const cachedItem = JSON.parse(cachedItemStr);
         if (Date.now() < cachedItem.expiry) {
-          isAvailable = cachedItem.data;
-          toggleIntraSearchUI(za, isAvailable);
-          return;
+          toggleIntraSearchUI(za, cachedItem.data);
         }
       } catch (_e) {
         sessionStorage.removeItem(cacheKey);
       }
     }
+  });
 
+  // Fetch availability for zas we haven't checked yet in this session
+  zaNew.forEach(async (za) => {
+    const cacheKey = `cipr_ri_available_${za}`;
+    const cachedItemStr = sessionStorage.getItem(cacheKey);
+    if (cachedItemStr) {
+      try {
+        const cachedItem = JSON.parse(cachedItemStr);
+        if (Date.now() < cachedItem.expiry) return; // already handled above
+      } catch (_e) {
+        sessionStorage.removeItem(cacheKey);
+      }
+    }
+
+    let isAvailable = false;
     try {
       const response = await fetch(`https://ciprnode.${za}/ri/`, { method: 'HEAD' });
-      isAvailable = response.ok; // 200 OK means it has providers.
-
+      isAvailable = response.ok;
       sessionStorage.setItem(
         cacheKey,
-        JSON.stringify({
-          data: isAvailable,
-          expiry: Date.now() + 240000, // 4 minutes
-        }),
+        JSON.stringify({ data: isAvailable, expiry: Date.now() + 240000 }),
       );
     } catch (_e) {
       isAvailable = false;
     }
-
     toggleIntraSearchUI(za, isAvailable);
   });
 };

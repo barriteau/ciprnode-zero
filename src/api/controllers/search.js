@@ -294,12 +294,16 @@ export const query = async (req, db, config, isResindex = false) => {
       // Execute all ISE plugins concurrently
       const promises = config.ise_provider.map(async (provider) => {
         try {
-          const { queryResindex } = await import(`../../../integrations/ise/${provider.name}.js`);
+          // Build an absolute file URL from CWD so the compiled binary loads
+          // the integration from the deployment directory (not the temp embed).
+          const pluginPath = `file://${Deno.cwd().replace(/\\/g, '/')}/integrations/ise/${provider.name}.js`;
+          const { queryResindex } = await import(pluginPath);
           return await queryResindex(provider, options);
         } catch (e) {
           console.error(
             `[ISE] Failed to dynamically load or run ISE provider '${provider.name}':`,
             e.message,
+            e.stack,
           );
           return { count: 0, items: [] };
         }
