@@ -1,7 +1,22 @@
-# Environment: dev, test or prod
+#: General system configuration
+
+# Environment
+# dev
+# test
+# prod
 env = "dev"
+
+# Log level
+# 0: silent
+# 1: operational
+# 2: verbose
+log_level = 2
+
+# A 'true' value here writes the the same output of 'log_level = 2' to
+# the logs files (ciprnode-*.log) in the /logs/ folder.
 debug = true
 
+#: The actual data of the resource in the Cipr, what goes to the Cipr, what identifies your resources
 [cipr_entry]
 
 # The Zone Apex for this resource:
@@ -13,11 +28,11 @@ title = "La red de Juan Barriteau"
 # A brief description of the resource, max 256 characters
 description = "Todo lo que Juan hace en red, redes con gente o sin ella"
 
-# Space separated list of keywords, max 512 characters, case insensitive.
-# Alternatively, keywords can be provided as an array of strings:
-# keywords = ["proyec", "top", "network", "infrastructure"]
+# Space separated list of keywords, max 512 characters, case insensitive. Alternatively, keywords
+# can be provided as an array of strings: keywords = ["project", "top", "network", "infrastructure"]
 keywords = "red redes infra infraestructura network infrastructure connection conexión conexiones"
 
+# Primary language of the resource, the main one, leave it empty if the resource is universally accesible.
 primary_lang = "kn"
 
 # Offensiveness Level of the resource
@@ -27,13 +42,10 @@ primary_lang = "kn"
 # 3: Universally offensive content
 ol = 0
 
-# Geographical coordinates in WGS 84 (EPSG:4326) format multiplied by 10000000 to obtain an integer value
-# 0 to skip, any precision level allowed
+# Geographical coordinates in WGS 84 (EPSG:4326) format multiplied by 10000000 to obtain an
+# integer value. Any precision level allowed. Use 0 if geolocation is irrelevant for the resource.
 latitude = 223027110
 longitude = 1141772160
-
-[ciprface]
-page_size = 5
 
 #: Internal Search Engine (ISE) Providers (optional)
 # These represent external APIs used for executing `QUERY /ri/` equivalent searches.
@@ -46,8 +58,7 @@ url = "https://cgt.barriteau.net/"
 # name = "pagefind"
 # url = "https://juan.barriteau.net/"
 
-# This is extra metadata for the ciprface. It is not part of the
-# indexed data; it just makes the ciprnode easier to find on the web.
+#: Extra metadata for the ciprface. It is not part of the indexed data, this just makes the ciprnode easier to find on the web.
 [meta_data]
 
 # Full name of the author/owner of the site
@@ -81,6 +92,13 @@ rights_url = "https://creativecommons.org/licenses/by/4.0/"
 # Date after which the page should be considered unavailable (RFC 7231 HTTP-date format)
 # unavailable_after = "31 Dec 2099 23:59:59 GMT"
 
+#: Front-end related configuration
+[ciprface]
+
+# Number of items per page
+page_size = 5
+
+#: Network related configuration
 [network]
 
 # A ciprnode listens only in the port 443, change this

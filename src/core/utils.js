@@ -5,6 +5,52 @@
 
 import { createSha256Hash } from './crypto.js';
 
+const OK = 'color: #98f8d3';
+const WA = 'color: #ffff6c';
+const KO = 'color: #a5291e';
+
+/**
+ * Draw a separator line in the console
+ * @param {string} type what type of line to draw, OK or KO
+ */
+export const line = (type) => {
+  const LI = `%c${'━'.repeat(80)}`;
+  switch (type) {
+    case 'END':
+      console.groupEnd();
+      console.log(LI, OK);
+      break;
+    case 'IN':
+      console.log(LI, OK);
+      console.group();
+      break;
+    default:
+      console.log(LI, OK);
+      console.group();
+      break;
+  }
+};
+
+/**
+ * Print colorful messages in the console
+ * @param {string} msg message text
+ * @param {string} type what type of message to show, H1, OK, WA or KO
+ */
+export const msg = (msg, type, indent = false) => {
+  switch (type) {
+    case 'H1': // Header message
+      return console.log(`%c${indent ? '\t' : ''}${msg}`, 'font-weight: bold');
+    case 'OK':
+      return console.log(`%c${indent ? '\t' : ''}${msg}`, OK);
+    case 'WA':
+      return console.warn(`%c${indent ? '\t' : ''}${msg}`, WA);
+    case 'KO':
+      return console.error(`%c${indent ? '\t' : ''}${msg}`, KO);
+    default:
+      return console.log(`%c${indent ? '\t' : ''}${msg}`, OK);
+  }
+};
+
 /**
  * Calculates the number of nodes to propagate to per pulse to infect the network.
  * @param {number} totalNodes - Total numbers of ciprnodes in the ciprdup. (Required)
