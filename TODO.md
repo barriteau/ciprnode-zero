@@ -13,7 +13,7 @@ Legend:
 - [✔] Completar head en \src\templates\layouts\base.eta
 - [✔] move test_words to the root and all [meta_data] to [ciprface] in the .toml
 - [✔] Improve the console logging: silent, regular and debugging
-- […] NO 'using defaults' if config file is not found, error y pajuera (src\core\config.js)
+- [✔] NO 'using defaults' if config file is not found, error y pajuera (src\core\config.js)
 - […] Reorder footer
 - […] Review HATEOAS in each endpoint, one by one
 - […] Create the "Explore" page with random entries from the ciprdup

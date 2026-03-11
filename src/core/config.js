@@ -85,49 +85,48 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
     };
 
     const config = {
-      za: ciprEntry.za || 'localhost',
-      parent_url: data.parent_url || '',
-      port: Number(network.port) || 443,
-      env: data.env || 'development',
-      title: ciprEntry.title || '',
-      description: ciprEntry.description || '',
+      za: ciprEntry.za,
+      parent_url: data.parent_url,
+      port: network.port !== undefined ? Number(network.port) : undefined,
+      env: data.env,
+      title: ciprEntry.title,
+      description: ciprEntry.description,
       keywords: typeof ciprEntry.keywords === 'string'
         ? ciprEntry.keywords.split(' ').filter((k) => k.length > 0)
-        : (Array.isArray(ciprEntry.keywords) ? ciprEntry.keywords : []),
+        : (Array.isArray(ciprEntry.keywords) ? ciprEntry.keywords : undefined),
       primary_lang:
         (typeof ciprEntry.primary_lang === 'string' && ciprEntry.primary_lang.trim() !== '')
           ? ciprEntry.primary_lang.trim()
-          : null,
-      ol: (Number(ciprEntry.ol) === 0 || ciprEntry.ol === '' || ciprEntry.ol === null ||
-          ciprEntry.ol === undefined)
-        ? null
-        : Number(ciprEntry.ol),
+          : undefined,
+      ol: (ciprEntry.ol === '' || ciprEntry.ol === null || ciprEntry.ol === undefined)
+        ? undefined
+        : (Number(ciprEntry.ol) === 0 ? null : Number(ciprEntry.ol)),
       latitude: parseCoord(ciprEntry.latitude),
       longitude: parseCoord(ciprEntry.longitude),
-      bootstrap_node: network.bootstrap_node || '',
-      expected_propagation_time: Number(data.expected_propagation_time) || 120000,
-      page_size: Number(data.ciprface?.page_size) || 50,
+      bootstrap_node: network.bootstrap_node,
+      expected_propagation_time: network.expected_propagation_time !== undefined ? Number(network.expected_propagation_time) : undefined,
+      page_size: data.ciprface?.page_size !== undefined ? Number(data.ciprface.page_size) : undefined,
       test_words: typeof data.test_words === 'string'
         ? data.test_words.split(/\s+/).filter((k) => k.length > 0)
-        : (Array.isArray(data.test_words) ? data.test_words : []),
-      log_level: typeof data.log_level === 'number' ? data.log_level : 2,
+        : (Array.isArray(data.test_words) ? data.test_words : undefined),
+      log_level: typeof data.log_level === 'number' ? data.log_level : undefined,
       debug: Deno.args.includes('--debug') || data.debug === true || false,
       // Optional [meta_data] section — passed through as-is; individual keys may be absent.
-      meta_data: data.meta_data && typeof data.meta_data === 'object' ? data.meta_data : null,
+      meta_data: data.meta_data && typeof data.meta_data === 'object' ? data.meta_data : undefined,
       dns: {
         do53: Array.isArray(network.do53)
           ? network.do53
-          : (Array.isArray(data.do53) ? data.do53 : []),
-        doh: Array.isArray(network.doh) ? network.doh : (Array.isArray(data.doh) ? data.doh : []),
+          : (Array.isArray(data.do53) ? data.do53 : undefined),
+        doh: Array.isArray(network.doh) ? network.doh : (Array.isArray(data.doh) ? data.doh : undefined),
       },
       dns_provider: {
-        name: Deno.env.get('CIPR_DNS_PROVIDER') || data.dns_provider?.name || '',
-        api_token: Deno.env.get('CIPR_DNS_API_TOKEN') || data.dns_provider?.api_token || '',
-        zone_id: Deno.env.get('CIPR_DNS_ZONE_ID') || data.dns_provider?.zone_id || '',
+        name: Deno.env.get('CIPR_DNS_PROVIDER') || data.dns_provider?.name,
+        api_token: Deno.env.get('CIPR_DNS_API_TOKEN') || data.dns_provider?.api_token,
+        zone_id: Deno.env.get('CIPR_DNS_ZONE_ID') || data.dns_provider?.zone_id,
       },
       ise_provider: Array.isArray(data.ise_provider)
         ? data.ise_provider
-        : (data.ise_provider ? [data.ise_provider] : []),
+        : (data.ise_provider ? [data.ise_provider] : undefined),
     };
 
     validateCiprConfig(config);
@@ -136,40 +135,4 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
     msg('Error parsing config file: ' + error, 'KO');
     throw error;
   }
-};
-
-/**
- * Returns default configuration.
- * @returns {CiprNodeConfig}
- */
-const _getDefaultConfig = () => {
-  return {
-    za: 'localhost',
-    parent_url: '',
-    port: 443,
-    env: 'development',
-    title: 'Default Node',
-    description: 'Unconfigured Cipr Node',
-    keywords: [],
-    primary_lang: null,
-    ol: null,
-    latitude: 0,
-    longitude: 0,
-    bootstrap_node: '',
-    page_size: 50,
-    test_words: [],
-    log_level: 2,
-    debug: false,
-    meta_data: null,
-    dns: {
-      do53: [],
-      doh: [],
-    },
-    dns_provider: {
-      name: '',
-      api_token: '',
-      zone_id: '',
-    },
-    ise_provider: [],
-  };
 };

@@ -31,6 +31,22 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     }
   };
 
+  // 0. Validate Port
+  check(
+    'Port',
+    config.port,
+    Number.isInteger(config.port) && config.port >= 1 && config.port <= 65535,
+    `Must be a valid port number (1-65535). Current Value: ${config.port}`,
+  );
+
+  // 0b. Validate Environment
+  check(
+    'Environment (env)',
+    config.env,
+    typeof config.env === 'string' && config.env.trim().length > 0,
+    `Must be a non-empty string. Current Value: "${config.env}"`,
+  );
+
   // 1. Validate za (Zone Apex)
   // Regex: Simple hostname validation (Spec allows unicode, but basic structure is dot separated)
   // Spec: /^[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?$/u
@@ -39,7 +55,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
   check(
     'za (Zone Apex)',
     config.za,
-    zaRegex.test(config.za),
+    typeof config.za === 'string' && zaRegex.test(config.za),
     `Must be a valid zone apex (SLD.TLD). Current Value: "${config.za}"`,
   );
 
@@ -49,8 +65,8 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
   check(
     'Title',
     config.title,
-    titleRegex.test(config.title),
-    `Must be 1-64 chars, no newlines. Current Length: ${config.title.length}`,
+    typeof config.title === 'string' && titleRegex.test(config.title),
+    `Must be 1-64 chars, no newlines. Current Length: ${config.title?.length}`,
   );
 
   // 3. Validate Description
@@ -59,18 +75,19 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
   check(
     'Description',
     config.description,
-    descRegex.test(config.description),
-    `Must be 1-256 chars, no newlines. Current Length: ${config.description.length}`,
+    typeof config.description === 'string' && descRegex.test(config.description),
+    `Must be 1-256 chars, no newlines. Current Length: ${config.description?.length}`,
   );
 
   // 4. Validate Keywords
   // Max 512, No Newlines
   const kwRegex = /^[^\r\n\u2028\u2029]{1,512}$/u;
+  const kwStr = Array.isArray(config.keywords) ? config.keywords.join(' ') : '';
   check(
     'Keywords',
     config.keywords,
-    kwRegex.test(config.keywords),
-    `Must be 1-512 chars, no newlines. Current Length: ${config.keywords.length}`,
+    Array.isArray(config.keywords) && kwStr.length > 0 && kwRegex.test(kwStr),
+    `Must be 1-512 chars, no newlines. Current Length: ${kwStr.length}`,
   );
 
   // 4b. Validate Primary Language
@@ -154,7 +171,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
   );
 
   // 9b. Validate Test Words (Non-fatal warning)
-  const testWordsStr = config.test_words.join(' ');
+  const testWordsStr = Array.isArray(config.test_words) ? config.test_words.join(' ') : '';
   const validTestWords = testWordsStr.length > 0 && testWordsStr.length <= 512;
 
   if (!validTestWords) {
