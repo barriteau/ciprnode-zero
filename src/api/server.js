@@ -1,8 +1,8 @@
 import { handleRequest } from './routes.js';
 import { serveDir } from 'jsr:@std/http@^1.0.24/file-server';
 import { startScheduler } from '../bot/scheduler.js';
-import { logDebug } from '../core/logger.js';
 import { isWithinRadius } from '../db/geo.js';
+import { msg } from '../core/utils.js';
 import { initRenderer, render } from './views/renderer.js';
 
 /**
@@ -80,38 +80,15 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
   try {
     db.function('is_within_radius', isWithinRadius);
   } catch (e) {
-    console.warn('Failed to register is_within_radius function:', e);
+    msg('Failed to register is_within_radius function: ' + e, 'WA');
   }
 
   // Initialize Template Renderer
   await initRenderer();
 
-  const handler = async (request) => {
+  const innerHandler = async (request, _info) => {
     try {
       const url = new URL(request.url);
-
-      if (config.debug) {
-        let reqBody = '';
-        try {
-          if (request.body && (request.method === 'QUERY' || request.method === 'PUT')) {
-            const reqClone = request.clone();
-            reqBody = await reqClone.text();
-          }
-        } catch (_e) {
-          reqBody = '[Error reading body]';
-        }
-
-        logDebug(config, `Incoming request: ${request.method} ${url.pathname}`, {
-          headers: Object.fromEntries(request.headers),
-          query: Object.fromEntries(url.searchParams),
-          body: reqBody,
-        });
-      } else {
-        logDebug(config, `Incoming request: ${request.method} ${url.pathname}`, {
-          headers: Object.fromEntries(request.headers),
-        });
-      }
-      console.log(`${request.method} ${url.pathname}`);
 
       // 0. DoS Protection: Content-Length Limit (512KB)
       const MAX_BODY_SIZE = 512 * 1024; // 524,288 bytes
@@ -119,7 +96,7 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
       if (contentLengthHeader) {
         const contentLength = parseInt(contentLengthHeader, 10);
         if (!isNaN(contentLength) && contentLength > MAX_BODY_SIZE) {
-          console.warn(
+          msg(
             `[DoS Protection] Request rejected: Content-Length ${contentLength} exceeds limit of ${MAX_BODY_SIZE}`,
           );
 
@@ -167,19 +144,6 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
       // 2. API Routing
       const apiResponse = await handleRequest(request, db, config);
       if (apiResponse) {
-        if (config.debug) {
-          // Clone response to read body without consuming the original stream if needed,
-          // strictly speaking Response.clone() is cheap but text() consumes it.
-          // For logging large bodies this might be heavy, but requested for debug.
-          try {
-            const resClone = apiResponse.clone();
-            const bodyText = await resClone.text();
-            logDebug(config, `Outgoing Response: ${apiResponse.status}`, {
-              headers: Object.fromEntries(apiResponse.headers),
-              body: bodyText.substring(0, 1000) + (bodyText.length > 1000 ? '...' : ''),
-            });
-          } catch (_e) { /* ignore body read errors */ }
-        }
         return withCompression(request, apiResponse);
       }
 
@@ -192,7 +156,7 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
 
       return new Response('Not Found', { status: 404 });
     } catch (err) {
-      console.error(`[FATAL] Request Handler Error: ${err.message}`, err);
+      msg(`Request Handler Error: ${err.message}`, 'KO');
 
       let errorHtml;
       try {
@@ -212,11 +176,26 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
     }
   };
 
+  const handler = async (request, info) => {
+    const response = await innerHandler(request, info);
+    
+    // We import LOG_LEVEL from utils to check level
+    // Wait, LOG_LEVEL is not explicitly imported yet let's check
+    // Actually, I'll import it at the top or just use config.log_level which is standard.
+    if (config.log_level >= 2) {
+      const parsedUrl = new URL(request.url);
+      msg(`Incoming request:\n  Method: ${request.method}\n  Path: ${parsedUrl.pathname}\n  From: ${info.remoteAddr.hostname}`, 'REQ');
+      msg(`  Outgoing Response: ${response.status}`, 'RES');
+    }
+    
+    return response;
+  };
+
   const server = Deno.serve({
     port: config.port,
     handler,
     onListen: ({ port, hostname }) => {
-      console.log(`\nLocally listening on http://${hostname}:${port}/\n`);
+      msg(`\nLocally listening on http://${hostname}:${port}/\n`);
       const welcome = `
 █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
 █     Welcome to the Cosmic Index of Public Resources     █
@@ -224,8 +203,8 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
 `;
       (async () => {
         if (skipScheduler) {
-          console.log(welcome);
-          console.log(`[FRONT-DEV MODE] Reachability check and Ciprpulse scheduler disabled.`);
+          msg(welcome, 'H1');
+          msg(` Front-end development mode, reachability check and Ciprpulse scheduler disabled.`, 'WA');
           return;
         }
 
@@ -237,7 +216,7 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
           // Let's use dynamic import to keep startup clean if needed, or better, add validation.js to imports.
           const { verifyNodeHttp } = await import('../core/verification.js');
 
-          console.log(`Verifying reachability for ${ciprnodeHostname}...`);
+          msg(`Verifying reachability for ${ciprnodeHostname}...`);
           // We can't really verify HTTP reachability to "ourselves" if we haven't propatated in DNS yet?
           // Or if we are behind NAT?
           // The old logic checked for A/CNAME presence.
@@ -256,53 +235,53 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
           const isReachable = await verifyNodeHttp(config.za, config);
 
           if (isReachable) {
-            console.log(`[OK] Ciprnode is reachable via https://${ciprnodeHostname}/`);
-            console.log(welcome);
+            msg(`[OK] Ciprnode is reachable via https://${ciprnodeHostname}/`, 'OK');
+            msg(welcome);
 
             // Start Ciprpulse Scheduler
             startScheduler(config, db, txtUpdated);
           } else {
             // Fallback to detailed diagnostics if HEAD fails
-            console.log(`[WARN] HEAD request to https://${ciprnodeHostname}/ failed.`);
-            console.log(`Checking DNS records directly for diagnostics...`);
+            msg(`HEAD request to https://${ciprnodeHostname}/ failed.`, 'WA');
+            msg(`Checking DNS records directly for diagnostics...`);
 
             try {
               await Deno.resolveDns(ciprnodeHostname, 'A');
-              console.log(`[OK] 'A' record exists.`);
+              msg(`[OK] 'A' record exists.`, 'OK');
             } catch (e) {
-              console.warn(`[ERR] No 'A' record found: ${e.message}`);
+              msg(`No 'A' record found: ${e.message}`, 'WA');
             }
 
-            console.log(welcome);
-            console.warn(`WARNING: This node may not be publicly reachable.`);
+            msg(welcome);
+            msg(`WARNING: This node may not be publicly reachable.`, 'WA');
 
             // [Debug/Dev Fix] Fallback to Local Check to allow Scheduler to start in testing
             if (config.debug) {
-              console.log(
-                `[Debug] Public check failed. Attempting local loopback check (HTTP) on port ${config.port}...`,
+              msg(
+                `Public check failed. Attempting local loopback check (HTTP) on port ${config.port}...`,
               );
               try {
                 const localUrl = `http://localhost:${config.port}/`;
                 const localRes = await fetch(localUrl, { method: 'HEAD' });
                 if (localRes.ok) {
-                  console.log(`[Debug] Local loopback confirmed (HTTP ${localRes.status}).`);
-                  console.log(`[Debug] Starting Ciprpulse scheduler in LOCAL/DEV mode.`);
+                  msg(`Local loopback confirmed (HTTP ${localRes.status}).`);
+                  msg(`Starting Ciprpulse scheduler in LOCAL/DEV mode.`);
                   startScheduler(config, db, txtUpdated);
                 } else {
-                  console.warn(`[Debug] Local loopback also failed: ${localRes.status}`);
-                  console.warn(`Ciprpulse scheduler will NOT be started.`);
+                  msg(`Local loopback also failed: ${localRes.status}`, 'WA');
+                  msg(`Ciprpulse scheduler will NOT be started.`, 'WA');
                 }
               } catch (localErr) {
-                console.warn(`[Debug] Local loopback error: ${localErr.message}`);
-                console.warn(`Ciprpulse scheduler will NOT be started.`);
+                msg(`Local loopback error: ${localErr.message}`, 'WA');
+                msg(`Ciprpulse scheduler will NOT be started.`, 'WA');
               }
             } else {
-              console.warn(`Ciprpulse scheduler will NOT be started.`);
+              msg(`Ciprpulse scheduler will NOT be started.`, 'WA');
             }
           }
         } catch (e) {
-          console.error(`Startup verification error:`, e);
-          console.log(welcome);
+          msg(`Startup verification error: ${e.message}`, 'KO');
+          msg(welcome);
         }
       })();
     },

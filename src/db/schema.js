@@ -1,3 +1,4 @@
+import { msg } from '../core/utils.js';
 /**
  * @file src/db/schema.js
  * @description Database schema definitions and initialization.
@@ -18,7 +19,7 @@ export const initSchema = (db) => {
     return;
   }
 
-  console.log(`Initializing Database Schema...`);
+  msg(`Initializing Database Schema...`);
 
   // 1. Main Table Creation with Constraints
   db.exec(`
@@ -96,7 +97,7 @@ export const initSchema = (db) => {
     });
     db.exec('COMMIT TRANSACTION;');
   } catch (e) {
-    console.warn('Could not seed languages table automatically from schema init:', e.message);
+    msg('Could not seed languages table automatically from schema init: ' + e.message, 'WA');
   }
 
   // 2. FTS5 Virtual Table (External Content)
@@ -145,5 +146,5 @@ export const initSchema = (db) => {
       END;
   `);
 
-  console.log(`[OK] Database schema initialized successfully.`);
+  msg(`[OK] Database schema initialized successfully.`);
 };

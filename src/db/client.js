@@ -1,3 +1,4 @@
+import { msg } from '../core/utils.js';
 /**
  * @file src/db/client.js
  * @description SQLite database client factory.
@@ -36,7 +37,7 @@ export const getDbConnection = async () => {
   // Memory Map 2GB: Maps the DB file into RAM for direct access
   db.exec('PRAGMA mmap_size = 2147483648;');
 
-  console.log(`Database connection established at: ${dbPath}`);
+  msg(`Database connection established at: ${dbPath}`);
 
   return db;
 };

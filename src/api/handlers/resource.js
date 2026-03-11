@@ -1,3 +1,4 @@
+import { msg } from '../../core/utils.js';
 /**
  * @file src/api/handlers/resource.js
  * @description Handlers for /za/ endpoints (GET, PUT, DELETE).
@@ -96,7 +97,7 @@ const handlePutResource = async (request, db, za) => {
 
     return new Response(null, { status: 204 }); // 204 No Content for successful PUT (or 201 Created)
   } catch (error) {
-    console.error('PUT Error:', error);
+    msg('PUT Error: ' + error, 'KO');
     return new Response('Internal Server Error', { status: 500 });
   }
 };

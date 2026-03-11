@@ -4,6 +4,7 @@
  */
 
 import { logKeyValueTable } from './logger.js';
+import { msg } from './utils.js';
 
 /**
  * Validates the CiprNodeConfig object.
@@ -23,8 +24,8 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     validations[label] = condition ? '[OK] Valid' : '[ERR] Invalid';
 
     if (!condition) {
-      console.warn(`${label}: Invalid`);
-      console.warn(`  -> ${errorMessage}`);
+      msg(`${label}: Invalid`, 'WA');
+      msg(`  -> ${errorMessage}`, 'WA');
       errors.push(`${label}: ${errorMessage}`);
       isValid = false;
     }
@@ -157,10 +158,10 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
   const validTestWords = testWordsStr.length > 0 && testWordsStr.length <= 512;
 
   if (!validTestWords) {
-    console.warn(
-      `[WARN] test_words: Must not exceed 512 characters and must not be empty. Current Length: ${testWordsStr.length}`,
+    msg(
+      `test_words: Must not exceed 512 characters and must not be empty. Current Length: ${testWordsStr.length}`,
     );
-    console.warn(`       -> Ignoring test_words configuration error to allow startup.`);
+    msg(`       -> Ignoring test_words configuration error to allow startup.`, 'WA');
     validations['Test Words'] = '[WARN] Ignored Invalid Configuration';
   } else {
     validations['Test Words'] = '[OK] Valid';
@@ -208,15 +209,24 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     validations['ISE Providers'] = 'Skipped (None provided)';
   }
 
+  // 12. Validate Log Level
+  const validLogLevels = [0, 1, 2];
+  check(
+    'Log Level',
+    config.log_level,
+    validLogLevels.includes(config.log_level),
+    `Must be 0 (silent), 1 (operational), or 2 (verbose). Current Value: ${config.log_level}`,
+  );
+
   if (isValid) {
     logKeyValueTable(validations);
-    console.log(`[OK] All checks passed\n`);
+    msg(`[OK] All checks passed\n`);
   } else {
     logKeyValueTable(validations);
-    console.error(`[ERR] Verification Failed\n`);
+    msg(`[ERR] Verification Failed\n`, 'KO');
     if (exitOnFail) {
-      console.log('Please fix the errors in ciprnode.toml and start again.');
-      errors.forEach((e) => console.log(`  - ${e}`));
+      msg('Please fix the errors in ciprnode.toml and start again.');
+      errors.forEach((e) => msg(`  - ${e}`));
       Deno.exit(1);
     } else {
       return false;

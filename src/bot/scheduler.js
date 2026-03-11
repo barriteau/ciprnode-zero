@@ -4,7 +4,7 @@
  */
 
 import { countEntries, getEntry, searchEntries } from '../db/repo.js';
-import { calculateNodesPerPulse } from '../core/utils.js';
+import { calculateNodesPerPulse, msg } from '../core/utils.js';
 import { validateCiprConfig } from '../core/validator.js';
 // import { verifyNode } from '../core/verification.js'; // reused? No, broadcast is PUT.
 
@@ -15,17 +15,17 @@ import { validateCiprConfig } from '../core/validator.js';
  * @param {boolean} txtUpdated
  */
 export const startScheduler = async (config, db, txtUpdated) => {
-  console.log('Starting Ciprpulse scheduler...');
+  msg('Starting Ciprpulse scheduler...');
 
   // 1. Check for Initial Broadcast requirement
   if (txtUpdated) {
-    console.log('[Ciprpulse] Local TXT record updated. Broadcasting update...');
+    msg('Local TXT record updated. Broadcasting update...');
     await broadcastUpdate(config, db);
   }
 
   // 2. Periodic Tasks (Ciprpulse)
   const PULSE_INTERVAL = Math.max(1000, config.expected_propagation_time || 8000);
-  console.log(`[Ciprpulse] Scheduler interval set to ${PULSE_INTERVAL}ms`);
+  msg(`Scheduler interval set to ${PULSE_INTERVAL}ms`);
 
   setInterval(() => {
     runPulseChecks(db, config);
@@ -35,9 +35,7 @@ export const startScheduler = async (config, db, txtUpdated) => {
   // 3. Self Validation Task
   // "every 3 expected_propagation_time"
   const SELF_VALIDATION_INTERVAL = 3 * config.expected_propagation_time;
-  console.log(
-    `[Ciprpulse] Self-validation interval set to ${SELF_VALIDATION_INTERVAL}ms`,
-  );
+  msg(`Self-validation interval set to ${SELF_VALIDATION_INTERVAL}ms`);
 
   setInterval(() => {
     runSelfValidation(config, db);
@@ -53,19 +51,19 @@ const broadcastUpdate = async (config, db) => {
   try {
     const totalNodes = countEntries(db);
     if (totalNodes <= 1) {
-      console.log('[Ciprpulse] No peers to broadcast to.');
+      msg('No peers to broadcast to.');
       return;
     }
 
     const nodesPerPulse = calculateNodesPerPulse(totalNodes, config.expected_propagation_time);
     const targetCount = Math.min(totalNodes, nodesPerPulse);
 
-    console.log(`[Ciprpulse] Broadcasting to ${targetCount} peers (Total: ${totalNodes})...`);
+    msg(`Broadcasting to ${targetCount} peers (Total: ${totalNodes})...`);
 
     // Get Local Entry Data to send
     const myEntry = getEntry(db, config.za);
     if (!myEntry) {
-      console.warn('[Ciprpulse] Local entry not found in DB! Cannot broadcast.');
+      msg('Local entry not found in DB! Cannot broadcast.', 'WA');
       return;
     }
 
@@ -76,13 +74,11 @@ const broadcastUpdate = async (config, db) => {
     for (const row of rows) {
       // SSRF Prevention: Validate za is not localhost/private
       if (row.za.includes('localhost') || row.za.includes('127.0.0.1') || row.za.includes('::1')) {
-        if (config.debug) console.warn(`[Ciprpulse] Skipping broadcast to private peer: ${row.za}`);
+        if (config.debug) msg(`Skipping broadcast to private peer: ${row.za}`, 'WA');
         continue;
       }
 
       const peerUrl = `https://ciprnode.${row.za}/${config.za}`; // PUT /<za>
-      console.log(`[Ciprpulse] Broadcast PUT -> ${peerUrl}`);
-
       try {
         const response = await fetch(peerUrl, {
           method: 'PUT',
@@ -94,13 +90,17 @@ const broadcastUpdate = async (config, db) => {
           signal: AbortSignal.timeout(10000),
         });
 
-        if (config.debug) console.log(`[DBG] Broadcast to ${row.za}: ${response.status}`);
+        if (config.log_level >= 2) {
+          const parsedUrl = new URL(peerUrl);
+          msg(`Outgoing request:\n  Method: PUT\n  Path: ${parsedUrl.pathname}\n  To: ${parsedUrl.hostname}`, 'REQ');
+          msg(`  Incoming Response: ${response.status}`, 'RES');
+        }
       } catch (e) {
-        if (config.debug) console.log(`[DBG] Broadcast failed to ${row.za}: ${e.message}`);
+        if (config.debug) msg(`[DBG] Broadcast failed to ${row.za}: ${e.message}`);
       }
     }
   } catch (e) {
-    console.error(`[Ciprpulse] Broadcast error: ${e.message}`);
+    msg(`Broadcast error: ${e.message}`, 'KO');
   }
 };
 
@@ -135,7 +135,7 @@ const runPulseChecks = async (db, config) => {
 
   if (auditEntries.length === 0) return;
 
-  console.log(`[CiprPulse] Auditing ${auditEntries.length} entries...`);
+  msg(`Auditing ${auditEntries.length} entries...`);
 
   for (const entry of auditEntries) {
     if (!entry.za) continue;
@@ -171,8 +171,8 @@ const runPulseChecks = async (db, config) => {
     if (isValid) {
       // B. Valid Entry -> Propagate PUT
       if (config.debug) {
-        console.log(
-          `[CiprPulse] ${entry.za} is VALID. Propagating PUT to ${targets.length} peers.`,
+        msg(
+          `${entry.za} is VALID. Propagating PUT to ${targets.length} peers.`,
         );
       }
 
@@ -185,8 +185,9 @@ const runPulseChecks = async (db, config) => {
       }
     } else {
       // C. Invalid Entry -> Propagate DELETE
-      console.log(
-        `[CiprPulse] ${entry.za} is INVALID/UNREACHABLE. Deleting locally and propagating DELETE.`,
+      msg(
+        `${entry.za} is INVALID/UNREACHABLE. Deleting locally and propagating DELETE.`,
+        'WA'
       );
 
       // 1. Delete locally
@@ -222,37 +223,35 @@ const sendPulseRequest = (config, targetZa, method, body, resourceZa) => {
       options.body = JSON.stringify(body);
     }
 
-    if (config.debug) console.log(`[CiprPulse] Sending ${method} -> ${url}`);
-
-    // We don't await the result strictly to block, but we want to catch errors.
-    // Parallelizing inside the loop or fire-and-forget?
-    // Let's await to avoid flooding if N is large?
-    // "must start one of the following actions every expected_propagation_time"
-    // If we block too long, we drift. But JS is single threaded event loop.
-    // fetch is async.
-
+    // We don't await the result strictly to block...
     fetch(url, { ...options, signal: AbortSignal.timeout(10000) }).then((res) => {
+      if (config.log_level >= 2) {
+        const parsedUrl = new URL(url);
+        msg(`Outgoing request:\n  Method: ${method}\n  Path: ${parsedUrl.pathname}\n  To: ${parsedUrl.hostname}`, 'REQ');
+        msg(`  Incoming Response: ${res.status}`, 'RES');
+      }
       if (config.debug) {
-        if (!res.ok) console.log(`[CiprPulse] ${method} to ${targetZa} failed: ${res.status}`);
+        if (!res.ok) msg(`${method} to ${targetZa} failed: ${res.status}`, 'WA');
       }
     }).catch((err) => {
-      const msg = err.message || '';
+      const errMsg = err.message || '';
       // Check for common connection errors
       if (
-        msg.includes('connection error') || msg.includes('connection reset') ||
-        msg.includes('connection refused') || msg.includes('Failed to fetch')
+        errMsg.includes('connection error') || errMsg.includes('connection reset') ||
+        errMsg.includes('connection refused') || errMsg.includes('Failed to fetch')
       ) {
-        console.warn(`[WARN] CiprPulse Broadcast to ${targetZa} failed: Connection Error.`);
-        console.warn(
+        msg(`CiprPulse Broadcast to ${targetZa} failed: Connection Error.`, 'WA');
+        msg(
           `       -> The peer might be offline, unreachable, or running on a non-standard port.`,
+          'WA'
         );
-        if (config.debug) console.warn(`       -> Details: ${msg}`);
+        if (config.debug) msg(`       -> Details: ${errMsg}`, 'WA');
       } else {
-        if (config.debug) console.log(`[CiprPulse] ${method} to ${targetZa} error: ${msg}`);
+        if (config.debug) msg(`${method} to ${targetZa} error: ${errMsg}`, 'KO');
       }
     });
   } catch (e) {
-    if (config.debug) console.log(`[CiprPulse] Request setup error: ${e.message}`);
+    if (config.debug) msg(`Request setup error: ${e.message}`, 'KO');
   }
 };
 
@@ -262,14 +261,14 @@ const sendPulseRequest = (config, targetZa, method, body, resourceZa) => {
  * @param {import('@db/sqlite').Database} db
  */
 const runSelfValidation = async (config, db) => {
-  // console.log('[CiprPulse] Running self-validation...');
+  // console.log('Running self-validation...');
   const isValid = validateCiprConfig(config, false); // exitOnFail = false
 
   // If we are alone, we can't really broadcast, but we can check integrity.
   // calculateNodesPerPulse requires > 0 usually? Utils says max(1, ...).
 
   if (isValid) {
-    if (config.debug) console.log('[CiprPulse] Self-validation passed.');
+    if (config.debug) msg('Self-validation passed.');
     // "if the validation is successful, a PUT for its own za must be sent to ... randomly selected nodes"
     // We can reuse broadcastUpdate logic but tailored to random selection instead of "all" if broadcastUpdate was "all"?
     // broadcastUpdate actually did random selection of N nodes. So we can just call it?
@@ -286,7 +285,7 @@ const runSelfValidation = async (config, db) => {
     // Or just count failures?
     // Simplest interpretation: Try... Catch/Fail -> Retry 1..2..3 -> explode.
 
-    console.warn('[CiprPulse] Self-validation failed! Retrying...');
+    msg('Self-validation failed! Retrying...', 'WA');
     let retrySuccess = false;
     for (let i = 1; i <= 3; i++) {
       await new Promise((r) => setTimeout(r, 1000)); // Wait 1s between retries? Validating config is fast though.
@@ -299,11 +298,11 @@ const runSelfValidation = async (config, db) => {
       // For now, simple re-check (maybe ephemeral state changed?).
       if (validateCiprConfig(config, false)) {
         retrySuccess = true;
-        console.log(`[CiprPulse] Self-validation passed on retry ${i}.`);
+        msg(`Self-validation passed on retry ${i}.`);
         await broadcastUpdate(config, db);
         break;
       }
-      console.warn(`[CiprPulse] Self-validation retry ${i} failed.`);
+      msg(`Self-validation retry ${i} failed.`, 'WA');
     }
 
     if (!retrySuccess) {
@@ -311,7 +310,7 @@ const runSelfValidation = async (config, db) => {
       // "a DELETE request for its own za must be sent to ... randomly selected nodes"
       // "HUGE alert must be shown in the console"
 
-      console.error(`
+      msg(`
       ################################################################
       #                                                              #
       #  CRITICAL ALERT: SELF-VALIDATION FAILED AFTER RETRIES        #
@@ -390,13 +389,13 @@ const runReliabilityChecks = async (db, config) => {
 
   if (targets.length === 0) {
     if (config.debug) {
-      console.log('[CiprPulse] No eligible peers (older than 1h) available for Reliability Check.');
+      msg('No eligible peers (older than 1h) available for Reliability Check.');
     }
     return;
   }
 
   if (config.debug) {
-    console.log(`[CiprPulse] Running Reliability Check on ${targets.length} peer(s).`);
+    msg(`Running Reliability Check on ${targets.length} peer(s).`);
   }
 
   // 4. Validate and Enforce
@@ -411,8 +410,8 @@ const runReliabilityChecks = async (db, config) => {
     );
 
     if (!isReliable) {
-      console.log(
-        `[CiprPulse] ${target.za} FAILED Reliability Check. Evicting and propagating DELETE...`,
+      msg(
+        `${target.za} FAILED Reliability Check. Evicting and propagating DELETE...`,
       );
 
       // Delete locally

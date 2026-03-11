@@ -1,3 +1,4 @@
+import { msg } from '../../core/utils.js';
 /**
  * @file src/api/handlers/query.js
  * @description Handler for QUERY requests.
@@ -67,7 +68,7 @@ export const handleQuery = async (request, db) => {
       headers: { 'Content-Type': 'application/hal+json; charset=utf-8' },
     });
   } catch (error) {
-    console.error('QUERY Error:', error);
+    msg('QUERY Error: ' + error, 'KO');
     return new Response('Internal Server Error', { status: 500 });
   }
 };

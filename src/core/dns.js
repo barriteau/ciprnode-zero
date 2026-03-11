@@ -6,6 +6,7 @@
  */
 
 import { encodeBase64Url } from '@std/encoding/base64url';
+import { msg, LOG_LEVEL } from './utils.js';
 
 /**
  * Verifies if the Ciprnode has a valid DNS entry.
@@ -17,8 +18,8 @@ import { encodeBase64Url } from '@std/encoding/base64url';
 export const verifyCiprHash = async (config, za, expectedHash) => {
   const dnsConfig = config.dns;
   if (!dnsConfig || !dnsConfig.doh || dnsConfig.doh.length < 3) {
-    console.warn(
-      `[CRITICAL] DNS configuration missing or insufficient DoH servers (minimum 3 required). Verification Failed.`,
+    msg(
+      `DNS configuration missing or insufficient DoH servers (minimum 3 required). Verification Failed.`,
     );
     return false;
   }
@@ -28,7 +29,7 @@ export const verifyCiprHash = async (config, za, expectedHash) => {
   const do53List = dnsConfig.do53 || [];
 
   if (do53List.length === 0) {
-    console.warn(
+    msg(
       `No Do53 servers configured. Starting in pure DoH mode (dependent on OS DNS/SNI).`,
     );
   }
@@ -55,14 +56,14 @@ export const verifyCiprHash = async (config, za, expectedHash) => {
       ? do53List[Math.floor(Math.random() * do53List.length)]
       : null;
 
-    console.log(`Attempt ${i + 1}/${maxRetries} Starting...`);
+    msg(`Attempt ${i + 1}/${maxRetries} Starting...`);
     if (do53Ip) {
-      console.log(`Selected Do53 resolver: ${do53Ip}`);
+      msg(`Selected Do53 resolver: ${do53Ip}`);
     } else {
-      console.log(`No Do53 servers available. Using OS DNS.`);
+      msg(`No Do53 servers available. Using OS DNS.`);
     }
 
-    console.log(`Validating via:
+    msg(`Validating via:
   1. ${new URL(url1).hostname}
   2. ${new URL(url2).hostname}
   3. ${new URL(url3).hostname}`);
@@ -72,7 +73,7 @@ export const verifyCiprHash = async (config, za, expectedHash) => {
       const txt2 = await queryDoHTxt(url2, `_cipr.${za}`, do53Ip);
       const txt3 = await queryDoHTxt(url3, `_cipr.${za}`, do53Ip);
 
-      console.log(`Found in them:
+      msg(`Found in them:
   1: ${txt1}
   2: ${txt2}
   3: ${txt3}`);
@@ -83,7 +84,7 @@ export const verifyCiprHash = async (config, za, expectedHash) => {
       const cleanTxt3 = txt3 ? txt3.replace(/^"|"$/g, '') : '';
 
       if (cleanTxt1 !== expectedHash) {
-        console.warn(
+        msg(
           `Validation Failed on Server 1 (${
             new URL(url1).hostname
           })\nFound:    ${cleanTxt1}\nExpected: ${expectedHash}`,
@@ -92,7 +93,7 @@ export const verifyCiprHash = async (config, za, expectedHash) => {
       }
 
       if (cleanTxt2 !== expectedHash) {
-        console.warn(
+        msg(
           `Validation Failed on Server 2 (${
             new URL(url2).hostname
           })\nFound:    ${cleanTxt2}\nExpected: ${expectedHash}`,
@@ -101,7 +102,7 @@ export const verifyCiprHash = async (config, za, expectedHash) => {
       }
 
       if (cleanTxt3 !== expectedHash) {
-        console.warn(
+        msg(
           `Validation Failed on Server 3 (${
             new URL(url3).hostname
           })\nFound:    ${cleanTxt3}\nExpected: ${expectedHash}`,
@@ -110,16 +111,16 @@ export const verifyCiprHash = async (config, za, expectedHash) => {
       }
 
       // All 3 Matched
-      console.log(`Triple Validation Successful`);
-      console.log(`The hash ${expectedHash} was found in all servers.`);
+      msg(`Triple Validation Successful`, 'OK');
+      msg(`The hash ${expectedHash} was found in all servers.`);
       return true;
     } catch (error) {
-      console.log(`Attempt ${i + 1} failed: ${error.message}\nTrying again...`);
+      msg(`Attempt ${i + 1} failed: ${error.message}\nTrying again...`);
       // Continue to next retry
     }
   }
 
-  console.warn(`DNS Verification failed after ${maxRetries} attempts.`);
+  msg(`DNS Verification failed after ${maxRetries} attempts.`, 'WA');
   return false;
 };
 
@@ -249,6 +250,12 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
   }
 
   const txts = parseDnsResponse(resBody);
+
+  if (LOG_LEVEL >= 2) {
+    const responseListStr = txts.length > 0 ? txts[0] : 'None';
+    msg(`DNS request:\n  To: ${hostname}`, 'DNS');
+    msg(`  Incoming Response: ${responseListStr}`, 'RES');
+  }
 
   if (txts.length > 0) {
     return txts[0];

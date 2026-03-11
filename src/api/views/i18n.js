@@ -1,3 +1,4 @@
+import { msg } from '../../core/utils.js';
 /**
  * @file src/api/views/i18n.js
  * @description Simple Internationalization Helper
@@ -22,7 +23,7 @@ export class I18n {
         const text = await Deno.readTextFile(join(localesDir, `${lang}.json`));
         this.locales[lang] = JSON.parse(text);
       } catch (e) {
-        console.warn(`Failed to load locale ${lang}:`, e.message);
+        msg(`Failed to load locale ${lang}: ${e.message}`, 'WA');
         this.locales[lang] = {};
       }
     }

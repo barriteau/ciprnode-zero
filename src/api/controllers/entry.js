@@ -6,6 +6,7 @@
 import { deleteEntry, getEntry, insertEntry } from '../../db/repo.js';
 import { halResponse } from '../views/hal.js';
 import { render } from '../views/renderer.js';
+import { msg } from '../../core/utils.js';
 // import { verifyCiprHash } from '../../core/dns.js'; // Replaced by verifyNode
 // import { createSha256Hash } from '../../core/crypto.js'; // Replaced by generateCiprHash
 
@@ -82,13 +83,13 @@ export const put = async (req, db, config, za) => {
 
   // 2.5 Ignore Self-Update (Per Spec)
   if (za === config.za) {
-    if (config.debug) console.log(`[DBG] PUT ${za}: Self-update ignored (Protected).`);
+    if (config.debug) msg(`[DBG] PUT ${za}: Self-update ignored (Protected).`);
     // Return 200 OK as if successful, but do nothing.
     return new Response(null, { status: 200, headers: { Location: `/${za}/` } });
   }
 
   // 3. Verify Sender (Critical Step per Spec)
-  if (config.debug) console.log(`[DBG] PUT ${za}: Verifying Sender...`);
+  if (config.debug) msg(`[DBG] PUT ${za}: Verifying Sender...`);
   const calculatedHash = await generateCiprHash(
     body.za,
     body.title,
@@ -99,12 +100,12 @@ export const put = async (req, db, config, za) => {
     body.longitude,
     body.primary_lang,
   );
-  if (config.debug) console.log(`[DBG] PUT ${za}: Hash calculated: ${calculatedHash}`);
+  if (config.debug) msg(`[DBG] PUT ${za}: Hash calculated: ${calculatedHash}`);
 
   // Use verifyNode to check both DNS TXT and HTTP HEAD (Reachability)
   // This ensures we only accept updates from reachable nodes.
   const isValid = await verifyNode(config, za, calculatedHash);
-  if (config.debug) console.log(`[DBG] PUT ${za}: Node Verification Result: ${isValid}`);
+  if (config.debug) msg(`[DBG] PUT ${za}: Node Verification Result: ${isValid}`);
 
   if (!isValid) {
     return new Response(
@@ -140,13 +141,13 @@ export const del = async (_req, db, config, za) => {
   // 1. Check if resource exists locally
   const entry = getEntry(db, za);
   if (!entry) {
-    if (config.debug) console.log(`[DBG] DELETE ${za}: Ignored (Not found locally).`);
+    if (config.debug) msg(`[DBG] DELETE ${za}: Ignored (Not found locally).`);
     return new Response(null, { status: 200 }); // "Ignored but status 200" per spec? Or 404? Spec says "response must be status 200 anyway"
   }
 
   // 1.5 Ignore Self-Delete (Per Spec)
   if (za === config.za) {
-    if (config.debug) console.log(`[DBG] DELETE ${za}: Self-deletion ignored (Protected).`);
+    if (config.debug) msg(`[DBG] DELETE ${za}: Self-deletion ignored (Protected).`);
     return new Response(null, { status: 200 });
   }
 
@@ -156,7 +157,7 @@ export const del = async (_req, db, config, za) => {
   // If VALID -> IGNORE DELETE (Protect the node).
   // If INVALID -> DELETE (Propagate cleanup).
 
-  if (config.debug) console.log(`[DBG] DELETE ${za}: Verifying node validity...`);
+  if (config.debug) msg(`[DBG] DELETE ${za}: Verifying node validity...`);
 
   // We need the hash to verify. We have the entry in DB, so we can calculate it.
   const calculatedHash = await generateCiprHash(
@@ -174,15 +175,15 @@ export const del = async (_req, db, config, za) => {
 
   if (isValid) {
     // 3a. Validation Passes -> Ignore DELETE
-    console.log(`[DELETE] Request for ${za} IGNORED. Node is valid.`);
+    msg(`[DELETE] Request for ${za} IGNORED. Node is valid.`);
     if (config.debug) {
-      console.log(`[DBG] DELETE ${za}: Node verified successfully. Retaining entry.`);
+      msg(`[DBG] DELETE ${za}: Node verified successfully. Retaining entry.`);
     }
     return new Response(null, { status: 200 });
   } else {
     // 3b. Validation Fails -> Execute DELETE
-    console.log(`[DELETE] Request for ${za} ACCEPTED. Node failed validation.`);
-    if (config.debug) console.log(`[DBG] DELETE ${za}: Node verification failed. Deleting entry.`);
+    msg(`[DELETE] Request for ${za} ACCEPTED. Node failed validation.`);
+    if (config.debug) msg(`[DBG] DELETE ${za}: Node verification failed. Deleting entry.`);
     deleteEntry(db, za);
     return new Response(null, { status: 200 });
   }

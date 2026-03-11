@@ -1,14 +1,68 @@
-import { dirname, join } from '@std/path';
+/**
+ * @file src/core/logger.js
+ * @description Manages writing logs to files with size and time-based rotation.
+ */
+
+import { join } from '@std/path';
 import { ensureDirSync } from '@std/fs';
 
-const LOG_FILE_PATH = join(Deno.cwd(), 'data', 'ciprnode.log');
+const LOG_DIR = join(Deno.cwd(), 'logs');
+const LOG_FILE_PATH = join(LOG_DIR, 'ciprnode.log');
+const MAX_FILE_SIZE = 256 * 1024 * 1024; // 256 MB
+const MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 // Ensure log directory exists
 try {
-  ensureDirSync(dirname(LOG_FILE_PATH));
+  ensureDirSync(LOG_DIR);
 } catch (e) {
   console.error('Failed to create log directory:', e);
 }
+
+// Ensure the old data/ciprnode.log is deleted (clean up obsolete file)
+try {
+  const OLD_LOG_FILE = join(Deno.cwd(), 'data', 'ciprnode.log');
+  Deno.removeSync(OLD_LOG_FILE);
+} catch {
+  // Ignore if not present
+}
+
+let lastCleanup = Date.now();
+
+const cleanupOldLogs = () => {
+  try {
+    const now = Date.now();
+    for (const entry of Deno.readDirSync(LOG_DIR)) {
+      if (entry.isFile && entry.name !== 'ciprnode.log' && entry.name.startsWith('ciprnode_')) {
+        const filePath = join(LOG_DIR, entry.name);
+        try {
+          const stat = Deno.statSync(filePath);
+          if (stat.mtime && (now - stat.mtime.getTime() > MAX_AGE_MS)) {
+            Deno.removeSync(filePath);
+          }
+        } catch {
+          // Ignore individual file stat/remove errors
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Error cleaning up old logs:', e);
+  }
+};
+
+const rotateLogFile = () => {
+  try {
+    const stat = Deno.statSync(LOG_FILE_PATH);
+    if (stat.size >= MAX_FILE_SIZE) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const rotatedPath = join(LOG_DIR, `ciprnode_${timestamp}.log`);
+      Deno.renameSync(LOG_FILE_PATH, rotatedPath);
+    }
+  } catch (e) {
+    if (!(e instanceof Deno.errors.NotFound)) {
+      // Ignore other errors
+    }
+  }
+};
 
 const formatForFile = (level, args) => {
   const timestamp = new Date().toISOString();
@@ -26,53 +80,30 @@ const formatForFile = (level, args) => {
   return `[${timestamp}] [${level}] ${message}`;
 };
 
-const writeToLogFile = (text) => {
+/**
+ * Writes text to the log file with rotation.
+ * @param {string} text Text to append to the log file.
+ */
+export const writeToLogFile = (text) => {
   try {
+    rotateLogFile();
     Deno.writeTextFileSync(LOG_FILE_PATH, text + '\n', { append: true });
+    
+    const now = Date.now();
+    if (now - lastCleanup > 3600000) { // 1 hour
+      cleanupOldLogs();
+      lastCleanup = now;
+    }
   } catch {
     // Ignore file write errors to prevent crash
   }
 };
 
 /**
- * Patches the global console object to write to the log file.
- * Must be called once at startup.
+ * Logs a message to the file with the given level prefix.
  */
-export const setupConsoleLogging = () => {
-  const originalLog = console.log;
-  const originalInfo = console.log;
-  const originalWarn = console.warn;
-  const originalError = console.error;
-  const originalDebug = console.debug;
-
-  console.log = (...args) => {
-    writeToLogFile(formatForFile('LOG', args));
-    originalLog.apply(console, args);
-  };
-
-  console.log = (...args) => {
-    writeToLogFile(formatForFile('INFO', args));
-    originalInfo.apply(console, args);
-  };
-
-  console.warn = (...args) => {
-    writeToLogFile(formatForFile('WARN', args));
-    originalWarn.apply(console, args);
-  };
-
-  console.error = (...args) => {
-    writeToLogFile(formatForFile('ERROR', args));
-    originalError.apply(console, args);
-  };
-
-  console.debug = (...args) => {
-    writeToLogFile(formatForFile('DEBUG', args));
-
-    // Check for --debug flag for console visibility
-    if (Deno.args.includes('--debug')) {
-      originalDebug.apply(console, args);
-    }
-  };
+export const logToFile = (level, ...args) => {
+  writeToLogFile(formatForFile(level, args));
 };
 
 // Custom Table Printer (No Headers)
@@ -82,42 +113,10 @@ export const logKeyValueTable = (data, separator = '   ') => {
   const entries = Object.entries(data);
   if (entries.length === 0) return;
 
-  // Calculate padding
   const maxKeyLen = Math.max(...entries.map(([k]) => k.length));
 
   entries.forEach(([key, value]) => {
     const paddedKey = key.padEnd(maxKeyLen);
     console.log(`${paddedKey}${separator}${value}`);
   });
-};
-
-// Legacy aliases for backward compatibility during refactor
-export const logInfo = (msg, data) => {
-  console.log(`${msg}`, data || '');
-};
-
-export const logSuccess = (msg, data) => {
-  console.log(`[OK]   ${msg}`, data || '');
-};
-
-export const logWarn = (msg, data) => {
-  console.warn(`[WARN] ${msg}`, data || '');
-};
-
-export const logError = (msg, err) => {
-  console.error(`[ERR]  ${msg}`, err || '');
-};
-
-export const logDebug = (config, msg, data) => {
-  // If config.debug is true, we want to see this.
-  // console.debug might be hidden unless --debug flag is used in Deno.
-  // We'll force it to console.log with a [DBG] prefix if config.debug is on.
-  if (config?.debug) {
-    // Use console.log or console.info to ensure output to stdout
-    // when the application config says debug is enabled.
-    const serialized = data
-      ? (typeof data === 'object' ? JSON.stringify(data, null, 2) : String(data))
-      : '';
-    console.log(`[DBG]  ${msg}`, serialized);
-  }
 };

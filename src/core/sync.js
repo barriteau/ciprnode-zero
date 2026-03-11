@@ -7,7 +7,7 @@ import { countEntries, getEntry, insertEntry } from '../db/repo.js';
 // import { verifyCiprHash } from './dns.js'; // Replaced by verifyNode
 import { verifyNode } from './verification.js';
 // import { createSha256Hash } from './crypto.js'; // Replaced by generateCiprHash
-import { calculateNodesPerPulse, generateCiprHash } from './utils.js';
+import { calculateNodesPerPulse, generateCiprHash, msg } from './utils.js';
 
 /**
  * Performs the initial sync if the database is empty.
@@ -20,15 +20,15 @@ export const initialSync = async (config, db) => {
   // If we only have 0 or 1 entries, a full network sync is strictly required.
   // 1 entry usually means the node generated its own identity locally but didn't finish syncing peers.
   if (count > 1) {
-    console.log(`[OK] Database already populated, skipping initial sync.`);
+    msg(`[OK] Database already populated, skipping initial sync.`);
     return;
   }
 
-  console.log(`Wait while the ciprdup (local copy of the Cipr) is populated...`);
+  msg(`Wait while the ciprdup (local copy of the Cipr) is populated...`);
 
   const bootstrapUrl = config.bootstrap_node;
   if (!bootstrapUrl) {
-    console.warn(`No bootstrap_node configured. Skipping sync.`);
+    msg(`No bootstrap_node configured. Skipping sync.`, 'WA');
     return;
   }
 
@@ -38,16 +38,16 @@ export const initialSync = async (config, db) => {
     const hostname = bootstrapUrlObj.hostname;
     let resolved = false;
 
-    console.log(`Verifying bootstrap node DNS: ${hostname}...`);
+    msg(`Verifying bootstrap node DNS: ${hostname}...`);
 
     for (let i = 0; i < 3; i++) {
       try {
         await Deno.resolveDns(hostname, 'A');
         resolved = true;
-        console.log(`[OK] Bootstrap node resolved.`);
+        msg(`[OK] Bootstrap node resolved.`);
         break;
       } catch (e) {
-        console.warn(`Attempt ${i + 1}/3 failed to resolve bootstrap node: ${e.message}`);
+        msg(`Attempt ${i + 1}/3 failed to resolve bootstrap node: ${e.message}`, 'WA');
         await new Promise((r) => setTimeout(r, 1000));
       }
     }
@@ -55,34 +55,34 @@ export const initialSync = async (config, db) => {
     const dbIsEmpty = countEntries(db) === 0;
 
     if (!resolved) {
-      const msg = `[FATAL] Bootstrap node (${hostname}) could not be resolved in DNS.`;
-      console.warn(msg);
+      const msgText = `[FATAL] Bootstrap node (${hostname}) could not be resolved in DNS.`;
+      msg(msgText);
       if (dbIsEmpty) {
-        console.error(`Local database is empty. Cannot bootstrap without a valid node.`);
-        console.error(`Startup aborted.`);
+        msg(`Local database is empty. Cannot bootstrap without a valid node.`, 'KO');
+        msg(`Startup aborted.`, 'KO');
         Deno.exit(1);
       } else {
-        console.warn(`Local database has data. Continuing offline/isolated.`);
+        msg(`Local database has data. Continuing offline/isolated.`, 'WA');
       }
     }
 
     // Validate if bootstrap_node is same as current za
     const isSelf = hostname === config.za || hostname === `ciprnode.${config.za}`;
     if (isSelf) {
-      console.warn(`Bootstrap node (${hostname}) appears to be this node (za: ${config.za}).`);
-      console.warn(`Self-bootstrapping is not possible.`);
+      msg(`Bootstrap node (${hostname}) appears to be this node (za: ${config.za}).`);
+      msg(`Self-bootstrapping is not possible.`, 'WA');
 
       if (dbIsEmpty) {
-        console.warn(
+        msg(
           `Skipping sync. The local database will be populated with initial data only.`,
         );
         return;
       } else {
-        console.warn(`Local database has data. Continuing.`);
+        msg(`Local database has data. Continuing.`, 'WA');
       }
     }
   } catch (e) {
-    console.warn(`Invalid bootstrap_node URL: ${e.message}`);
+    msg(`Invalid bootstrap_node URL: ${e.message}`, 'WA');
   }
 
   // const THREE_MINUTES_MS = 3 * 60 * 1000; // Removed
@@ -92,20 +92,20 @@ export const initialSync = async (config, db) => {
 
   // Helper to fetch and process entries
   const fetchAndProcess = async (urlStr) => {
-    if (config.debug) console.log(`[DBG] Sync > Fetching: ${urlStr}`);
 
     try {
       const response = await fetch(urlStr, {
         headers: { 'Accept': 'application/hal+json' },
       });
 
-      if (config.debug) {
-        console.log(`[DBG] Sync < Response Status: ${response.status}`);
-        // Log headers if needed, but status is usually enough for sync debugging
+      if (config.log_level >= 2) {
+        const parsedUrl = new URL(urlStr);
+        msg(`Outgoing request:\n  Method: GET\n  Path: ${parsedUrl.pathname}\n  To: ${parsedUrl.hostname}`, 'REQ');
+        msg(`  Incoming Response: ${response.status}`, 'RES');
       }
 
       if (!response.ok) {
-        if (config.debug) console.log(`[DBG] Sync failed for ${urlStr}: ${response.status}`);
+        if (config.debug) msg(`[DBG] Sync failed for ${urlStr}: ${response.status}`);
         return null;
       }
 
@@ -114,7 +114,7 @@ export const initialSync = async (config, db) => {
       const textData = await response.text();
 
       if (config.debug) {
-        console.log(
+        msg(
           `[DBG] Sync < Body Preview: ${textData.substring(0, 500)}${
             textData.length > 500 ? '...' : ''
           }`,
@@ -125,7 +125,7 @@ export const initialSync = async (config, db) => {
       try {
         data = JSON.parse(textData);
       } catch (e) {
-        if (config.debug) console.log(`[DBG] Sync < JSON Parse Error: ${e.message}`);
+        if (config.debug) msg(`[DBG] Sync < JSON Parse Error: ${e.message}`);
         return null;
       }
 
@@ -140,7 +140,7 @@ export const initialSync = async (config, db) => {
       }
 
       if (config.debug) {
-        console.log(
+        msg(
           `[DBG] Sync < Found ${entries.length} entries. Total in remote: ${data.total ?? 'N/A'}`,
         );
       }
@@ -148,7 +148,7 @@ export const initialSync = async (config, db) => {
       let insertedCount = 0;
       for (const entry of entries) {
         if (!entry.za) {
-          if (config.debug) console.log(`[DBG] Sync < Skipping entry without za.`);
+          if (config.debug) msg(`[DBG] Sync < Skipping entry without za.`);
           continue;
         }
 
@@ -187,7 +187,7 @@ export const initialSync = async (config, db) => {
           );
 
           if (calculatedHash === existingHash) {
-            if (config.debug) console.log(`[DBG] Sync > Skipped (Unchanged): ${entry.za}`);
+            if (config.debug) msg(`[DBG] Sync > Skipped (Unchanged): ${entry.za}`);
             continue;
           }
         }
@@ -198,7 +198,7 @@ export const initialSync = async (config, db) => {
 
         // 2. Double Verification (TXT + HEAD)
         if (config.debug) {
-          console.log(`[DBG] Sync > Verifying ${entry.za}...`);
+          msg(`[DBG] Sync > Verifying ${entry.za}...`);
         }
 
         // Use the centralized verification logic
@@ -215,13 +215,13 @@ export const initialSync = async (config, db) => {
           if (inserted) {
             insertedCount++;
             lastInsertTime = Date.now(); // Reset timer
-            if (config.debug) console.log(`[DBG] Sync > Inserted: ${entry.za}`);
+            if (config.debug) msg(`[DBG] Sync > Inserted: ${entry.za}`);
           } else {
-            if (config.debug) console.log(`[DBG] Sync > Skipped (Duplicate): ${entry.za}`);
+            if (config.debug) msg(`[DBG] Sync > Skipped (Duplicate): ${entry.za}`);
           }
         } else {
           if (config.debug) {
-            console.log(
+            msg(
               `[DBG] Sync > Verification Failed for ${entry.za}. Either TXT record mismatch or Node unreachable (HEAD).`,
             );
           }
@@ -234,13 +234,13 @@ export const initialSync = async (config, db) => {
         msg.includes('connection error') || msg.includes('connection reset') ||
         msg.includes('connection refused')
       ) {
-        console.warn(`[WARN] Sync: Failed to connect to ${urlStr}.`);
-        console.warn(`       -> Peer unreachable. Skipping.`);
+        msg(`[WARN] Sync: Failed to connect to ${urlStr}.`, 'WA');
+        msg(`       -> Peer unreachable. Skipping.`, 'WA');
       } else {
-        if (config.debug) console.log(`[DBG] Sync Error fetching ${urlStr}: ${msg}`);
+        if (config.debug) msg(`[DBG] Sync Error fetching ${urlStr}: ${msg}`);
       }
       // Log stack in debug
-      if (config.debug) console.log(e.stack);
+      if (config.debug) msg(e.stack);
       return null;
     }
   };
@@ -262,42 +262,42 @@ export const initialSync = async (config, db) => {
     const baseUrl = bootstrapUrl.endsWith('/') ? bootstrapUrl : `${bootstrapUrl}/`;
     const identityUrl = `${baseUrl}${bootstrapZa}`;
 
-    console.log(`[Sync] Verifying bootstrap node identity: ${identityUrl}...`);
+    msg(`[Sync] Verifying bootstrap node identity: ${identityUrl}...`);
     const identityResult = await fetchAndProcess(identityUrl);
 
     if (!identityResult || !identityResult.success) {
-      console.error(`[FATAL] Bootstrap node identity verification failed. Aborting network sync.`);
+      msg(`[FATAL] Bootstrap node identity verification failed. Aborting network sync.`, 'KO');
       return;
     }
-    console.log(`[Sync] Bootstrap node identity verified and stored as the first entry.`);
+    msg(`[Sync] Bootstrap node identity verified and stored as the first entry.`);
   } catch (e) {
-    console.error(`[FATAL] Failed to sync bootstrap node identity: ${e.message}`);
+    msg(`[FATAL] Failed to sync bootstrap node identity: ${e.message}`, 'KO');
     return;
   }
 
   // Phase 2: Populate ciprdup from bootstrap node
-  console.log(`[Sync] Populating ciprdup from ${bootstrapUrl}...`);
+  msg(`[Sync] Populating ciprdup from ${bootstrapUrl}...`);
   const bootstrapResult = await fetchAndProcess(bootstrapUrl);
 
   if (bootstrapResult && bootstrapResult.total > 0) {
     // Viral Sync Logic
     const totalNodes = bootstrapResult.total;
     const nodesPerPulse = calculateNodesPerPulse(totalNodes, config.expected_propagation_time);
-    console.log(`[Sync] Viral Propagation: Total=${totalNodes}, NodesPerPulse=${nodesPerPulse}`);
+    msg(`[Sync] Viral Propagation: Total=${totalNodes}, NodesPerPulse=${nodesPerPulse}`);
 
     // Pick random entries from DB to propagate to
     const dbTotal = countEntries(db);
     const targetCount = Math.min(dbTotal, nodesPerPulse);
 
     if (targetCount > 0) {
-      console.log(`[Sync] Initiating viral burst to ${targetCount} peers...`);
+      msg(`[Sync] Initiating viral burst to ${targetCount} peers...`);
       // SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT N
       const stmt = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`);
       const rows = stmt.all(config.za, targetCount);
 
       for (const row of rows) {
         const peerUrl = `https://ciprnode.${row.za}/`;
-        console.log(`[Sync] Viral Jump -> ${peerUrl}`);
+        msg(`[Sync] Viral Jump -> ${peerUrl}`);
         await fetchAndProcess(peerUrl);
       }
     }
@@ -306,5 +306,5 @@ export const initialSync = async (config, db) => {
   // Phase 2: Steady State Maintaince / Continued Sync - REMOVED
   // User requested to remove the loop and only do the viral burst based on calculateNodesPerJump.
 
-  console.log(`[OK] Initial population complete.`);
+  msg(`[OK] Initial population complete.`);
 };

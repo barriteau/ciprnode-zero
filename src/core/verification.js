@@ -4,6 +4,7 @@
  */
 
 import { verifyCiprHash } from './dns.js';
+import { msg } from './utils.js';
 
 /**
  * Verifies if a ciprnode is valid by checking both DNS TXT record and HTTP reachability.
@@ -17,7 +18,7 @@ export const verifyNode = async (config, za, expectedHash) => {
   const isTxtValid = await verifyCiprHash(config, za, expectedHash);
   if (!isTxtValid) {
     if (config.debug) {
-      console.log(`[DBG] Verification failed: TXT record mismatch or missing for ${za}`);
+      msg(`[DBG] Verification failed: TXT record mismatch or missing for ${za}`);
     }
     return false;
   }
@@ -25,7 +26,7 @@ export const verifyNode = async (config, za, expectedHash) => {
   // 2. HTTP HEAD Validation
   const isHttpValid = await verifyNodeHttp(za, config);
   if (!isHttpValid) {
-    if (config.debug) console.log(`[DBG] Verification failed: HTTP HEAD check failed for ${za}`);
+    if (config.debug) msg(`[DBG] Verification failed: HTTP HEAD check failed for ${za}`);
     return false;
   }
 
@@ -46,7 +47,7 @@ export const verifyNodeHttp = async (za, config = {}) => {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       if (config.debug) {
-        console.log(`[DBG] Verifying HTTP HEAD (Attempt ${attempt}/${maxRetries}): ${url}`);
+        msg(`[DBG] Verifying HTTP HEAD (Attempt ${attempt}/${maxRetries}): ${url}`);
       }
 
       const response = await fetch(url, {
@@ -54,7 +55,10 @@ export const verifyNodeHttp = async (za, config = {}) => {
         signal: AbortSignal.timeout(10000),
       });
 
-      if (config.debug) console.log(`[DBG] HTTP HEAD ${url} returned ${response.status}`);
+      if (config.log_level >= 2) {
+        msg(`Outgoing request:\n  Method: HEAD\n  Path: /\n  To: ciprnode.${za}`, 'REQ');
+        msg(`  Incoming Response: ${response.status}`, 'RES');
+      }
 
       if (response.ok) {
         return true; // Success
@@ -67,7 +71,7 @@ export const verifyNodeHttp = async (za, config = {}) => {
       }
     } catch (error) {
       if (config.debug) {
-        console.log(`[DBG] HTTP HEAD failed for ${url} (Attempt ${attempt}): ${error.message}`);
+        msg(`[DBG] HTTP HEAD failed for ${url} (Attempt ${attempt}): ${error.message}`);
       }
 
       if (attempt < maxRetries) {
@@ -144,9 +148,6 @@ export const verifyReliability = async (
   url.searchParams.set('pages[size]', paginationParams.size);
 
   try {
-    if (config.debug) {
-      console.log(`[DBG] Verifying Reliability: QUERY ${url.toString()}`);
-    }
 
     const response = await fetch(url.toString(), {
       method: 'QUERY',
@@ -156,9 +157,14 @@ export const verifyReliability = async (
       signal: AbortSignal.timeout(10000),
     });
 
+    if (config.log_level >= 2) {
+      msg(`Outgoing request:\n  Method: QUERY\n  Path: ${url.pathname}${url.search}\n  To: ${url.hostname}`, 'REQ');
+      msg(`  Incoming Response: ${response.status}`, 'RES');
+    }
+
     if (!response.ok) {
       if (config.debug) {
-        console.log(
+        msg(
           `[DBG] Reliability check failed: ${targetZa} returned status ${response.status}`,
         );
       }
@@ -172,7 +178,7 @@ export const verifyReliability = async (
     const isReliable = compareSearchResults(localBaselineRank, targetRank);
 
     if (config.debug) {
-      console.log(
+      msg(
         `[DBG] Reliability for ${targetZa}: ${
           isReliable ? 'PASS' : 'FAIL'
         } (Baseline: ${localBaselineRank.length}, Target: ${targetRank.length})`,
@@ -182,7 +188,7 @@ export const verifyReliability = async (
     return isReliable;
   } catch (error) {
     if (config.debug) {
-      console.log(`[DBG] Reliability error for ${targetZa}: ${error.message}`);
+      msg(`[DBG] Reliability error for ${targetZa}: ${error.message}`);
     }
     return false;
   }

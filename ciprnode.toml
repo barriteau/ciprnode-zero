@@ -14,7 +14,7 @@ log_level = 2
 
 # A 'true' value here writes the the same output of 'log_level = 2' to
 # the logs files (ciprnode-*.log) in the /logs/ folder.
-debug = true
+debug = false
 
 #: The actual data of the resource in the Cipr, what goes to the Cipr, what identifies your resources
 [cipr_entry]

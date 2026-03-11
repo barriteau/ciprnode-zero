@@ -8,15 +8,15 @@ import { getDbConnection } from './src/db/client.js';
 import { initSchema } from './src/db/schema.js';
 import { startServer } from './src/api/server.js';
 // import { startBot } from './src/bot/agent.js'; // Removed
-import { logKeyValueTable, setupConsoleLogging } from './src/core/logger.js';
+import { logKeyValueTable } from './src/core/logger.js';
 // import { createSha256Hash } from './src/core/crypto.js'; // Replaced by generateCiprHash
 import { getEntry, insertEntry } from './src/db/repo.js';
 
-// :: Initialize Console Patching (File Persistence)
-setupConsoleLogging();
+// :: File Persistence & Rotation is handled directly via `writeToLogFile`.
 import { verifyCiprHash } from './src/core/dns.js';
 import { initialSync } from './src/core/sync.js';
-import { generateCiprHash } from './src/core/utils.js';
+import { generateCiprHash, setLoggingConfig } from './src/core/utils.js';
+import { msg } from './src/core/utils.js';
 
 if (import.meta.main) {
   try {
@@ -43,7 +43,7 @@ if (import.meta.main) {
 
     const sequenceStart = performance.now();
 
-    console.log(`
+    msg(`
 ░█▀█ ░▀ ░█▀█ ░█▀█ ░█▄░█ ░█▀█ ░█▀▄ ░█▀▀
 ░█   ░█ ░█▄█ ░█▄▀ ░█░▀█ ░█░█ ░█░█ ░█▀
 ░█▄█  ▀  ▀    ▀ ▀  ▀  ▀  ▀▀▀  ▀▀   ▀▀▀
@@ -52,16 +52,18 @@ if (import.meta.main) {
           ▀▀▀  ▀▀▀  ▀ ▀  ▀▀▀
      A ciprnode proof of concept
 
-          Startup Sequence`);
+          Startup Sequence`, 'H1');
 
     //: 1. Configuration file validation...
-    console.group(`\n1. Configuration file validation...`);
+    msg(`1. Configuration file validation...`, 'H1');
 
     const isFrontOnly = Deno.args.includes('--front-only');
     const config = await loadConfig();
 
+    setLoggingConfig(config.log_level, config.debug);
+
     // Config Summary Table (Sanitized)
-    console.log(`Configuration summary:`);
+    msg(`Configuration summary:`);
     const configSummary = {
       'Environment': config.env,
       'Debug Mode': config.debug,
@@ -74,11 +76,10 @@ if (import.meta.main) {
     };
     logKeyValueTable(configSummary);
 
-    console.log(`[OK] The Configuration File is okay and loaded`);
-    console.groupEnd(); // End Config
+    msg(`The Configuration File is okay and loaded`, 'OK');
 
     //: 2. Extracting ciprHash for the current configuration...
-    console.group(`\n2. Extracting ciprHash for the current configuration...`);
+    msg(`2. Extracting ciprHash for the current configuration...`, 'H1');
 
     // Define keywordsStr for use in insertEntry later
     const keywordsStr = Array.isArray(config.keywords)
@@ -97,38 +98,35 @@ if (import.meta.main) {
       config.primary_lang,
     );
 
-    console.log(`Hash: ${ciprHash}`);
-    console.groupEnd();
+    msg(`Hash: ${ciprHash}`);
 
     //: 3. Ciprdup (local database) connection...
-    console.group(`\n3. Ciprdup (local database) connection...`);
+    msg(`3. Ciprdup (local database) connection...`, 'H1');
     const db = await getDbConnection();
     initSchema(db); // Ensures tables exist
-    console.log(`[OK] Database connected & schema verified`);
-    console.groupEnd();
+    msg(`Database connected & schema verified`, 'OK');
 
     //: 4. Ciprnode Synchronization...
     let txtUpdated = false; // Track if we updated the TXT record (moved up to be available globally in this scope)
 
     if (isFrontOnly) {
-      console.log(`\n[FRONT-DEV MODE] Skipping Ciprnode synchronization...`);
+      msg(`Front-end development mode, skipping Ciprnode synchronization.`, 'WA');
     } else {
-      console.group(`\n4. Ciprnode synchronization...`);
+      msg(`4. Ciprnode synchronization...`, 'H1');
       await initialSync(config, db);
-      console.groupEnd();
     }
 
     //: 5. Configured za Verification... (Check if row exists for config.za)
     if (isFrontOnly) {
-      console.log(`\n[FRONT-DEV MODE] Skipping DNS za verification...`);
+      msg(`Front-end development mode, skipping DNS za verification.`, 'WA');
     } else {
-      console.group(`\n5. Configured za verification...`);
+      msg(`5. Configured za verification...`, 'H1');
       const existingEntry = getEntry(db, config.za);
       const now = Math.floor(Date.now() / 1000); // Unix Timestamp (UTC)
 
       if (!existingEntry) {
         // Not found -> Create New
-        console.log(`Entry for ${config.za} not found. Creating...`);
+        msg(`Entry for ${config.za} not found. Creating...`);
         insertEntry(db, {
           za: config.za,
           title: config.title,
@@ -140,7 +138,7 @@ if (import.meta.main) {
           timestamp: now,
           primary_lang: config.primary_lang, // Patch: missing identity language
         });
-        console.log(`[OK] New entry created`);
+        msg(`New entry created`, 'OK');
         // New entry implies we might need to update DNS if it doesn't match,
         // but logic below handles "Mismatch" if existing.
         // If it's new locally, we assume we might be setting up.
@@ -151,7 +149,7 @@ if (import.meta.main) {
       } else {
         // ... existing validation logic ...
         // Found -> Generate Initial Validation Hash
-        console.log(`An entry for ${config.za} has been found, validating it...`);
+        msg(`An entry for ${config.za} has been found, validating it...`);
         // From DB Row values
         const validationHash = await generateCiprHash(
           existingEntry.za,
@@ -165,9 +163,7 @@ if (import.meta.main) {
         );
 
         if (ciprHash !== validationHash) {
-          console.log(
-            `Differences detected between ciprnode.toml and local database. Updating local index...`,
-          );
+          msg(`Differences detected between ciprnode.toml and local database. Updating local index...`, 'WA');
           // Sync new config values into the local SQLite node identity
           insertEntry(db, {
             za: config.za,
@@ -187,43 +183,35 @@ if (import.meta.main) {
             try {
               const providerName = config.dns_provider.name;
               const { updateRecord } = await import(`./integrations/dns/${providerName}.js`);
-              console.warn(
-                `Local configuration changed. Updating ${providerName} TXT DNS record...`,
-              );
+              msg(`Local configuration changed. Updating ${providerName} TXT DNS record...`, 'WA');
               updated = await updateRecord(config, ciprHash);
             } catch (e) {
-              console.error(
-                `[MAIN] Failed to dynamically load or run DNS provider '${config.dns_provider.name}':`,
-                e.message,
-              );
+              msg(`Failed to dynamically load or run DNS provider '${config.dns_provider.name}': ${e.message}`, 'KO');
             }
           }
 
           if (updated) {
             txtUpdated = true;
-            console.log(`TXT DNS record updated. Waiting 60s for propagation...`);
+            msg(`TXT DNS record updated. Waiting 60s for propagation...`, 'OK');
             // We can lower this or keep it, but standard says wait.
             await new Promise((r) => setTimeout(r, 60000));
           } else if (!config.dns_provider?.name) {
-            console.warn(
-              `\n[ACTION REQUIRED] You must manually update your DNS TXT record for _cipr.${config.za} to:`,
-            );
-            console.warn(`"${ciprHash}"\n`);
+            msg(`ACTION REQUIRED: You must manually update your DNS TXT record for _cipr.${config.za} to:`, 'WA');
+            msg(`"${ciprHash}"\n`);
           }
         } else {
           // ...
-          console.log(`[OK] Local database matches ciprnode.toml configuration.`);
+          msg(`Local database matches ciprnode.toml configuration.`, 'OK');
         }
       }
-      console.groupEnd();
     }
 
     //: 6. DNS entry verification (Auto-Repair checks)
     let isVerified = false;
     if (isFrontOnly) {
-      console.log(`\n[FRONT-DEV MODE] Skipping DNS entry verification and Auto-Repair...`);
+      msg(`Front-end development mode, skipping DNS entry verification and Auto-Repair.`, 'WA');
     } else {
-      console.group(`\n6. DNS entry verification...`);
+      msg(`6. DNS entry verification...`, 'H1');
       isVerified = await verifyCiprHash(config, config.za, ciprHash);
 
       // Auto-Repair Logic
@@ -232,20 +220,17 @@ if (import.meta.main) {
         config.dns_provider?.name // Check if a provider is configured
       ) {
         let updated = false;
-        console.warn(
+        msg(
           `DNS Entry verification failed. Attempting automated repair for ${config.dns_provider.name}...`,
         );
         if (config.dns_provider?.name) {
           try {
             const providerName = config.dns_provider.name;
             const { updateRecord } = await import(`./integrations/dns/${providerName}.js`);
-            console.warn(`Fixing bad remote TXT via Provider (${providerName}) ...`);
+            msg(`Fixing bad remote TXT via Provider (${providerName}) ...`, 'WA');
             updated = await updateRecord(config, ciprHash);
           } catch (e) {
-            console.error(
-              `[MAIN] Failed to fix TXT record via DNS provider '${config.dns_provider.name}':`,
-              e.message,
-            );
+            msg(`Failed to fix TXT record via DNS provider '${config.dns_provider.name}': ${e.message}`, 'KO');
           }
         }
         if (updated) {
@@ -254,38 +239,36 @@ if (import.meta.main) {
           const maxAttempts = 3;
           const delayMs = 60000; // 60 seconds
 
-          console.log(`Propagation wait loop...`);
+          msg(`Propagation wait loop...`);
           for (let i = 1; i <= maxAttempts; i++) {
-            console.log(`Waiting ${delayMs / 1000}s (Attempt ${i}/${maxAttempts})...`);
+            msg(`Waiting ${delayMs / 1000}s (Attempt ${i}/${maxAttempts})...`);
             await new Promise((r) => setTimeout(r, delayMs));
 
-            console.log(`Verifying...`);
+            msg(`Verifying...`);
             isVerified = await verifyCiprHash(config, config.za, ciprHash);
 
             if (isVerified) {
-              console.log(`[OK] Cipr DNS entry verification successful`);
+              msg(`Cipr DNS entry verification successful`, 'OK');
               break;
             } else {
-              console.warn(`Attempt ${i} failed.`);
+              msg(`Attempt ${i} failed.`, 'WA');
             }
           }
-          console.groupEnd();
         }
       }
 
       if (!isVerified) {
-        console.error(`[ERR] This ciprnode does not have an associated entry in the DNS.`);
+        msg(`This ciprnode does not have an associated entry in the DNS.`, 'KO');
 
         if (!config.debug) {
-          console.error(`Exiting.`);
+          msg(`Exiting.`, 'KO');
           Deno.exit(1);
         } else {
-          console.warn(`Continuing in Debug Mode.`);
+          msg(`Continuing in Debug Mode.`, 'WA');
         }
       } else {
-        console.log(`[OK] Cipr Entry in the DNS Verified`);
+        msg(`Cipr Entry in the DNS verified.`, 'OK');
       }
-      console.groupEnd();
     }
 
     // Calculate process duration
@@ -294,8 +277,8 @@ if (import.meta.main) {
     const seconds = ((durationMs % 60000) / 1000).toFixed(2);
     const durationStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 
-    console.log(`\nThe Startup Sequence has completed.`);
-    console.log(`Duration: ${durationStr}\n`);
+    msg(`The Startup Sequence has completed.`, 'OK');
+    msg(`Duration: ${durationStr}`);
 
     //: Start API Server (Scheduler starts inside after verification)
     // We need to know if TXT was updated to trigger the broadcast in scheduler

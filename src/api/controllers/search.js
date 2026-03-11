@@ -6,6 +6,7 @@
 import { countEntries, getLanguageMap, getLatestTimestamp, searchEntries } from '../../db/repo.js';
 import { render } from '../views/renderer.js';
 import { captureSearchTerms } from '../../core/fts_generator.js';
+import { msg } from '../../core/utils.js';
 
 /**
  * Handles HEAD /ri/ requests to determine ISE availability.
@@ -59,7 +60,7 @@ export const query = async (req, db, config, isResindex = false) => {
       bodyText = await req.text();
     }
   } catch (e) {
-    console.error('Error reading body:', e);
+    msg('Error reading body:', e);
   }
 
   if (bodyText) {
@@ -76,7 +77,7 @@ export const query = async (req, db, config, isResindex = false) => {
           }
         }
       } catch (e) {
-        console.error('Error parsing JSON body:', e);
+        msg('Error parsing JSON body:', e);
       }
     } else if (contentType.includes('application/x-www-form-urlencoded')) {
       const bodyParams = new URLSearchParams(bodyText);
@@ -300,7 +301,7 @@ export const query = async (req, db, config, isResindex = false) => {
           const { queryResindex } = await import(pluginPath);
           return await queryResindex(provider, options);
         } catch (e) {
-          console.error(
+          msg(
             `[ISE] Failed to dynamically load or run ISE provider '${provider.name}':`,
             e.message,
             e.stack,
@@ -496,7 +497,7 @@ export const getLanguages = (req, db, _config) => {
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
     });
   } catch (e) {
-    console.error('Error fetching languages:', e);
+    msg('Error fetching languages:', e);
     return new Response('[]', {
       status: 500,
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
