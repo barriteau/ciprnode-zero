@@ -142,6 +142,7 @@ export const query = async (req, db, config, isResindex = false) => {
 
   const options = {
     query: params.get('q') || params.get('query') || '',
+    mode: params.get('mode') || 'searching',
     ol: [],
     geo: {},
     timestamp: {},
@@ -386,7 +387,6 @@ export const query = async (req, db, config, isResindex = false) => {
   // B. HTML (Template)
   const templateData = {
     configZa: config.za,
-    parentUrl: config.parent_url || null,
     stats: { // potentially expensive to get real count every time?
       count: statsCount,
       last_insert: (() => {

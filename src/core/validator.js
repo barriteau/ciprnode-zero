@@ -90,7 +90,32 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be 1-512 chars, no newlines. Current Length: ${kwStr.length}`,
   );
 
-  // 4b. Validate Primary Language
+  // 4b. Validate Offering
+  const offSeekRegex = /^[^\r\n\u2028\u2029]{1,128}$/u;
+  if (config.offering) {
+    check(
+      'Offering',
+      config.offering,
+      typeof config.offering === 'string' && offSeekRegex.test(config.offering),
+      `Must be 1-128 chars, no newlines. Current Length: ${config.offering?.length}`,
+    );
+  } else {
+    validations['Offering'] = 'Skipped (None provided)';
+  }
+
+  // 4c. Validate Seeking
+  if (config.seeking) {
+    check(
+      'Seeking',
+      config.seeking,
+      typeof config.seeking === 'string' && offSeekRegex.test(config.seeking),
+      `Must be 1-128 chars, no newlines. Current Length: ${config.seeking?.length}`,
+    );
+  } else {
+    validations['Seeking'] = 'Skipped (None provided)';
+  }
+
+  // 4d. Validate Primary Language
   if (config.primary_lang) {
     check(
       'Primary Language',
@@ -182,26 +207,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     validations['Test Words'] = '[WARN] Ignored Invalid Configuration';
   } else {
     validations['Test Words'] = '[OK] Valid';
-  }
-
-  // 10. Validate Parent URL if present
-  if (config.parent_url) {
-    let isValidUrl = false;
-    try {
-      const url = new URL(config.parent_url);
-      isValidUrl = url.protocol === 'http:' || url.protocol === 'https:';
-    } catch {
-      isValidUrl = false;
-    }
-    check(
-      'Parent URL',
-      config.parent_url,
-      isValidUrl,
-      `Must be a valid HTTP or HTTPS URL. Current Value: "${config.parent_url}"`,
-    );
-  } else {
-    validations['Parent URL'] = 'Skipped (None provided)';
-  }
+  }
 
   // 11. Validate ISE Providers
   if (config.ise_provider && config.ise_provider.length > 0) {

@@ -34,6 +34,11 @@
     "options": {
       "toggle": "Filtros de Pesquisa",
       "reset": "Redefinir"
+    },
+    "info": {
+      "searching": "Pesquisa geral de recursos",
+      "seeking": "Pesquisa priorizando recursos que oferecem o que seus termos de pesquisa especificam",
+      "offering": "Pesquisa priorizando recursos que exigem o que seus termos de pesquisa especificam"
     }
   },
   "results": {

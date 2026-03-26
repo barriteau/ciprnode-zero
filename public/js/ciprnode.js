@@ -189,6 +189,22 @@ const initLanguageAutocomplete = () => {
 
 const initSearchForm = () => {
   initAutocomplete();
+
+  const modeToggles = document.querySelectorAll('input[name="mode"]');
+  const infoDiv = document.getElementById('search-bar-info');
+  if (infoDiv && modeToggles.length > 0) {
+    modeToggles.forEach(toggle => {
+      toggle.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          const mode = e.target.value;
+          const newText = infoDiv.getAttribute(`data-info-${mode}`);
+          if (newText) {
+            infoDiv.textContent = newText;
+          }
+        }
+      });
+    });
+  }
 };
 
 const initFilters = () => {

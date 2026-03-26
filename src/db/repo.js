@@ -25,12 +25,14 @@ export const insertEntry = (db, entry) => {
   const keywords = Array.isArray(entry.keywords) ? entry.keywords.join(' ') : entry.keywords;
 
   const stmt = db.prepare(`
-    INSERT INTO ciprdup (za, title, description, keywords, ol, latitude, longitude, timestamp, primary_lang)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO ciprdup (za, title, description, keywords, offering, seeking, ol, latitude, longitude, timestamp, primary_lang)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(za) DO UPDATE SET
       title = excluded.title,
       description = excluded.description,
       keywords = excluded.keywords,
+      offering = excluded.offering,
+      seeking = excluded.seeking,
       ol = excluded.ol,
       latitude = excluded.latitude,
       longitude = excluded.longitude,
@@ -43,6 +45,8 @@ export const insertEntry = (db, entry) => {
     entry.title,
     entry.description,
     keywords,
+    entry.offering || null,
+    entry.seeking || null,
     entry.ol,
     entry.latitude || null,
     entry.longitude || null,
@@ -204,7 +208,7 @@ const sanitizeFtsQuery = (raw) => {
 };
 
 export const searchEntries = (db, options = {}) => {
-  const { query: rawQuery, ol, geo, timestamp, pages, primary_lang } = options;
+  const { query: rawQuery, ol, geo, timestamp, pages, primary_lang, mode } = options;
   const query = sanitizeFtsQuery(rawQuery);
   // Construct Base SQL
 
@@ -216,7 +220,10 @@ export const searchEntries = (db, options = {}) => {
     ftsJoin = `JOIN ciprdup_fts ON ciprdup.rowid = ciprdup_fts.rowid`;
     // We need to inject the MATCH condition into WHERE, and update ORDER BY
     // Spec: "Tie-breaking: ... older entries (earlier timestamps) must be ranked higher."
-    orderBy = `ORDER BY bm25(ciprdup_fts, 32.0, 16.0, 8.0, 1.0) ASC, ciprdup.timestamp ASC`;
+    let weights = '32.0, 16.0, 8.0, 1.0, 1.0, 1.0';
+    if (mode === 'seeking') weights = '32.0, 16.0, 8.0, 1.0, 1.0, 32.0';
+    if (mode === 'offering') weights = '32.0, 16.0, 8.0, 1.0, 32.0, 1.0';
+    orderBy = `ORDER BY bm25(ciprdup_fts, ${weights}) ASC, ciprdup.timestamp ASC`;
   }
 
   // Re-build params for the exact order: FTS match param first?

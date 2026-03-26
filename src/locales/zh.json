@@ -33,6 +33,11 @@
     "options": {
       "toggle": "搜索过滤",
       "reset": "重置"
+    },
+    "info": {
+      "searching": "常规资源搜索",
+      "seeking": "优先搜索提供您指定的搜索词所代表内容的资源",
+      "offering": "优先搜索需要您指定的搜索词所代表内容的资源"
     }
   },
   "results": {

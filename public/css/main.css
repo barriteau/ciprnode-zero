@@ -29,7 +29,7 @@ html {
 body {
     overflow-y: scroll;
     overflow-x: hidden;
-    min-width: 360px;
+    min-width: 320px;
     margin-top: 3.4rem;
     background-color: var(--body-background-color);
     color: var(--body-color);
@@ -222,22 +222,26 @@ input[type="color"] {
 
 input[type="checkbox"],
 input[type="radio"] {
-    vertical-align: text-top;
+    vertical-align: middle;
+}
+
+form fieldset {
+    border: 1px solid #efefef;
+    background-color: #efefef;
+    border-radius: 4px;
 }
 
 fieldset legend {
+    background-color: #efefef;
+    border-radius: 4px;
+    font-weight: bold;
     padding: 0 0.5rem;
     vertical-align: text-bottom;
 }
 
 label {
-    font-size: 1rem;
+    font-size: 1em;
     vertical-align: text-bottom;
-}
-
-form fieldset {
-    border: 1px solid #cccccc;
-    border-radius: 4px;
 }
 
 /* --- Scrollbar --- */
@@ -265,7 +269,7 @@ nav#toolbar {
     position: fixed;
     top: 0;
     left: 0;
-    min-width: 360px;
+    min-width: 320px;
     width: 100vw;
     padding: 0 calc(50vw - 320px);
     height: 3.4rem;
@@ -805,7 +809,7 @@ ol#annotations-list>li>figure>figcaption {
 }
 
 ol#annotations-list>li>figure>figcaption>span.actions {
-    font-size: 1.3rem;
+    font-size: 1em;
 }
 
 #annotations-list>li>figure>div.excerpt {
@@ -815,7 +819,7 @@ ol#annotations-list>li>figure>figcaption>span.actions {
     -webkit-line-clamp: 2;
     line-clamp: 2;
     overflow: hidden;
-    font-size: 1.25rem;
+    font-size: 1.25em;
     font-style: italic;
 }
 
@@ -1344,35 +1348,21 @@ ol.toc li:last-child:before {
 
 /* --- Search form ---*/
 
-#search-bar {
-    display: flex;
+#main-search-form input[type="text"],
+#main-search-form input[type="datetime"],
+#main-search-form input[type="datetime-local"],
+#main-search-form input[type="number"] {
     width: 100%;
-    gap: 0.5em;
-    margin-bottom: 1rem;
+    min-width: 2em;
+    box-sizing: border-box;
 }
 
-#search-bar input,
-#search-filters input {
-    flex: 1;
-    min-width: 0;
-}
-
-#search-bar input {
-    margin-right: -3.75em;
-}
-
-/* FTS5 validation feedback: only overrides border/outline color, nothing else */
-#q.fts-invalid {
-    border-color: #d9534f;
-    outline-color: #d9534f;
-}
-
-/* --- #search-help details/summary operator reference panel --- */
+/* --- Search help --- */
 
 #search-help {
+    display: flex;
     position: relative;
     flex-shrink: 0;
-    display: flex;
     align-items: center;
 }
 
@@ -1380,11 +1370,10 @@ ol.toc li:last-child:before {
     background-color: #ffffff;
 }
 
-/* Hide the native disclosure triangle */
-#search-help>summary {
-    list-style: none;
-    cursor: pointer;
+#search-help summary {
     display: flex;
+    /*list-style: none;*/
+    cursor: pointer;
     align-items: center;
     padding: 0 0.15rem;
     border-radius: 4px;
@@ -1399,7 +1388,7 @@ ol.toc li:last-child:before {
 #search-help-panel {
     position: absolute;
     top: calc(100% + 8px);
-    right: 0;
+    left: 0;
     white-space: pre;
     font-family: "Iosevka", monospace;
     font-size: 0.78rem;
@@ -1412,69 +1401,180 @@ ol.toc li:last-child:before {
     min-width: max-content;
 }
 
+/* --- Search bar ---*/
+
+#search-bar {
+    display: flex;
+    width: 100%;
+    gap: 0;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#search-bar input {
+    flex-basis: 100%;
+}
+
+#search-bar input {
+    margin: 0;
+}
+
+/* --- Ternary toggle --- */
+
+.toggle-group {
+    display: flex;
+    border-radius: 4px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    margin: 0 0.5em;
+    max-width: max-content;
+    /*font-size: 1em;*/
+}
+
+.toggle-group input[type="radio"] {
+    opacity: 0;
+    position: absolute;
+}
+
+.toggle-group input[type="radio"]+label {
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.toggle-group input[type="radio"]:not(:is(:checked))+label svg-icon {
+    /* color: #999999; */
+    filter: invert(75%) sepia(0%) saturate(89%) hue-rotate(228deg) brightness(83%) contrast(82%);
+}
+
+.toggle-group input[type="radio"]:checked+label svg-icon {
+  /* color: #008000; */
+  filter: invert(21%) sepia(77%) saturate(5925%) hue-rotate(118deg) brightness(95%) contrast(106%);
+}
+
+/* --- Search bar info --- */
+
+#search-bar-info {
+    min-width: max-content;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-align: right;
+    color: #008000;
+    margin-bottom: 1em;
+}
+
+/* FTS5 validation feedback: only overrides border/outline color, nothing else */
+#q.fts-invalid {
+    border-color: #d9534f;
+    outline-color: #d9534f;
+}
 
 #search-bar button,
 #search-filters button {
     flex-shrink: 0;
 }
 
+details#search-options summary {
+    background-color: #efefef;
+    margin-bottom: 1em;
+    padding: 0 1em;
+}
+
 #search-filters {
-    /* : Check for media query variations */
-    width: 100%;
     display: flex;
-    gap: 0.5rem;
     flex-wrap: wrap;
-    background-color: #eeeeee;
-    border: 2px solid #eeeeee;
-    border-radius: 4px;
-    padding: 0.5rem 0.5rem 0.4rem 0.5rem;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 #search-filters>fieldset {
-    /* : Check for media query variations */
-    flex: 1;
+    /* Default: all fieldsets stack vertically taking 100% width on small screens */
+    flex: 1 1 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
-#search-filters>fieldset#ol-filter label {
-    /* : Check for media query variations */
-    white-space: nowrap;
-    margin-right: 1rem;
+/* Force side-by-side 25% / 75% layout for Language and Offensiveness on > 640px */
+@media screen and (min-width: 641px) {
+    #search-filters>fieldset#language-filter {
+        flex: 0 0 calc(40% - 0.25rem);
+    }
+    #search-filters>fieldset#ol-filter {
+        flex: 0 0 calc(60% - 0.25rem);
+    }
 }
 
-#search-filters>fieldset#search-options-buttons {
-    flex: 1 1 100% !important;
+div#search-options-buttons {
+    flex: 1 1 100%;
     text-align: right;
-    border: none;
-    margin: 0;
-    padding: 0;
+    margin: 1em 0 0 0;
 }
 
-#search-filters>fieldset#search-options-buttons button {
-    font-size: 1rem;
+#date-time-filter>div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-#date-time-filter>div,
+@media screen and (max-width: 640px) {
+    #date-time-filter>div {
+        flex-wrap: wrap;
+    }
+}
+
+/* --- Location Filter Layout --- */
+#location-filter {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 #location-filter>div {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.75rem;
-    position: relative;
+    flex: 1 1 50%;
+    min-width: 0;
 }
 
-#language-filter>div {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-    position: relative;
+#location-filter>div>input {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 0px;
+    box-sizing: border-box;
 }
 
-#date-time-filter>div>input,
-#location-search {
-    grid-column: 2 / -1;
+#geo_unit {
+    flex: 0 0 auto;
+}
+
+@media screen and (max-width: 640px) {
+    #location-filter {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    #location-filter>div {
+        flex-wrap: wrap;
+    }
+    #location-filter>div>label {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+}
+
+#ol-filter > label {
+   cursor: pointer;
 }
 
 #language-reset-btn {
@@ -1489,12 +1589,11 @@ ol.toc li:last-child:before {
 }
 
 #language-reset-btn:hover {
-    color: red;
+    color: #ff0000;
 }
 
 .autocomplete-results {
     position: absolute;
-    grid-column: 2 / -1;
     top: 100%;
     left: 0;
     right: 0;
@@ -1544,11 +1643,10 @@ summary:active {
     font-weight: bold;
     cursor: pointer;
     background-color: transparent;
-    border: 2px solid transparent;
     color: #015F6B;
-    border-radius: 4px;
-    list-style: none;
-    text-align: right;
+    /*list-style: none;*/
+    text-align: left;
+    font-size: 1.25em;
 }
 
 /* --- Search results --- */
@@ -1575,9 +1673,8 @@ summary:active {
     font-weight: bold;
 }
 
-div.actions>a,
 div.actions>label>a {
-    font-size: 1rem;
+    font-size: 0.75em;
     font-family: "Libertinus Sans", sans-serif;
     background-color: transparent;
     color: #e47900;
@@ -1587,9 +1684,9 @@ div.actions>label>a {
     display: inline-block;
 }
 
-div.actions>label>a {
+div.actions>label.intra-search-label>a {
     color: #00b6e4;
-    border: 1px solid #98e7ff;
+    border-color:#00b6e4;
 }
 
 /* --- Pagination --- */

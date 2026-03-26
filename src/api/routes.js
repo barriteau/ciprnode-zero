@@ -85,6 +85,9 @@ export const handleRequest = (request, db, config) => {
         const allowedFields = [
           'title',
           'description',
+          'keywords',
+          'offering',
+          'seeking',
           'ol',
           'latitude',
           'longitude',

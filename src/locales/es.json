@@ -33,6 +33,11 @@
     "options": {
       "toggle": "Filtros de búsqueda",
       "reset": "Restablecer"
+    },
+    "info": {
+      "searching": "Búsqueda general de recursos",
+      "seeking": "Búsqueda priorizando los recursos en que se ofrece lo que escribiste",
+      "offering": "Búsqueda priorizando los recursos en que se requiere lo que escribiste"
     }
   },
   "results": {

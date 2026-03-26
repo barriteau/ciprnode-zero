@@ -92,10 +92,12 @@ if (import.meta.main) {
       config.title,
       config.description,
       config.keywords,
+      config.offering,
+      config.seeking,
+      config.primary_lang,
       config.ol,
       config.latitude,
       config.longitude,
-      config.primary_lang,
     );
 
     msg(`Hash: ${ciprHash}`);
@@ -137,6 +139,8 @@ if (import.meta.main) {
           longitude: config.longitude,
           timestamp: now,
           primary_lang: config.primary_lang, // Patch: missing identity language
+          offering: config.offering,
+          seeking: config.seeking,
         });
         msg(`New entry created`, 'OK');
         // New entry implies we might need to update DNS if it doesn't match,
@@ -156,10 +160,12 @@ if (import.meta.main) {
           existingEntry.title,
           existingEntry.description,
           existingEntry.keywords,
+          existingEntry.offering,
+          existingEntry.seeking,
+          existingEntry.primary_lang,
           existingEntry.ol,
           existingEntry.latitude,
           existingEntry.longitude,
-          existingEntry.primary_lang,
         );
 
         if (ciprHash !== validationHash) {
@@ -175,6 +181,8 @@ if (import.meta.main) {
             longitude: config.longitude,
             timestamp: now,
             primary_lang: config.primary_lang,
+            offering: config.offering,
+            seeking: config.seeking,
           });
 
           // Trigger DNS Update

@@ -166,10 +166,12 @@ export const initialSync = async (config, db) => {
           entry.title,
           entry.description,
           entry.keywords,
+          entry.offering,
+          entry.seeking,
+          entry.primary_lang,
           entry.ol,
           entry.latitude,
           entry.longitude,
-          entry.primary_lang,
         );
 
         // OPTIMIZATION: Check if entry exists and is identical
@@ -180,10 +182,12 @@ export const initialSync = async (config, db) => {
             existing.title,
             existing.description,
             existing.keywords,
+            existing.offering,
+            existing.seeking,
+            existing.primary_lang,
             existing.ol,
             existing.latitude,
             existing.longitude,
-            existing.primary_lang,
           );
 
           if (calculatedHash === existingHash) {

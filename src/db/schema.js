@@ -44,6 +44,8 @@ export const initSchema = (db) => {
       -- Constraint: Max length 512 characters.
       -- Constraint: Must NOT contain Newline (LF) or Carriage Return (CR) characters.
       keywords TEXT CHECK (length(keywords) <= 512 AND instr(keywords, x'0A') = 0 AND instr(keywords, x'0D') = 0),
+      offering TEXT CHECK (offering IS NULL OR (length(offering) <= 128 AND instr(offering, x'0A') = 0 AND instr(offering, x'0D') = 0)),
+      seeking TEXT CHECK (seeking IS NULL OR (length(seeking) <= 128 AND instr(seeking, x'0A') = 0 AND instr(seeking, x'0D') = 0)),
 
       -- Primary Language: ISO 639-1 language code of the resource.
       -- Constraint: Must be exactly 2 characters (e.g., 'en', 'es') or NULL.
@@ -113,6 +115,8 @@ export const initSchema = (db) => {
           title,
           description,
           keywords,
+          offering,
+          seeking,
           content='ciprdup',  -- External content source is the main table
           content_rowid='rowid' -- Link via standard internal rowid
       );
@@ -123,26 +127,26 @@ export const initSchema = (db) => {
   // Trigger: After Insert
   db.exec(`
       CREATE TRIGGER IF NOT EXISTS ciprdup_ai AFTER INSERT ON ciprdup BEGIN
-        INSERT INTO ciprdup_fts(rowid, za, title, description, keywords)
-        VALUES (new.rowid, new.za, new.title, new.description, new.keywords);
+        INSERT INTO ciprdup_fts(rowid, za, title, description, keywords, offering, seeking)
+        VALUES (new.rowid, new.za, new.title, new.description, new.keywords, new.offering, new.seeking);
       END;
   `);
 
   // Trigger: After Delete
   db.exec(`
       CREATE TRIGGER IF NOT EXISTS ciprdup_ad AFTER DELETE ON ciprdup BEGIN
-        INSERT INTO ciprdup_fts(ciprdup_fts, rowid, za, title, description, keywords)
-        VALUES('delete', old.rowid, old.za, old.title, old.description, old.keywords);
+        INSERT INTO ciprdup_fts(ciprdup_fts, rowid, za, title, description, keywords, offering, seeking)
+        VALUES('delete', old.rowid, old.za, old.title, old.description, old.keywords, old.offering, old.seeking);
       END;
   `);
 
   // Trigger: After Update
   db.exec(`
       CREATE TRIGGER IF NOT EXISTS ciprdup_au AFTER UPDATE ON ciprdup BEGIN
-        INSERT INTO ciprdup_fts(ciprdup_fts, rowid, za, title, description, keywords)
-        VALUES('delete', old.rowid, old.za, old.title, old.description, old.keywords);
-        INSERT INTO ciprdup_fts(rowid, za, title, description, keywords)
-        VALUES (new.rowid, new.za, new.title, new.description, new.keywords);
+        INSERT INTO ciprdup_fts(ciprdup_fts, rowid, za, title, description, keywords, offering, seeking)
+        VALUES('delete', old.rowid, old.za, old.title, old.description, old.keywords, old.offering, old.seeking);
+        INSERT INTO ciprdup_fts(rowid, za, title, description, keywords, offering, seeking)
+        VALUES (new.rowid, new.za, new.title, new.description, new.keywords, new.offering, new.seeking);
       END;
   `);
 

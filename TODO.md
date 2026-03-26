@@ -14,9 +14,22 @@ Legend:
 - [✔] move test_words to the root and all [meta_data] to [ciprface] in the .toml
 - [✔] Improve the console logging: silent, regular and debugging
 - [✔] NO 'using defaults' if config file is not found, error y pajuera (src\core\config.js)
+- […] [ Search for: | I need: | I offer: ], add columns in ciprdup, change placeholder, change weight of the search accordingly
+
+---
+
+---
+
+- […] !!! Mover los @media de main.css a media-queries.css
+- […] !!! Revisar el autocomplete de location
+- […] !!! Revisar el validador de los FTS5 expressions en la búsqueda
+- […] Reducir los íconos con media queries
+- […] Reorder search filters horizontally
+- […] Create the "Explore" button, it fills the page with random entries from the ciprdup
+- […] Ciprconf, a dead simple desktop app (Taury?) exclusively made to create the ciprnode.toml file
+- […] Hunt every rem in the styles and convert to em
 - […] Reorder footer
 - […] Review HATEOAS in each endpoint, one by one
-- […] Create the "Explore" page with random entries from the ciprdup
 - […] Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml
 - […] Implementation of the leech mode
 - […] Add Ukrainian, Farsi and Arabic languages
@@ -32,6 +45,7 @@ Legend:
 - […] Create the guasa.art HTR and publish its ciprnode
 - […] Create the juan.barriteau.net and cgt.barriteau.net HTRs and publish their ciprnode
 - […] Create a way to receive BTC/USDT/USDC (payments and patronage / pagos y mecenazgo)
+  - Don't buy me a coffee, just buy me time, all I need is time ;)
   - non-custodial APIs:
     - https://nowpayments.io/ (0.5% fee)
     - https://www.blockonomics.co/ (1% fee)
@@ -129,5 +143,3 @@ The legend at the bottom for this scene is:
 A final text appears in the center of the scene:
 
 «Now, instead of complaining, you can just move on ;)»
-
----

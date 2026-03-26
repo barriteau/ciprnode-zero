@@ -13,7 +13,7 @@
  * @param {string} hash - The calculated ciprHash to set.
  * @returns {Promise<boolean>} True if updated/created, false if error or no change needed.
  */
-export const updateRecord = async (config, _expectedHash) => {
+export const updateRecord = async (config, expectedHash) => {
   const token = config.dns_provider.api_token;
   // If zone_id is not provided, we might try to infer it from config.za
   // deSEC uses the domain name as the identifier in the URL.
@@ -25,7 +25,7 @@ export const updateRecord = async (config, _expectedHash) => {
   }
 
   // Ensure hash is quoted for TXT record
-  const quotedHash = `"${hash}"`;
+  const quotedHash = `"${expectedHash}"`;
   const recordName = '_cipr';
   const type = 'TXT';
   const ttl = 60;

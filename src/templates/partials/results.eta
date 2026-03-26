@@ -24,10 +24,10 @@
       <code>OL<%= item.ol ?? 0 %></code>
       •
       <% if (item.lang_name || item.lang_name_en) { %>
-        <%= item.lang_name || item.lang_name_en %>
-        <% if (item.lang_name && item.lang_name_en && item.lang_name !== item.lang_name_en) { %>
-          &nbsp;<i><%= item.lang_name_en %></i>
-        <% } %>
+      <%= item.lang_name || item.lang_name_en %>
+      <% if (item.lang_name && item.lang_name_en && item.lang_name !== item.lang_name_en) { %>
+      &nbsp;<i><%= item.lang_name_en %></i>
+      <% } %>
       <% } %>
 
       <% if (item.latitude !== null && item.longitude !== null && item.latitude !== undefined) { %>
@@ -39,9 +39,13 @@
     </small>
 
     <div class="actions">
-      <a href="https://ciprnode.<%= item.za %>"><%= it.t('results.visit_ciprnode') %> <%= item.za %></a>
+      <label for="actions-visit-<%= item.za %>">
+        <a href="https://ciprnode.<%= item.za %>" id="actions-visit-<%= item.za %>">
+          <%= it.t('results.visit_ciprnode') %> <%= item.za %>
+        </a>
+      </label>
 
-      <label id="intra-search-label-<%= item.za %>" tabindex="0" class="js-req disabled hidden intra-search-label">
+      <label id="intra-search-label-<%= item.za %>" for="intra-search-toggle-<%= item.za %>" tabindex="0" class="js-req disabled hidden intra-search-label">
         <a>
           <%= it.t('results.intra_search') %> *.<%= item.za %>
           <input id="intra-search-toggle-<%= item.za %>" class="search-toggle" type="checkbox" role="button" form="ri-search-form" aria-pressed="true" />

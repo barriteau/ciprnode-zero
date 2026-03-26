@@ -22,7 +22,6 @@ import { exists } from '@std/fs';
  * @property {number} longitude
  * @property {string} bootstrap_node
  * @property {number} page_size
- * @property {string} [parent_url]
  * @property {string} [primary_lang]
  * @property {string[]} test_words
  * @property {Object} [dns_provider]
@@ -86,7 +85,6 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
 
     const config = {
       za: ciprEntry.za,
-      parent_url: data.parent_url,
       port: network.port !== undefined ? Number(network.port) : undefined,
       env: data.env,
       title: ciprEntry.title,
@@ -94,6 +92,8 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
       keywords: typeof ciprEntry.keywords === 'string'
         ? ciprEntry.keywords.split(' ').filter((k) => k.length > 0)
         : (Array.isArray(ciprEntry.keywords) ? ciprEntry.keywords : undefined),
+      offering: (typeof ciprEntry.offering === 'string' && ciprEntry.offering.trim() !== '') ? ciprEntry.offering.trim() : undefined,
+      seeking: (typeof ciprEntry.seeking === 'string' && ciprEntry.seeking.trim() !== '') ? ciprEntry.seeking.trim() : undefined,
       primary_lang:
         (typeof ciprEntry.primary_lang === 'string' && ciprEntry.primary_lang.trim() !== '')
           ? ciprEntry.primary_lang.trim()
@@ -106,9 +106,9 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
       bootstrap_node: network.bootstrap_node,
       expected_propagation_time: network.expected_propagation_time !== undefined ? Number(network.expected_propagation_time) : undefined,
       page_size: data.ciprface?.page_size !== undefined ? Number(data.ciprface.page_size) : undefined,
-      test_words: typeof data.test_words === 'string'
-        ? data.test_words.split(/\s+/).filter((k) => k.length > 0)
-        : (Array.isArray(data.test_words) ? data.test_words : undefined),
+      test_words: typeof (network.test_words || data.test_words) === 'string'
+        ? (network.test_words || data.test_words).split(/\s+/).filter((k) => k.length > 0)
+        : (Array.isArray(network.test_words || data.test_words) ? (network.test_words || data.test_words) : undefined),
       log_level: typeof data.log_level === 'number' ? data.log_level : undefined,
       debug: Deno.args.includes('--debug') || data.debug === true || false,
       // Optional [meta_data] section — passed through as-is; individual keys may be absent.

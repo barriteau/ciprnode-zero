@@ -8,14 +8,42 @@
 <form id="main-search-form" action="/" method="QUERY" hx-method="QUERY" hx-action="/" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML">
 
   <div id="search-bar">
-    <input id="cipr-search" type="text" name="q" value="<%= it.query || '' %>" placeholder="<%= it.t('search.placeholder') %>" autocomplete="off" spellcheck="false" />
     <details id="search-help">
       <summary title="<%= it.t('search.operators_tooltip_title') %>">
-        <a><svg-icon class="help light"></svg-icon></a>
+        <a>
+          <svg-icon class="help light"></svg-icon>
+        </a>
       </summary>
       <div id="search-help-panel"><%= it.t('search.operators_tooltip') %></div>
     </details>
+
+    <input id="cipr-search" type="text" name="q" value="<%= it.query || '' %>" placeholder="<%= it.t('search.placeholder') %>" autocomplete="off" spellcheck="false" />
+
+    <span id="search-mode-toggle" class="toggle-group">
+      <input type="radio" name="mode" id="searching" value="searching" <%= !it.mode || it.mode === 'searching' ? 'checked="checked"' : '' %> />
+      <label for="searching">
+        <svg-icon class="cipr-search"></svg-icon>
+      </label>
+
+      <input type="radio" name="mode" id="seeking" value="seeking" <%= it.mode === 'seeking' ? 'checked="checked"' : '' %> />
+      <label for="seeking">
+        <svg-icon class="seeking-line"></svg-icon>
+      </label>
+
+      <input type="radio" name="mode" id="offering" value="offering" <%= it.mode === 'offering' ? 'checked="checked"' : '' %> />
+      <label for="offering">
+        <svg-icon class="offering-line"></svg-icon>
+      </label>
+    </span>
+
     <button id="cipr-search-submit" type="submit"><%= it.t('search.btn') %></button>
+  </div>
+
+  <div id="search-bar-info" 
+       data-info-searching="<%= it.t('search.info.searching') || 'General resource search' %>"
+       data-info-seeking="<%= it.t('search.info.seeking') || 'Search prioritizing resources that offer what your search terms specify' %>"
+       data-info-offering="<%= it.t('search.info.offering') || 'Search prioritizing resources that require what your search terms specify' %>">
+    <%= it.mode === 'seeking' ? (it.t('search.info.seeking') || 'Search prioritizing resources that offer what your search terms specify') : (it.mode === 'offering' ? (it.t('search.info.offering') || 'Search prioritizing resources that require what your search terms specify') : (it.t('search.info.searching') || 'General resource search')) %>
   </div>
 
   <details id="search-options">
@@ -26,8 +54,7 @@
         <div>
           <label for="time_after"><%= it.t('search.filters.after') %></label>
           <input type="datetime-local" id="time_after" name="after" value="<%= it.filters?.after || '' %>" />
-        </div>
-        <div>
+
           <label for="time_before"><%= it.t('search.filters.before') %></label>
           <input type="datetime-local" id="time_before" name="before" value="<%= it.filters?.before || '' %>" />
         </div>
@@ -35,7 +62,6 @@
 
       <fieldset id="location-filter">
         <legend><%= it.t('search.filters.location') %></legend>
-
         <div>
           <label for="location-search"><%= it.t('search.filters.near') %></label>
           <input type="text" id="location-search" placeholder="<%= it.t('search.filters.near_placeholder') %>" autocomplete="off" />
@@ -56,7 +82,6 @@
 
       <fieldset id="language-filter">
         <legend><%= it.t('search.filters.language') || 'Language' %></legend>
-
         <div>
           <input type="text" id="language-search" aria-label="<%= it.t('search.filters.language') || 'Language' %>" placeholder="<%= it.t('search.filters.language_placeholder') || 'Type a language...' %>" autocomplete="off" />
           <button type="button" id="language-reset-btn" aria-label="<%= it.t('search.options.reset') %>" class="hidden" title="<%= it.t('search.options.reset') %>">&times;</button>
@@ -73,10 +98,6 @@
           <%= it.t('search.filters.ol_any') %>
         </label>
         <label>
-          <input type="checkbox" name="ol" value="0" class="ol-input" <%= ol.includes(0) ? "checked" : "" %> />
-          <%= it.t('search.filters.ol_0') %>
-        </label>
-        <label>
           <input type="checkbox" name="ol" value="1" class="ol-input" <%= ol.includes(1) ? "checked" : "" %> />
           <%= it.t('search.filters.ol_1') %>
         </label>
@@ -88,13 +109,17 @@
           <input type="checkbox" name="ol" value="3" class="ol-input" <%= ol.includes(3) ? "checked" : "" %> />
           <%= it.t('search.filters.ol_3') %>
         </label>
+        <label>
+          <input type="checkbox" name="ol" value="0" class="ol-input" <%= ol.includes(0) ? "checked" : "" %> />
+          <%= it.t('search.filters.ol_0') %>
+        </label>
       </fieldset>
-
-      <fieldset id="search-options-buttons">
-        <button type="button" id="reset-filters-btn"><%= it.t('search.options.reset') || 'Reset' %></button>
-        <button type="submit"><%= it.t('search.btn') %></button>
-      </fieldset>
-
     </div>
+
+    <div id="search-options-buttons">
+      <button type="button" id="reset-filters-btn"><%= it.t('search.options.reset') || 'Reset' %></button>
+      <button type="submit"><%= it.t('search.btn') %></button>
+    </div>
+
   </details>
 </form>

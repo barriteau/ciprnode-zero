@@ -237,10 +237,12 @@ export const generateCiprHash = async (
   title,
   description,
   keywords,
+  offering,
+  seeking,
+  primary_lang,
   ol,
   latitude,
   longitude,
-  primary_lang,
 ) => {
   const keywordsStr = Array.isArray(keywords) ? keywords.join(' ') : (keywords || '');
 
@@ -256,6 +258,8 @@ export const generateCiprHash = async (
     title,
     description,
     keywordsStr,
+    offering || '',
+    seeking || '',
     primary_lang || '',
     olStr,
     latStr,

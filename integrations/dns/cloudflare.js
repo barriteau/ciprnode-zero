@@ -4,6 +4,7 @@
  */
 
 
+import { logKeyValueTable } from '../../src/core/logger.js';
 
 const CF_API_URL = 'https://api.cloudflare.com/client/v4';
 

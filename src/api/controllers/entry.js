@@ -95,10 +95,12 @@ export const put = async (req, db, config, za) => {
     body.title,
     body.description,
     body.keywords,
+    body.offering,
+    body.seeking,
+    body.primary_lang,
     body.ol,
     body.latitude,
     body.longitude,
-    body.primary_lang,
   );
   if (config.debug) msg(`[DBG] PUT ${za}: Hash calculated: ${calculatedHash}`);
 
@@ -165,10 +167,12 @@ export const del = async (_req, db, config, za) => {
     entry.title,
     entry.description,
     entry.keywords,
+    entry.offering,
+    entry.seeking,
+    entry.primary_lang,
     entry.ol,
     entry.latitude,
     entry.longitude,
-    entry.primary_lang,
   );
 
   const isValid = await verifyNode(config, za, calculatedHash);

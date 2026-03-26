@@ -34,6 +34,11 @@
     "options": {
       "toggle": "Search Filters",
       "reset": "Reset"
+    },
+    "info": {
+      "searching": "General resource search",
+      "seeking": "Search prioritizing resources that offer what your search terms specify",
+      "offering": "Search prioritizing resources that require what your search terms specify"
     }
   },
   "results": {

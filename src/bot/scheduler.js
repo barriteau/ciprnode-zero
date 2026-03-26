@@ -147,10 +147,12 @@ const runPulseChecks = async (db, config) => {
       entry.title,
       entry.description,
       entry.keywords,
+      entry.offering,
+      entry.seeking,
+      entry.primary_lang,
       entry.ol,
       entry.latitude,
       entry.longitude,
-      entry.primary_lang,
     );
 
     // "check their correctness with the validator.js functions"

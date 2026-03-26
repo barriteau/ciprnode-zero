@@ -32,6 +32,14 @@ description = "Todo lo que Juan hace en red, redes con gente o sin ella"
 # can be provided as an array of strings: keywords = ["project", "top", "network", "infrastructure"]
 keywords = "red redes infra infraestructura network infrastructure connection conexión conexiones"
 
+# What is offered or shared through your resource. This includes, but is not restricted to, tangible products, professional or casual
+# services, expertise, personal skills, attributes, qualities and traits that others might find valuable, interesting or attractive.
+offering = "Freelance software development services"
+
+# What you are looking for or who you want to connect with. This could be specific items, a helping hand, someone
+# with a particular skill set or specific characteristics from collaborators, personal or professional connections.
+seeking = "Blockchain indie developer"
+
 # Primary language of the resource, the main one, leave it empty if the resource is universally accesible.
 primary_lang = "kn"
 

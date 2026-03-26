@@ -34,6 +34,11 @@
     "options": {
       "toggle": "Filtres de recherche",
       "reset": "Réinitialiser"
+    },
+    "info": {
+      "searching": "Recherche générale de ressources",
+      "seeking": "Recherche priorisant les ressources qui offrent ce que vos termes de recherche spécifient",
+      "offering": "Recherche priorisant les ressources qui nécessitent ce que vos termes de recherche spécifient"
     }
   },
   "results": {
