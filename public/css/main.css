@@ -41,7 +41,7 @@ blockquote {
     font-style: italic;
     font-size: 1.2rem;
     background-color: #f9f9f9;
-    border-left: 4px solid #cccccc;
+    border-inline-start: 4px solid #cccccc;
     padding: 0.01rem 0.5rem;
 }
 
@@ -51,7 +51,7 @@ p#query-warning {
     font-size: 1rem;
     font-family: "Iosevka", monospace;
     background-color: #ffe46d62;
-    border-left: 4px solid #ffd000;
+    border-inline-start: 4px solid #ffd000;
     padding: 0.01rem 0.5rem;
 }
 
@@ -151,8 +151,8 @@ table td {
 .table-grid th,
 .table-grid td {
     border: 1px solid #cccccc;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-inline-start: 8px;
+    padding-inline-end: 8px;
 }
 
 .table-grid td {
@@ -183,8 +183,8 @@ select {
 
 button {
     color: #015F6B;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-inline-start: 8px;
+    padding-inline-end: 8px;
 }
 
 input,
@@ -192,7 +192,7 @@ textarea {
     background-color: var(--body-background-color);
     border-radius: 4px;
     border: 2px solid #dcdcdc;
-    padding: 4px 0 4px 4px;
+    padding-block: 4px; padding-inline-start: 4px; padding-inline-end: 0;
 }
 
 select,
@@ -268,7 +268,7 @@ label {
 nav#toolbar {
     position: fixed;
     top: 0;
-    left: 0;
+   inset-inline-start: 0;
     min-width: 320px;
     width: 100vw;
     padding: 0 calc(50vw - 320px);
@@ -296,7 +296,7 @@ nav#toolbar>div>a,
 nav#toolbar>div>label {
     display: inline-block;
     vertical-align: middle;
-    margin: 0 1rem 0 0;
+    margin-block: 0; margin-inline-end: 1rem;
 }
 
 nav#toolbar>div>a:last-child,
@@ -338,7 +338,7 @@ main p.center {
 }
 
 main p.right {
-    text-align: right;
+    text-align: end;
     margin: 2rem 0;
 }
 
@@ -353,17 +353,17 @@ main p:not(.math-equation-block) main p:not(.code-highlight-block) main p:not(h1
 }
 
 main span.indent {
-    margin-left: 1rem;
+    margin-inline-start: 1rem;
 }
 
 main .no-indent {
     text-indent: 0 !important;
-    margin-left: 0 !important;
+    margin-inline-start: 0 !important;
 }
 
 main .unindent {
     text-indent: 0 !important;
-    margin-left: -1rem !important;
+    margin-inline-start: -1rem !important;
 }
 
 main #footnav {
@@ -377,7 +377,7 @@ main #footnav a {
 }
 
 main p.firma {
-    text-align: right;
+    text-align: end;
     font-weight: bold;
     margin-bottom: 6rem;
 }
@@ -403,7 +403,7 @@ nav#foot-nav>div {
 }
 
 nav#foot-nav svg-icon {
-    margin-right: 0.5rem;
+    margin-inline-end: 0.5rem;
 }
 
 /* --- footer --- */
@@ -418,7 +418,7 @@ footer {
     width: 100vw;
     margin: 1em auto 0 auto;
     padding: 0;
-    text-align: right;
+    text-align: end;
     vertical-align: bottom;
 }
 
@@ -454,8 +454,8 @@ img.wide {
 
 img.center {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    margin-inline-start: auto;
+    margin-inline-end: auto;
 }
 
 figure {
@@ -520,7 +520,7 @@ article.av aside {
 
 article.av aside div {
     width: 100%;
-    text-align: right;
+    text-align: end;
     margin: 0;
     padding: 0;
 }
@@ -550,7 +550,7 @@ nav#toolbar a[disabled] svg-icon {
 aside#toc-panel button#toc-close {
     position: absolute;
     top: 0;
-    right: 0;
+   inset-inline-end: 0;
     border: 0;
     padding: .33rem;
     margin: 0;
@@ -563,7 +563,7 @@ aside#toc-panel button#toc-close {
 aside#toc-panel {
     position: fixed;
     top: 0;
-    left: -100vw;
+   inset-inline-start: -100vw;
     height: 100vh;
     width: 100%;
     max-width: 1240px;
@@ -575,7 +575,7 @@ aside#toc-panel {
 aside#toc-panel>button#toc-overlay {
     position: fixed;
     top: 0;
-    left: 0;
+   inset-inline-start: 0;
     width: 100%;
     height: 100%;
     border-radius: 0;
@@ -591,14 +591,14 @@ aside#toc-panel>button#toc-overlay {
 aside#toc-panel>#toc-body {
     position: absolute;
     top: 3.4rem;
-    left: 0;
+   inset-inline-start: 0;
     height: calc(100vh - 3.4rem);
     width: 80vw;
     max-width: 1024px;
     margin: 0;
     padding: 1rem;
     background: #dddddd;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0; border-start-end-radius: 4px; border-end-end-radius: 4px;
     overflow-y: scroll;
 }
 
@@ -607,7 +607,7 @@ aside#toc-panel>#toc-body nav {
 }
 
 body:has(input[form="toc-form"]:checked) aside#toc-panel {
-    left: 0;
+   inset-inline-start: 0;
 }
 
 body:has(input[form="toc-form"]:checked) aside#toc-panel #toc-overlay {
@@ -652,37 +652,37 @@ body:has(input[form="toc-form"]:checked) label svg-icon.toc {
 }
 
 #toc-body>nav a.in-0 {
-    margin-left: 0;
+    margin-inline-start: 0;
     font-size: 1.5rem;
 }
 
 #toc-body>nav a.in-1 {
-    margin-left: 1rem;
+    margin-inline-start: 1rem;
     font-size: 1.4rem;
 }
 
 #toc-body>nav a.in-2 {
-    margin-left: 2rem;
+    margin-inline-start: 2rem;
     font-size: 1.3rem;
 }
 
 #toc-body>nav a.in-3 {
-    margin-left: 3rem;
+    margin-inline-start: 3rem;
     font-size: 1.2rem;
 }
 
 #toc-body>nav a.in-4 {
-    margin-left: 4rem;
+    margin-inline-start: 4rem;
     font-size: 1.1rem;
 }
 
 #toc-body>nav a.in-5 {
-    margin-left: 5rem;
+    margin-inline-start: 5rem;
     font-size: 1rem;
 }
 
 #toc-body>nav a.in-6 {
-    margin-left: 6rem;
+    margin-inline-start: 6rem;
     font-size: 0.9rem;
 }
 
@@ -696,7 +696,7 @@ body:has(input[form="toc-form"]:checked) label svg-icon.toc {
 aside#annotations-panel {
     position: fixed;
     top: 0;
-    right: -100vw;
+   inset-inline-end: -100vw;
     height: 100vh;
     width: 100%;
     max-width: 1240px;
@@ -718,7 +718,7 @@ nav#toolbar label svg-icon.annotations {
 aside#annotations-panel button#annotations-close {
     position: absolute;
     top: 0;
-    right: 0;
+   inset-inline-end: 0;
     border: 0;
     padding: .33rem;
     margin: 0;
@@ -732,7 +732,7 @@ aside#annotations-panel button#annotations-close {
 aside#annotations-panel>button#annotations-overlay {
     position: fixed;
     top: 0;
-    right: 0;
+   inset-inline-end: 0;
     width: 100%;
     height: 100%;
     border-radius: 0;
@@ -748,19 +748,19 @@ aside#annotations-panel>button#annotations-overlay {
 aside#annotations-panel>#annotations-body {
     position: absolute;
     top: 3.4rem;
-    right: 0;
+   inset-inline-end: 0;
     height: calc(100vh - 3.4rem);
     width: 80vw;
     max-width: 1024px;
     margin: 0;
     padding: 0;
     background: #dddddd;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0; border-start-end-radius: 4px; border-end-end-radius: 4px;
     overflow-y: scroll;
 }
 
 body:has(input[form="annotations-form"]:checked) aside#annotations-panel {
-    right: 0;
+   inset-inline-end: 0;
 }
 
 body:has(input[form="annotations-form"]:checked) aside#annotations-panel #annotations-overlay {
@@ -774,7 +774,7 @@ body:has(input[form="annotations-form"]:checked) label svg-icon.annotations {
 
 #annotations-body>h2 {
     margin: 0;
-    padding: 2em 0 1em 1em;
+    padding-block-start: 2em; padding-block-end: 1em; padding-inline-start: 1em; padding-inline-end: 0;
 }
 
 ol#annotations-list {
@@ -785,21 +785,21 @@ ol#annotations-list {
 }
 
 #annotations-list>li {
-    margin: 1em 0 1em 0.5em;
+    margin-block: 1em; margin-inline-start: 0.5em; margin-inline-end: 0;
     padding: 0;
 }
 
 ol#annotations-list>li.here {
-    border-left: 8px solid #ccff00;
+    border-inline-start: 8px solid #ccff00;
 }
 
 #annotations-list>li.not-here {
-    border-left: 8px solid #c5c5c5;
+    border-inline-start: 8px solid #c5c5c5;
 }
 
 #annotations-list>li>figure {
     margin: 0;
-    padding: 0 0 0 0.5em;
+    padding-block: 0; padding-inline-start: 0.5em; padding-inline-end: 0;
 }
 
 ol#annotations-list>li>figure>figcaption {
@@ -845,7 +845,7 @@ ol#annotations-list>li>figure>figcaption>span.actions {
 aside#search-panel {
     position: fixed;
     top: 0;
-    right: -100vw;
+   inset-inline-end: -100vw;
     height: 100vh;
     width: 100%;
     max-width: 1240px;
@@ -869,7 +869,7 @@ aside#search-panel button#search-close,
 aside#search-panel button#ri-search-close {
     position: absolute;
     top: 0;
-    right: 0;
+   inset-inline-end: 0;
     border: 0;
     padding: .33rem;
     margin: 0;
@@ -883,7 +883,7 @@ aside#search-panel button#ri-search-close {
 aside#search-panel>button#search-overlay {
     position: fixed;
     top: 0;
-    right: 0;
+   inset-inline-end: 0;
     width: 100%;
     height: 100%;
     border-radius: 0;
@@ -900,14 +900,14 @@ aside#search-panel>#search-body,
 aside#search-panel>#ri-search-body {
     position: absolute;
     top: 3.4rem;
-    right: 0;
+   inset-inline-end: 0;
     height: calc(100vh - 3.4rem);
     width: 80vw;
     max-width: 1024px;
     margin: 0;
     padding: 0;
     background: #dddddd;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0; border-start-end-radius: 4px; border-end-end-radius: 4px;
     overflow-y: scroll;
 }
 
@@ -923,7 +923,7 @@ aside#search-panel>#ri-search-body {
 
 body:has(input[form="search-form"]:checked) aside#search-panel,
 body:has(input[form="ri-search-form"]:checked) aside#search-panel {
-    right: 0;
+   inset-inline-end: 0;
 }
 
 body:has(input[form="search-form"]:checked) aside#search-panel #search-overlay,
@@ -940,7 +940,7 @@ body:has(input[form="ri-search-form"]:checked) label svg-icon.search {
 #search-body>h2,
 #ri-search-body>h2 {
     margin: 0;
-    padding: 2em 0 1em 1em;
+    padding-block-start: 2em; padding-block-end: 1em; padding-inline-start: 1em; padding-inline-end: 0;
 }
 
 /*
@@ -952,21 +952,21 @@ ol#search-list {
 }
 
 #search-list>li {
-    margin: 1em 0 1em 0.5em;
+    margin-block: 1em; margin-inline-start: 0.5em; margin-inline-end: 0;
     padding: 0;
 }
 
 ol#search-list>li.here {
-    border-left: 8px solid #ccff00;
+    border-inline-start: 8px solid #ccff00;
 }
 
 #search-list>li.not-here {
-    border-left: 8px solid #c5c5c5;
+    border-inline-start: 8px solid #c5c5c5;
 }
 
 #search-list>li>figure {
     margin: 0;
-    padding: 0 0 0 0.5em;
+    padding-block: 0; padding-inline-start: 0.5em; padding-inline-end: 0;
 }
 
 
@@ -1043,7 +1043,7 @@ dialog::backdrop {
 dialog a.dialog-close {
     position: absolute;
     top: 0;
-    right: 0;
+   inset-inline-end: 0;
     margin: 0;
     padding: 4px;
 }
@@ -1131,7 +1131,7 @@ p.sel:after {
     content: "";
     position: absolute;
     display: block;
-    left: -32px;
+   inset-inline-start: -32px;
     top: -1em;
     max-width: calc(50vw + 64px);
     min-width: calc(3600px + 64px);
@@ -1164,7 +1164,7 @@ p.sel:after {
 .bookmark:before {
     position: absolute;
     top: 0.5rem;
-    left: -1.3rem;
+   inset-inline-start: -1.3rem;
     width: 0;
     height: calc(100% - 2rem);
     min-height: 4rem;
@@ -1172,18 +1172,18 @@ p.sel:after {
     content: "";
     border-radius: 2px;
     background-color: #e9e9e9;
-    border-right: 6px solid #e9e9e9;
-    border-left: 6px solid #e9e9e9;
+    border-inline-end: 6px solid #e9e9e9;
+    border-inline-start: 6px solid #e9e9e9;
     border-bottom: 8px solid #fbfbfb;
 }
 
 li>p.bookmark:before,
 li strong.bookmark:before {
-    left: -3em;
+   inset-inline-start: -3em;
 }
 
 p>strong.bookmark:before {
-    left: -2em;
+   inset-inline-start: -2em;
 }
 
 h1.bookmark:before,
@@ -1194,7 +1194,7 @@ h5.bookmark:before,
 h6.bookmark:before,
 code.bookmark:before,
 p.math-equation-block:before {
-    left: -1.15rem
+   inset-inline-start: -1.15rem
 }
 */
 
@@ -1317,17 +1317,17 @@ ol ol {
 }
 
 ol.toc ol {
-    margin-left: 0.625rem;
+    margin-inline-start: 0.625rem;
 }
 
 ol.toc li {
     margin: 0;
     padding: 0 0.4375rem;
-    border-left: 1px solid rgb(199, 199, 199);
+    border-inline-start: 1px solid rgb(199, 199, 199);
 }
 
 ol.toc li:last-child {
-    border-left: none;
+    border-inline-start: none;
 }
 
 ol.toc li:before {
@@ -1338,11 +1338,11 @@ ol.toc li:before {
     border-bottom: 1px solid rgb(199, 199, 199);
     content: "";
     display: inline-block;
-    left: -0.4375rem;
+   inset-inline-start: -0.4375rem;
 }
 
 ol.toc li:last-child:before {
-    border-left: 1px solid rgb(199, 199, 199);
+    border-inline-start: 1px solid rgb(199, 199, 199);
 }
 */
 
@@ -1388,7 +1388,7 @@ ol.toc li:last-child:before {
 #search-help-panel {
     position: absolute;
     top: calc(100% + 8px);
-    left: 0;
+   inset-inline-start: 0;
     white-space: pre;
     font-family: "Iosevka", monospace;
     font-size: 0.78rem;
@@ -1459,7 +1459,7 @@ ol.toc li:last-child:before {
     min-width: max-content;
     font-size: 0.8em;
     font-weight: bold;
-    text-align: right;
+    text-align: end;
     color: #008000;
     margin-bottom: 1em;
 }
@@ -1499,7 +1499,7 @@ details#search-options summary {
 
 div#search-options-buttons {
     flex: 1 1 100%;
-    text-align: right;
+    text-align: end;
     margin: 1em 0 0 0;
 }
 
@@ -1580,8 +1580,8 @@ div#search-options-buttons {
 .autocomplete-results {
     position: absolute;
     top: 100%;
-    left: 0;
-    right: 0;
+   inset-inline-start: 0;
+   inset-inline-end: 0;
     z-index: 100;
     margin-top: 4px;
     background-color: var(--body-background-color);
@@ -1630,7 +1630,7 @@ summary:active {
     background-color: transparent;
     color: #015F6B;
     /*list-style: none;*/
-    text-align: left;
+    text-align: start;
     font-size: 1.25em;
 }
 
@@ -1715,7 +1715,7 @@ div.actions>label.intra-search-label>a {
 #pwa-update-toast {
     position: fixed;
     bottom: 2rem;
-    left: 5%;
+   inset-inline-start: 5%;
     /*transform: translateX(-50%);*/
     color: var(--body-color);
     background-color: var(--body-background-color);

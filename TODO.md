@@ -16,21 +16,25 @@ Legend:
 - [✔] NO 'using defaults' if config file is not found, error y pajuera (src\core\config.js)
 - [✔] [ Search for: | I need: | I offer: ], add columns in ciprdup, change placeholder, change weight of the search accordingly
 - [✔] Revisar el autocomplete de location
-- […] !!! Revisar el validador de los FTS5 expressions en la búsqueda
-- […] !!! Mover los @media de main.css a media-queries.css
+- [✔] Revisar el validador de los FTS5 expressions en la búsqueda
+- [✔] Mover los @media de main.css a media-queries.css
 - [✔] Reducir los íconos con media queries
 - [✔] Reorder search filters horizontally
+- [✔] Hunt every rem in the styles and convert to em
+
 - […] Create the "Explore" button, it fills the page with random entries from the ciprdup
-- […] Ciprconf, a dead simple desktop app (Taury?) exclusively made to create the ciprnode.toml file
-- […] Hunt every rem in the styles and convert to em
+
 - […] Reorder footer
 - […] Review HATEOAS in each endpoint, one by one
 - […] Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml
 - […] Implementation of the leech mode
-- […] Add Ukrainian, Farsi and Arabic languages
+
+- […] Add Ukrainian, Persian (Farsi) and Arabic languages
 - […] Implement dark mode
 - […] Update ALPS
 - […] Update the README.md with the latest changes
+
+- […] Ciprconf, a dead simple desktop app (Taury?) exclusively made to create the ciprnode.toml file
 - [🗙] Improve the texts in the "Help" page
 
 ## External tasks

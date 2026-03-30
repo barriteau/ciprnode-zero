@@ -9,7 +9,7 @@ import { join } from '@std/path';
 export class I18n {
   constructor() {
     this.locales = {};
-    this.supported = ['en', 'es', 'it', 'zh', 'fr', 'pt', 'ru', 'hi'];
+    this.supported = ['en', 'es', 'it', 'zh', 'fr', 'pt', 'ru', 'hi', 'uk', 'fa', 'ar'];
     this.defaultLocale = 'en';
   }
 
