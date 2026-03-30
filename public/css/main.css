@@ -1465,7 +1465,7 @@ ol.toc li:last-child:before {
 }
 
 /* FTS5 validation feedback: only overrides border/outline color, nothing else */
-#q.fts-invalid {
+#cipr-search.fts-invalid {
     border-color: #d9534f;
     outline-color: #d9534f;
 }
@@ -1497,16 +1497,6 @@ details#search-options summary {
     box-sizing: border-box;
 }
 
-/* Force side-by-side 25% / 75% layout for Language and Offensiveness on > 640px */
-@media screen and (min-width: 641px) {
-    #search-filters>fieldset#language-filter {
-        flex: 0 0 calc(40% - 0.25rem);
-    }
-    #search-filters>fieldset#ol-filter {
-        flex: 0 0 calc(60% - 0.25rem);
-    }
-}
-
 div#search-options-buttons {
     flex: 1 1 100%;
     text-align: right;
@@ -1519,12 +1509,6 @@ div#search-options-buttons {
     flex-wrap: nowrap;
     align-items: center;
     gap: 0.5rem;
-}
-
-@media screen and (max-width: 640px) {
-    #date-time-filter>div {
-        flex-wrap: wrap;
-    }
 }
 
 /* --- Location Filter Layout --- */
@@ -1546,6 +1530,21 @@ div#search-options-buttons {
     gap: 0.5rem;
     flex: 1 1 50%;
     min-width: 0;
+    position: relative;
+}
+
+#language-filter>div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+}
+
+#language-search {
+    flex: 1 1 0px;
+    min-width: 0;
 }
 
 #location-filter>div>input {
@@ -1557,20 +1556,6 @@ div#search-options-buttons {
 
 #geo_unit {
     flex: 0 0 auto;
-}
-
-@media screen and (max-width: 640px) {
-    #location-filter {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    #location-filter>div {
-        flex-wrap: wrap;
-    }
-    #location-filter>div>label {
-        width: 100%;
-        margin-bottom: 0.25rem;
-    }
 }
 
 #ol-filter > label {

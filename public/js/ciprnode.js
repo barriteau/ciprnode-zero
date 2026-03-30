@@ -341,7 +341,7 @@ const initSearchHelp = () => {
 };
 
 const initFtsValidation = () => {
-  const input = document.getElementById('q');
+  const input = document.getElementById('cipr-search');
   if (!input) return;
 
   const validate = (text) => {
@@ -389,7 +389,7 @@ const initFtsValidation = () => {
 
     // --- Initial token: '^' only valid at START of a term ---
     if (/\w\^/.test(stripped)) return false; // trailing or mid-word caret
-    if (/\^\s/.test(stripped)) return false; // lone ^ followed by space
+    if (/\^(?!\w)/.test(stripped) || /\^NEAR_OK/.test(stripped)) return false; // must precede a word/phrase
 
     // --- Balanced parentheses ---
     let depth = 0;

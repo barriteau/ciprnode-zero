@@ -15,6 +15,17 @@ export const initSchema = (db) => {
   ).get();
 
   if (tableExists) {
+    try {
+      const insertLang = db.prepare(
+        'INSERT OR IGNORE INTO languages (lang_code, lang_name, lang_name_en) VALUES (?, ?, ?)',
+      );
+      db.exec('BEGIN TRANSACTION;');
+      const langs = JSON.parse(Deno.readTextFileSync(new URL('./languages.json', import.meta.url)));
+      langs.forEach((lang) => {
+        insertLang.run(lang.lang_code, lang.lang_name, lang.lang_name_en);
+      });
+      db.exec('COMMIT TRANSACTION;');
+    } catch(e) { }
     // Schema already exists, skipping
     return;
   }
@@ -87,8 +98,8 @@ export const initSchema = (db) => {
   // Seed languages. Read locally or fallback. In Deno, this requires fs read.
   // We can just rely on the initialization script, but it is nice to have it embedded or read from JSON
   try {
-    const __dirname = new URL('.', import.meta.url).pathname;
-    const langsJson = JSON.parse(Deno.readTextFileSync(__dirname + '/languages.json'));
+    const langsPath = new URL('./languages.json', import.meta.url);
+    const langsJson = JSON.parse(Deno.readTextFileSync(langsPath));
     const insertLang = db.prepare(
       'INSERT OR IGNORE INTO languages (lang_code, lang_name, lang_name_en) VALUES (?, ?, ?)',
     );

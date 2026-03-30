@@ -83,14 +83,44 @@
   }
 }
 
+/* Force side-by-side 25% / 75% layout for Language and Offensiveness on > 640px */
+@media screen and (min-width: 641px) {
+  #search-filters>fieldset#language-filter {
+    flex: 0 0 calc(40% - 0.25rem);
+  }
+
+  #search-filters>fieldset#ol-filter {
+    flex: 0 0 calc(60% - 0.25rem);
+  }
+}
+
+
 /* --- 640px (Standard Mobile) --- */
 @media screen and (max-width: 640px) {
-    body {
+  body {
     font-size: 0.6rem;
   }
 
   #search-filters {
     flex-direction: column;
+  }
+
+  #date-time-filter>div {
+    flex-wrap: wrap;
+  }
+
+  #location-filter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #location-filter>div {
+    flex-wrap: wrap;
+  }
+
+  #location-filter>div>label {
+    width: 100%;
+    margin-bottom: 0.25rem;
   }
 }
 
