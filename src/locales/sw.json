@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "title": "Ciprnode - Faharasa ya Kosmiki ya Rasilimali za Umma",
+    "description": "Faharasa ya utafutaji iliyogatuliwa kwa rasilimali za umma."
+  },
+  "header": {
+    "mode_toggle": "Hali",
+    "stats": "Ingizo la mwisho la {count} liliongezwa saa {date}"
+  },
+  "search": {
+    "title": "Faharasa ya Kosmiki ya Rasilimali za Umma",
+    "placeholder": "Tafuta",
+    "operators_tooltip": "Waendesha wanaoungwa mkono:\n\n<neno> AND <neno>\n<neno> OR <neno>\n<neno> NOT <neno>\n<neno>*\n^<neno>\n\"<neno> <neno>\"\nNEAR(<neno>, <neno>, ...)\n<jina la safu> : <neno>\n{<jina la safu> <jina la safu> ...} : <neno>\n(<kundi la yoyote ya hapo juu>)",
+    "operators_tooltip_title": "Marejeleo ya waendesha utafutaji",
+    "btn": "Tafuta",
+    "advanced_filters": "Vichungi vya Utafutaji",
+    "filters": {
+      "date": "Muda",
+      "after": "Baada ya",
+      "before": "Kabla ya",
+      "location": "Mahali",
+      "near": "Karibu na",
+      "near_placeholder": "Andika mahali...",
+      "radius": "Umbali Mkuu",
+      "language": "Lugha",
+      "language_placeholder": "Andika lugha...",
+      "ol": "Kiwango cha Kuudhi",
+      "ol_any": "Yoyote",
+      "ol_0": "Hakuna",
+      "ol_1": "Kibinafsi",
+      "ol_2": "Makundi",
+      "ol_3": "Kwa Ulimwengu"
+    },
+    "options": {
+      "toggle": "Vichungi vya Utafutaji",
+      "reset": "Weka upya"
+    },
+    "info": {
+      "searching": "Utafutaji mkuu wa rasilimali",
+      "seeking": "Utafutaji unaopeana kipaumbele rasilimali zinazotoa kile ambacho maneno yako ya utafutaji yanabainisha",
+      "offering": "Utafutaji unaopeana kipaumbele rasilimali zinazohitaji kile ambacho maneno yako ya utafutaji yanabainisha"
+    }
+  },
+  "results": {
+    "heading": "Matokeo ({start}-{end})",
+    "none": "Hakuna matokeo yaliyopatikana.",
+    "universal": "Kwa Ulimwengu",
+    "visit_ciprnode": "tembelea ciprnode.",
+    "intra_search": "utafutaji-wa-ndani"
+  },
+  "footer": {
+    "profile": "Profaili ya API",
+    "get_indexed": "Orodheshwa kwenye Cipr",
+    "install": "Sakinisha Programu",
+    "install_desktop": "Cipr kwenye kompyuta yako",
+    "install_mobile": "Cipr kwenye simu yako",
+    "install_ios": "Ili kusakinisha Cipr kwenye kifaa chako, gusa aikoni ya Shiriki kwenye sehemu ya chini ya skrini yako na uchague 'Ongeza kwenye Skrini ya Mwanzo'.",
+    "install_fallback": "Ili kusakinisha Cipr, tafadhali tafuta chaguo la 'Sakinisha' au 'Ongeza kwenye Skrini ya Mwanzo' katika menyu ya kivinjari chako.",
+    "source_code": "Msimbo Mkuu"
+  },
+  "pagination": {
+    "previous": "Iliyopita",
+    "next": "Inayofuata",
+    "page": "Ukurasa {page}"
+  },
+  "error": {
+    "noscript": "Kutumia ECMAScript/JavaScript hapa si kwa hiari kwa sababu huyu ni mteja rahisi wa mtandao mpana wa rasilimali. Bila hati (scripting), kupata data haiwezekani. Kwa mfano, zana hii inakosa matumizi katika hali hizo."
+  },
+  "pwa": {
+    "update_available": "Toleo jipya la ukurasa huu linapatikana.",
+    "reload": "Pakia upya ili Usasishe"
+  },
+  "intra_search": {
+    "close": "Funga jopo la utafutaji",
+    "toggle": "Fungua/Funga jopo la utafutaji",
+    "heading": "Tafuta ndani ya",
+    "placeholder": "Tafuta..."
+  }
+}

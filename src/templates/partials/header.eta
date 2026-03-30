@@ -8,9 +8,9 @@
     <div>Explore</div>
 
     <div>
-      <select id="lang-switcher" aria-label="Select Language">
+      <select id="lang-switcher" aria-label="Select Language" title="<%= it.languageNames[it.locale] %>">
         <% it.supportedLocales.forEach(function(lang) { %>
-        <option value="<%= lang %>" <%= it.locale === lang ? 'selected' : '' %>><%= lang.toUpperCase() %></option>
+        <option value="<%= lang %>" title="<%= it.languageNames[lang] %>" <%= it.locale === lang ? 'selected' : '' %>><%= lang.toUpperCase() %></option>
         <% }) %>
       </select>
     </div>

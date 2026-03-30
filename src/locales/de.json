@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "title": "Ciprnode - Kosmischer Index öffentlicher Ressourcen",
+    "description": "Ein dezentraler Suchindex für öffentliche Ressourcen."
+  },
+  "header": {
+    "mode_toggle": "Modus",
+    "stats": "Letzter von {count} Einträgen am {date} hinzugefügt"
+  },
+  "search": {
+    "title": "Kosmischer Index öffentlicher Ressourcen",
+    "placeholder": "Suchen",
+    "operators_tooltip": "Unterstützte Operatoren:\n\n<Wort> AND <Wort>\n<Wort> OR <Wort>\n<Wort> NOT <Wort>\n<Wort>*\n^<Wort>\n\"<Wort> <Wort>\"\nNEAR(<Wort>, <Wort>, ...)\n<Spaltenname> : <Wort>\n{<Spaltenname> <Spaltenname> ...} : <Wort>\n(<Gruppierung der oben genannten>)",
+    "operators_tooltip_title": "Referenz für Suchoperatoren",
+    "btn": "Suchen",
+    "advanced_filters": "Suchfilter",
+    "filters": {
+      "date": "Zeit",
+      "after": "Nach",
+      "before": "Vor",
+      "location": "Ort",
+      "near": "In der Nähe",
+      "near_placeholder": "Geben Sie einen Ort ein...",
+      "radius": "Maximale Entfernung",
+      "language": "Sprache",
+      "language_placeholder": "Geben Sie eine Sprache ein...",
+      "ol": "Beleidigungsgrad",
+      "ol_any": "Beliebig",
+      "ol_0": "Keine",
+      "ol_1": "Persönlich",
+      "ol_2": "Gruppen",
+      "ol_3": "Universell"
+    },
+    "options": {
+      "toggle": "Suchfilter",
+      "reset": "Zurücksetzen"
+    },
+    "info": {
+      "searching": "Allgemeine Ressourcensuche",
+      "seeking": "Suche, die Ressourcen bevorzugt, die anbieten, was Ihre Suchbegriffe festlegen",
+      "offering": "Suche, die Ressourcen bevorzugt, die benötigen, was Ihre Suchbegriffe festlegen"
+    }
+  },
+  "results": {
+    "heading": "Ergebnisse ({start}-{end})",
+    "none": "Keine Ergebnisse gefunden.",
+    "universal": "Universell",
+    "visit_ciprnode": "besuchen Sie ciprnode.",
+    "intra_search": "Interne Suche"
+  },
+  "footer": {
+    "profile": "API-Profil",
+    "get_indexed": "In Cipr indiziert werden",
+    "install": "App installieren",
+    "install_desktop": "Cipr auf Ihrem Desktop",
+    "install_mobile": "Cipr auf Ihrem Handy",
+    "install_ios": "Tippen Sie zum Installieren von Cipr auf das Teilen-Symbol unten und wählen Sie 'Zum Startbildschirm hinzufügen'.",
+    "install_fallback": "Um Cipr zu installieren, suchen Sie in Ihrem Browsermenü nach 'Installieren' oder 'Zum Startbildschirm hinzufügen'.",
+    "source_code": "Quellcode"
+  },
+  "pagination": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "page": "Seite {page}"
+  },
+  "error": {
+    "noscript": "Die Verwendung von ECMAScript/JavaScript ist hier nicht optional, da dies ein einfacher Client für ein diverses Netzwerk von Ressourcen ist. Ohne Skripting ist kein Abrufen möglich. Zum Beispiel wird dieses Tool unter diesen Bedingungen nutzlos."
+  },
+  "pwa": {
+    "update_available": "Eine neue Version dieser Seite ist verfügbar.",
+    "reload": "Zum Aktualisieren neu laden"
+  },
+  "intra_search": {
+    "close": "Suchfeld schließen",
+    "toggle": "Suchfeld öffnen/schließen",
+    "heading": "Suchen in",
+    "placeholder": "Suchen..."
+  }
+}

@@ -9,8 +9,9 @@ import { join } from '@std/path';
 export class I18n {
   constructor() {
     this.locales = {};
-    this.supported = ['en', 'es', 'it', 'zh', 'fr', 'pt', 'ru', 'hi', 'uk', 'fa', 'ar'];
+    this.supported = ['en', 'es', 'it', 'zh', 'fr', 'pt', 'ru', 'hi', 'uk', 'fa', 'ar', 'bn', 'ur', 'id', 'de', 'ja', 'sw', 'bm'];
     this.defaultLocale = 'en';
+    this.languageNames = { en: 'English', es: 'Spanish', it: 'Italian', zh: 'Chinese', fr: 'French', pt: 'Portuguese', ru: 'Russian', hi: 'Hindi', uk: 'Ukrainian', fa: 'Persian', ar: 'Arabic', bn: 'Bengali', ur: 'Urdu', id: 'Indonesian', de: 'German', ja: 'Japanese', sw: 'Swahili', bm: 'Bambara' };
   }
 
   /**

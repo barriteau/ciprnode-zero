@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= it.locale %>" dir="<%= ['ar', 'fa'].includes(it.locale) ? 'rtl' : 'ltr' %>">
+<html lang="<%= it.locale %>" dir="<%= ['ar', 'fa', 'ur'].includes(it.locale) ? 'rtl' : 'ltr' %>">
 
 <head>
   <meta charset="UTF-8" />

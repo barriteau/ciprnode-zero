@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "title": "Ciprnode - Indeks Kosmis Sumber Daya Publik",
+    "description": "Sebuah indeks pencarian terdesentralisasi untuk sumber daya publik."
+  },
+  "header": {
+    "mode_toggle": "Mode",
+    "stats": "Entri terakhir dari {count} ditambahkan pada {date}"
+  },
+  "search": {
+    "title": "Indeks Kosmis Sumber Daya Publik",
+    "placeholder": "Cari",
+    "operators_tooltip": "Operator yang didukung:\n\n<kata> AND <kata>\n<kata> OR <kata>\n<kata> NOT <kata>\n<kata>*\n^<kata>\n\"<kata> <kata>\"\nNEAR(<kata>, <kata>, ...)\n<nama kolom> : <kata>\n{<nama kolom> <nama kolom> ...} : <kata>\n(<pengelompokan dari salah satu di atas>)",
+    "operators_tooltip_title": "Referensi operator pencarian",
+    "btn": "Cari",
+    "advanced_filters": "Filter Pencarian",
+    "filters": {
+      "date": "Waktu",
+      "after": "Setelah",
+      "before": "Sebelum",
+      "location": "Lokasi",
+      "near": "Dekat",
+      "near_placeholder": "Ketik tempat...",
+      "radius": "Jarak Maks",
+      "language": "Bahasa",
+      "language_placeholder": "Ketik bahasa...",
+      "ol": "Tingkat Ofensif",
+      "ol_any": "Apa saja",
+      "ol_0": "Tidak ada",
+      "ol_1": "Pribadi",
+      "ol_2": "Kelompok",
+      "ol_3": "Universal"
+    },
+    "options": {
+      "toggle": "Filter Pencarian",
+      "reset": "Reset"
+    },
+    "info": {
+      "searching": "Pencarian sumber daya umum",
+      "seeking": "Pencarian yang memprioritaskan sumber daya yang menawarkan apa yang ditentukan oleh istilah pencarian Anda",
+      "offering": "Pencarian yang memprioritaskan sumber daya yang membutuhkan apa yang ditentukan oleh istilah pencarian Anda"
+    }
+  },
+  "results": {
+    "heading": "Hasil ({start}-{end})",
+    "none": "Tidak ada hasil yang ditemukan.",
+    "universal": "Universal",
+    "visit_ciprnode": "kunjungi ciprnode.",
+    "intra_search": "pencarian-internal"
+  },
+  "footer": {
+    "profile": "Profil API",
+    "get_indexed": "Terindeks di Cipr",
+    "install": "Instal Aplikasi",
+    "install_desktop": "Cipr di desktop Anda",
+    "install_mobile": "Cipr di ponsel Anda",
+    "install_ios": "Untuk menginstal Cipr di perangkat Anda, ketuk ikon Bagikan di bagian bawah layar dan pilih 'Tambahkan ke Layar Utama'.",
+    "install_fallback": "Untuk menginstal Cipr, silakan cari opsi 'Instal' atau 'Tambahkan ke Layar Utama' di menu browser Anda.",
+    "source_code": "Kode Sumber"
+  },
+  "pagination": {
+    "previous": "Sebelumnya",
+    "next": "Selanjutnya",
+    "page": "Halaman {page}"
+  },
+  "error": {
+    "noscript": "Menggunakan ECMAScript/JavaScript di sini bukan pilihan, karena ini adalah klien sederhana untuk jaringan sumber daya yang beragam. Tanpa skrip, pengambilan data tidak dimungkinkan. Misalnya, alat ini menjadi tidak berguna dalam kondisi tersebut."
+  },
+  "pwa": {
+    "update_available": "Versi baru halaman ini tersedia.",
+    "reload": "Muat Ulang untuk Memperbarui"
+  },
+  "intra_search": {
+    "close": "Tutup panel pencarian",
+    "toggle": "Buka/Tutup panel pencarian",
+    "heading": "Cari di",
+    "placeholder": "Mencari..."
+  }
+}

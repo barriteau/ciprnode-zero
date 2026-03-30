@@ -29,6 +29,7 @@ export const render = (templatePath, data = {}, locale = 'en') => {
     t: (key, params) => i18n.t(locale, key, params),
     locale: locale,
     supportedLocales: i18n.supported,
+    languageNames: i18n.languageNames,
     // Helper to switch language URL? No, handled by browser reload + cookie now.
   };
 

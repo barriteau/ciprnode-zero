@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "title": "Ciprnode - Duniɲa bɛɛ ka foroba nafolow sɛbɛnba",
+    "description": "Foroba nafolow ɲinini sɛbɛnba min tɛ mɔgɔ kelen bolo."
+  },
+  "header": {
+    "mode_toggle": "Cogo",
+    "stats": "{count} kɔnɔna, a laban farala a kan waati {date}"
+  },
+  "search": {
+    "title": "Duniɲa bɛɛ ka foroba nafolow sɛbɛnba",
+    "placeholder": "Ɲini",
+    "operators_tooltip": "Ɲinini baaraminɛn minnu bɛ sɔrɔ:\n\n<kuma> AND <kuma>\n<kuma> OR <kuma>\n<kuma> NOT <kuma>\n<kuma>*\n^<kuma>\n\"<kuma> <kuma>\"\nNEAR(<kuma>, <kuma>, ...)\n<kolɔni tɔgɔ> : <kuma>\n{<kolɔni tɔgɔ> <kolɔni tɔgɔ> ...} : <kuma>\n(<sanfɛla minw jɛn>)",
+    "operators_tooltip_title": "Ɲinini baaraminɛnw ni a kɔrɔ",
+    "btn": "Ɲini",
+    "advanced_filters": "Ɲinini sɛgɛsɛgɛli",
+    "filters": {
+      "date": "Waati",
+      "after": "Kɔfɛ",
+      "before": "Ka kɔn",
+      "location": "Yɔrɔ",
+      "near": "Gɛrɛfɛ",
+      "near_placeholder": "Yɔrɔ dɔ sɛbɛn...",
+      "radius": "Dafo janya",
+      "language": "Kan",
+      "language_placeholder": "Kan dɔ sɛbɛn...",
+      "ol": "Kɔnɔnagoya hakɛ",
+      "ol_any": "O-o-o",
+      "ol_0": "Fosi",
+      "ol_1": "Mɔgɔ kelen",
+      "ol_2": "Kuluw",
+      "ol_3": "Duniɲa bɛɛ"
+    },
+    "options": {
+      "toggle": "Ɲinini sɛgɛsɛgɛli",
+      "reset": "Cogo kɔrɔ"
+    },
+    "info": {
+      "searching": "Foroba nafolow ɲinini",
+      "seeking": "Ɲinini min bɛ foroba nafolow bla ɲɛfɛ minnu bɛ i ka ɲinini kumaw di",
+      "offering": "Ɲinini min bɛ foroba nafolow bla ɲɛfɛ minnu mago bɛ i ka ɲinini kumaw la"
+    }
+  },
+  "results": {
+    "heading": "Sɔrɔliw ({start}-{end})",
+    "none": "Fosi ma sɔrɔ.",
+    "universal": "Duniɲa bɛɛ",
+    "visit_ciprnode": "Ta ciprnode la.",
+    "intra_search": "Kɔnɔ-ɲinini"
+  },
+  "footer": {
+    "profile": "API ɲɛfɔli",
+    "get_indexed": "Ka bila Cipr la",
+    "install": "Pɔrogirami sigi",
+    "install_desktop": "Cipr i ka ɔridinatɛri kan",
+    "install_mobile": "Cipr i ka telefɔni kan",
+    "install_ios": "Ka Cipr sigi i ka minɛn kan, i bɛ tila-tila taamasiyɛn digi ɛkaran duguma, ka 'Add to Home Screen' sugandi.",
+    "install_fallback": "Ka Cipr sigi, i bɛ 'Install' walima 'Add to Home Screen' ɲini i ka ɛntɛrinɛti ɲinilan kɔnɔ.",
+    "source_code": "Kɔdi bɔyɔrɔ"
+  },
+  "pagination": {
+    "previous": "A tɛmɛnen",
+    "next": "A nata",
+    "page": "Ɲɛ {page}"
+  },
+  "error": {
+    "noscript": "JavaScript baara yan tɛ i sago ye, bawo nin ye foroba nafolow jɛkulu minɛn nɔgɔman dɔ ye. Ni ɛsikiripiti tɛ, ɲinini tɛ se ka kɛ. Misali la, nin minɛn in bɛ kɛ fɛn natali ye o cogo la."
+  },
+  "pwa": {
+    "update_available": "Nin ɲɛ in kura sɔrɔla.",
+    "reload": "A segin sɔrɔ ka yɛlɛma"
+  },
+  "intra_search": {
+    "close": "Ɲinini paneli datugu",
+    "toggle": "Ɲinini paneli da yɛlɛ/datugu",
+    "heading": "Ɲini kɔnɔna",
+    "placeholder": "Ɲinini..."
+  }
+}
