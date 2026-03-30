@@ -262,10 +262,10 @@ The CiprAPI exposes the following endpoints:
 - `GET /{za}/title/` - Retrieves the title of a specific cipred resource.
 - `GET /{za}/description/` - Retrieves the description of a specific cipred resource.
 - `GET /{za}/keywords/` - Retrieves the keywords of a specific cipred resource.
-- `GET /{za}/offering/` - Retrieves the offering of a specific cipred resource.
-- `GET /{za}/seeking/` - Retrieves the seeking of a specific cipred resource.
+- `GET /{za}/offering/` - Retrieves the offering being made through a specific cipred resource.
+- `GET /{za}/seeking/` - Retrieves the seeking being made through a specific cipred resource.
 - `GET /{za}/ol/` - Retrieves the value of the offensiveness level of a specific cipred resource.
-- `GET /{za}/language/` - Retrieves the value of the language of a specific cipred resource.
+- `GET /{za}/primary_lang/` - Retrieves the value of the primary language of a specific cipred resource.
 - `GET /{za}/latitude/` - Retrieves the latitude of a specific cipred resource.
 - `GET /{za}/longitude/` - Retrieves the longitude of a specific cipred resource.
 - `GET /{za}/timestamp/` - Retrieves the timestamp of a specific cipred resource.
@@ -283,7 +283,7 @@ The CiprAPI exposes the following endpoints:
 
 #### Use of the `GET` method
 
-A `GET` request to `/` accepts the `pages[size]` query parameter, being `size` an integer (n) indicating the expected number of entries. The entries in the Cipr are not expected to be ordered, so pagination is not feasible. A `GET` request to `/{za}/` will retrieve only one row with all the fields for a specific cipred resource or only one row with a specific field. Examples:
+A `GET` request to `/` accepts the `pages[size]` query parameter, being `size` an integer (n) indicating the expected number of entries. The entries in the Cipr are not expected to be ordered, so pagination is not feasible. A `GET` request to `/{za}/` will retrieve only one row with all the fields for a specific cipred resource or only one row with a specific field. All `GET` endpoints support content negotiation via the `Accept` header. Examples:
 
 This request asks the Cipr to retrieve the full Cipr^[Limits and default pagination settings of the ciprnode will apply.]:
 
@@ -299,61 +299,131 @@ GET /?pages[size]=2048 HTTP/1.1
 Host: ciprnode.example.com
 ```
 
-This request asks the Cipr to retrieve the row corresponding to the barriteau.net zone apex:
+This request asks the Cipr to retrieve the row corresponding to the barriteau.net zone apex as HAL JSON:
 
 ```http
 GET /barriteau.net/ HTTP/1.1
 Host: ciprnode.guasa.art
+Accept: application/hal+json
 ```
 
-This request asks the Cipr to retrieve the title of the barriteau.net cipred resource:
+```http
+HTTP/1.1 200 OK
+Content-Type: application/hal+json; charset=utf-8
+
+{
+  "za": "barriteau.net",
+  "title": "Barriteau",
+  "description": "The Barriteau resource",
+  "keywords": "barriteau net example",
+  "offering": null,
+  "seeking": null,
+  "ol": null,
+  "latitude": null,
+  "longitude": null,
+  "timestamp": 1698417000,
+  "primary_lang": "en",
+  "_links": {
+    "self": { "href": "/barriteau.net/" },
+    "collection": { "href": "/" }
+  }
+}
+```
+
+This request asks the Cipr to retrieve the title of the barriteau.net cipred resource as plain text:
 
 ```http
 GET /barriteau.net/title/ HTTP/1.1
 Host: ciprnode.cipr.info
+Accept: text/plain
 ```
 
-This request asks the Cipr to retrieve the list of languages matching with the `q` query parameter:
+```http
+HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+
+Barriteau
+```
+
+This request retrieves the same field as HAL JSON, which includes HATEOAS links to all sibling fields:
+
+```http
+GET /barriteau.net/title/ HTTP/1.1
+Host: ciprnode.cipr.info
+Accept: application/hal+json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/hal+json; charset=utf-8
+
+{
+  "title": "Barriteau",
+  "_links": {
+    "self": { "href": "/barriteau.net/title/" },
+    "up": { "href": "/barriteau.net/" },
+    "description": { "href": "/barriteau.net/description/" },
+    "keywords": { "href": "/barriteau.net/keywords/" },
+    "offering": { "href": "/barriteau.net/offering/" },
+    "seeking": { "href": "/barriteau.net/seeking/" },
+    "ol": { "href": "/barriteau.net/ol/" },
+    "primary_lang": { "href": "/barriteau.net/primary_lang/" },
+    "latitude": { "href": "/barriteau.net/latitude/" },
+    "longitude": { "href": "/barriteau.net/longitude/" },
+    "timestamp": { "href": "/barriteau.net/timestamp/" }
+  }
+}
+```
+
+This request asks the Cipr to retrieve the list of languages matching with the `q` query parameter. The `/languages/` endpoint is restricted to same-origin requests using the `Sec-Fetch-Site` header:
 
 ```http
 GET /languages/?q=Spanish HTTP/1.1
 Host: ciprnode.cipr.info
+Sec-Fetch-Site: same-origin
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+[
+  {
+    "lang_code": "es",
+    "lang_name": "Español",
+    "lang_name_en": "Spanish"
+  }
+]
 ```
 
 #### Use of the `PUT` method
 
-A `PUT` request to `{za}` will add a new cipred resource to the Cipr if it doesn't exist or update it if it does. The request body must contain at least all the required fields for a cipred resource. Example:
-
-```http
-PUT /guasa.art/ HTTP/1.1
-Host: ciprnode.example.com
-Content-Type: text/plain; charset=utf-8
-
-za=example.com
-title=La web de los ejemplos
-description=En esta web hay la la la
-keywords=perro gato loro
-ol=0
-latitude=407128000
-longitude=407128000
-timestamp=1698417000
-```
+A `PUT` request to `{za}` will add a new cipred resource to the Cipr if it doesn't exist or update it if it does. The request body must be JSON and must contain at least all the required fields for a cipred resource. The response has no body; the outcome is indicated by the HTTP status code (`201 Created` for new entries, `200 OK` for idempotent updates or self-insertions) and the `Location` header. Example:
 
 ```http
 PUT /guasa.art/ HTTP/1.1
 Host: ciprnode.cipr.info
-Content-Type: application/hal+json; charset=utf-8
+Content-Type: application/json; charset=utf-8
 
 {
-  "za": "example.com",
+  "za": "guasa.art",
   "title": "La web de los ejemplos",
   "description": "En esta web hay la la la",
   "keywords": "perro gato loro",
-  "ol": 0,
+  "offering": "ejemplos gratis",
+  "seeking": null,
+  "primary_lang": "es",
+  "ol": null,
   "latitude": 407128000,
   "longitude": 407128000,
-  "timestamp": 1698417000,
+  "timestamp": 1698417000
 }
+```
+
+```http
+HTTP/1.1 201 Created
+Location: /guasa.art/
+Content-Length: 0
 ```
 
 Before proceeding with the effective insertion/update of a `PUT`ed entry in the ciprdup, a ciprnode must execute the **Insertion Validation Sequence**:
@@ -367,11 +437,16 @@ The insertion won't be effective if at least one of those checks fails.
 
 #### Use of the `DELETE` method
 
-A `DELETE` request to `{za}` will remove a cipred resource from the Cipr if it exists. Example:
+A `DELETE` request to `{za}` will remove a cipred resource from the Cipr if it exists. The response is always `200 OK` with no body, regardless of whether the entry was actually deleted or the deletion was rejected because the node passed validation. Self-deletions are silently ignored. Example:
 
 ```http
 DELETE /example.com/ HTTP/1.1
 Host: ciprnode.barriteau.net
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Length: 0
 ```
 
 Before proceeding with the effective deletion of a `DELETE`d entry in the ciprdup, a ciprnode must execute the **Deletion Validation Sequence**:
@@ -564,30 +639,49 @@ Content-Length: 845
 
 {
   "_links": {
-    "self": { "href": "/{za}/?pages[num]=1&pages[size]=10" },
-    "next": { "href": "/{za}/?pages[num]=2&pages[size]=10" },
-    "last": { "href": "/{za}/?pages[num]=5&pages[size]=10" }
+    "self": { "href": "/?pages[num]=1" },
+    "first": { "href": "/?pages[num]=1" },
+    "last": { "href": "/?pages[num]=5" },
+    "next": { "href": "/?pages[num]=2" }
   },
   "count": 42,
-  "pages_num": [1],
-  "pages_size": [10],
+  "pages[num]": [1],
+  "pages[size]": [10],
   "_embedded": {
     "results": [
       {
-        "_links": { "self": { "href": "/sub.example.com/" } },
         "za": "sub.example.com",
         "title": "FTS Expression Guide",
         "description": "A complete guide to Full Text Search expressions.",
+        "keywords": "fts query search",
+        "offering": null,
+        "seeking": null,
+        "ol": null,
+        "latitude": null,
+        "longitude": null,
         "timestamp": 1698417000,
-        "score": 12.5
+        "primary_lang": "en",
+        "score": 12.5,
+        "lang_name": "English",
+        "lang_name_en": "English",
+        "_links": { "self": { "href": "/sub.example.com/" } }
       },
       {
-        "_links": { "self": { "href": "/blog.example.com/" } },
         "za": "blog.example.com",
         "title": "My First FTS Post",
         "description": "Testing the expression engine.",
+        "keywords": "blog post test",
+        "offering": null,
+        "seeking": null,
+        "ol": null,
+        "latitude": null,
+        "longitude": null,
         "timestamp": 1698417055,
-        "score": 8.2
+        "primary_lang": "en",
+        "score": 8.2,
+        "lang_name": "English",
+        "lang_name_en": "English",
+        "_links": { "self": { "href": "/blog.example.com/" } }
       }
     ]
   }
@@ -645,18 +739,40 @@ A ciprnode must provide a set of minimum mechanisms to allow resource owners cre
 
 #### Use of the `HEAD` method
 
-A `HEAD` request to `/` will verify the presence of a ciprnode in the Cipr. Example:
+A `HEAD` request to `/` will verify the presence of a ciprnode in the Cipr. The response includes an `X-Cipr-Count` header with the total number of entries in the ciprdup. Example:
 
 ```http
 HEAD / HTTP/1.1
 Host: ciprnode.example.com
 ```
 
-A `HEAD` request to `/ri/` will verify the presence of a resindex in a ciprnode:
+```http
+HTTP/1.1 200 OK
+X-Cipr-Count: 1542
+Content-Length: 0
+```
+
+A `HEAD` request to `/ri/` will verify the presence of a resindex in a ciprnode. Returns `200 OK` if the node has ISE (Internal Search Engine) providers configured, or `501 Not Implemented` if the resindex is not available. CORS headers are always included to allow cross-origin pings from other ciprnodes:
 
 ```http
 HEAD /ri/ HTTP/1.1
 Host: ciprnode.example.com
+```
+
+```http
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: HEAD, OPTIONS
+Content-Length: 0
+```
+
+Or if no resindex is configured:
+
+```http
+HTTP/1.1 501 Not Implemented
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: HEAD, OPTIONS
+Content-Length: 0
 ```
 
 ### 4. Ciprpulse

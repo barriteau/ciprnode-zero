@@ -36,10 +36,24 @@
         "def": "https://schema.org/keywords"
       },
       {
+        "id": "offering",
+        "type": "semantic",
+        "title": "Offering",
+        "doc": { "value": "What is offered or shared through the resource." },
+        "def": "https://schema.org/offers"
+      },
+      {
+        "id": "seeking",
+        "type": "semantic",
+        "title": "Seeking",
+        "doc": { "value": "What the owner of the resource is looking for." },
+        "def": "https://schema.org/seeks"
+      },
+      {
         "id": "ol",
         "type": "semantic",
         "title": "Offensiveness Level",
-        "doc": { "value": "Subjective rating of content (0=Safe, 1=Individual, 2=Collective, 3=Universal)." }
+        "doc": { "value": "Subjective rating of content (null=Safe, 1=Individual, 2=Collective, 3=Universal)." }
       },
       {
         "id": "latitude",
@@ -66,7 +80,7 @@
         "id": "primary_lang",
         "type": "semantic",
         "title": "Primary Language",
-        "doc": { "value": "The primary language code (e.g. ISO 639-1) for the resource." },
+        "doc": { "value": "ISO 639-1 language code for the resource." },
         "def": "https://schema.org/inLanguage"
       },
       {
@@ -80,6 +94,18 @@
         "type": "semantic",
         "title": "Geographic Longitude Filter",
         "doc": { "value": "Longitude center point for geographic search queries." }
+      },
+      {
+        "id": "geo_radius",
+        "type": "semantic",
+        "title": "Geographic Radius",
+        "doc": { "value": "Distance radius for geographic search in km or mi (see geo_unit)." }
+      },
+      {
+        "id": "geo_unit",
+        "type": "semantic",
+        "title": "Geographic Unit",
+        "doc": { "value": "Unit for geo_radius: 'km' (default) or 'mi'." }
       },
       {
         "id": "geo_min_radius_km",
@@ -97,25 +123,31 @@
         "id": "before",
         "type": "semantic",
         "title": "Before Timestamp",
-        "doc": { "value": "Filter results updated before this Unix Epoch timestamp." }
+        "doc": { "value": "Filter results updated before this Unix Epoch timestamp or ISO date." }
       },
       {
         "id": "after",
         "type": "semantic",
         "title": "After Timestamp",
-        "doc": { "value": "Filter results updated after this Unix Epoch timestamp." }
+        "doc": { "value": "Filter results updated after this Unix Epoch timestamp or ISO date." }
+      },
+      {
+        "id": "mode",
+        "type": "semantic",
+        "title": "Search Mode",
+        "doc": { "value": "Search weighting mode: 'searching' (default), 'offering', or 'seeking'." }
       },
       {
         "id": "pages_num",
         "type": "semantic",
         "title": "Page Numbers",
-        "doc": { "value": "Array of page numbers or ranges to retrieve." }
+        "doc": { "value": "Array of page numbers or ranges to retrieve (also accepted as pages[num])." }
       },
       {
         "id": "pages_size",
         "type": "semantic",
         "title": "Page Sizes",
-        "doc": { "value": "Array of number of entries per page." }
+        "doc": { "value": "Array of number of entries per page (also accepted as pages[size])." }
       },
       {
         "id": "CiprResource",
@@ -126,12 +158,15 @@
           { "href": "#title" },
           { "href": "#description" },
           { "href": "#keywords" },
+          { "href": "#offering" },
+          { "href": "#seeking" },
           { "href": "#primary_lang" },
           { "href": "#ol" },
           { "href": "#latitude" },
           { "href": "#longitude" },
           { "href": "#timestamp" },
           { "href": "#goEntry" },
+          { "href": "#goField" },
           { "href": "#doUpdateEntry" },
           { "href": "#doDeleteEntry" }
         ]
@@ -142,7 +177,9 @@
         "title": "Cipr Collection",
         "descriptor": [
           { "href": "#CiprResource" },
-          { "href": "#doSearch" }
+          { "href": "#doSearch" },
+          { "href": "#doSearchResindex" },
+          { "href": "#goLanguages" }
         ]
       },
       {
@@ -150,6 +187,15 @@
         "type": "safe",
         "rt": "#CiprResource",
         "title": "View Entry",
+        "doc": { "value": "GET /{za}/ — Retrieves all fields for a specific cipred resource." },
+        "descriptor": [ { "href": "#za" } ]
+      },
+      {
+        "id": "goField",
+        "type": "safe",
+        "rt": "#CiprResource",
+        "title": "View Field",
+        "doc": { "value": "GET /{za}/{field}/ — Retrieves a single field. Supports text/plain and application/hal+json via Accept header." },
         "descriptor": [ { "href": "#za" } ]
       },
       {
@@ -157,6 +203,7 @@
         "type": "idempotent",
         "rt": "#CiprResource",
         "title": "Update/Register Entry",
+        "doc": { "value": "PUT /{za}/ — Adds or updates a cipred resource. Request body must be JSON. Triggers Insertion Validation Sequence." },
         "descriptor": [ { "href": "#CiprResource" } ]
       },
       {
@@ -164,25 +211,63 @@
         "type": "idempotent",
         "rt": "#CiprCollection",
         "title": "Delete Entry",
+        "doc": { "value": "DELETE /{za}/ — Requests deletion of a cipred resource. Triggers Deletion Validation Sequence." },
         "descriptor": [ { "href": "#za" } ]
       },
       {
         "id": "doSearch",
-        "type": "safe",
+        "type": "unsafe",
         "rt": "#CiprCollection",
-        "title": "Search",
+        "title": "Search Ciprdup",
+        "doc": { "value": "QUERY / — Full-text search of the ciprdup with filters and pagination. Returns HAL+JSON with HATEOAS pagination links (first, prev, next, last)." },
         "descriptor": [
-           { "id": "query", "type": "semantic", "doc": { "value": "FTS Expression" } },
+           { "id": "query", "type": "semantic", "doc": { "value": "FTS5 search expression." } },
+           { "href": "#mode" },
            { "href": "#ol" },
            { "href": "#primary_lang" },
            { "href": "#geo_latitude" },
            { "href": "#geo_longitude" },
+           { "href": "#geo_radius" },
+           { "href": "#geo_unit" },
            { "href": "#geo_min_radius_km" },
            { "href": "#geo_max_radius_km" },
            { "href": "#before" },
            { "href": "#after" },
            { "href": "#pages_num" },
            { "href": "#pages_size" }
+        ]
+      },
+      {
+        "id": "doSearchResindex",
+        "type": "unsafe",
+        "rt": "#CiprCollection",
+        "title": "Search Resindex",
+        "doc": { "value": "QUERY /ri/ — Queries the node's Internal Search Engine (ISE) providers. Structure follows same HAL+JSON envelope as doSearch." },
+        "descriptor": [
+           { "id": "query", "type": "semantic", "doc": { "value": "Search expression for the resindex." } },
+           { "href": "#pages_num" },
+           { "href": "#pages_size" }
+        ]
+      },
+      {
+        "id": "checkNodePresence",
+        "type": "safe",
+        "title": "Check Node Presence",
+        "doc": { "value": "HEAD / — Verifies the ciprnode is alive. Returns X-Cipr-Count header with entry count." }
+      },
+      {
+        "id": "checkResindexPresence",
+        "type": "safe",
+        "title": "Check Resindex Presence",
+        "doc": { "value": "HEAD /ri/ — Returns 200 if ISE providers are configured, 501 otherwise. Includes CORS headers." }
+      },
+      {
+        "id": "goLanguages",
+        "type": "safe",
+        "title": "Language Autocomplete",
+        "doc": { "value": "GET /languages/ — Retrieves language list filtered by query parameter. Restricted to same-origin via Sec-Fetch-Site." },
+        "descriptor": [
+          { "id": "q", "type": "semantic", "doc": { "value": "Language search query (matches code, native name, or English name)." } }
         ]
       }
     ]

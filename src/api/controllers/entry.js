@@ -196,12 +196,46 @@ export const del = async (_req, db, config, za) => {
 /**
  * Handles Sub-field GET /za/field/
  */
-export const getField = (_req, db, _config, za, field) => {
+export const getField = (req, db, _config, za, field) => {
   const entry = getEntry(db, za);
   if (!entry) return new Response('Not Found', { status: 404 });
 
   const value = entry[field];
-  return new Response(JSON.stringify({ [field]: value }), {
+  const accept = req.headers.get('accept') || '';
+
+  if (accept.includes('text/plain')) {
+    const textValue = (value === null || value === undefined) ? '' : String(value);
+    return new Response(textValue, {
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
+  }
+
+  const responseObj = { [field]: value };
+  
+  if (accept.includes('application/hal+json')) {
+    const _links = {
+      self: { href: `/${za}/${field}/` },
+      up: { href: `/${za}/` },
+    };
+
+    const allFields = [
+      'title', 'description', 'keywords', 'offering', 'seeking',
+      'ol', 'primary_lang', 'latitude', 'longitude', 'timestamp'
+    ];
+
+    allFields.forEach((f) => {
+      if (f !== field) {
+        _links[f] = { href: `/${za}/${f}/` };
+      }
+    });
+
+    responseObj._links = _links;
+    return new Response(JSON.stringify(responseObj), {
+      headers: { 'Content-Type': 'application/hal+json; charset=utf-8' },
+    });
+  }
+
+  return new Response(JSON.stringify(responseObj), {
     headers: { 'Content-Type': 'application/json' },
   });
 };

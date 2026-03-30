@@ -45,13 +45,13 @@ export const insertEntry = (db, entry) => {
     entry.title,
     entry.description,
     keywords,
-    entry.offering || null,
-    entry.seeking || null,
-    entry.ol,
-    entry.latitude || null,
-    entry.longitude || null,
+    entry.offering === undefined ? null : entry.offering,
+    entry.seeking === undefined ? null : entry.seeking,
+    entry.ol === undefined ? null : entry.ol,
+    entry.latitude === undefined ? null : entry.latitude,
+    entry.longitude === undefined ? null : entry.longitude,
     entry.timestamp,
-    entry.primary_lang || null,
+    entry.primary_lang === undefined ? null : entry.primary_lang,
   );
 
   return result.changes > 0;

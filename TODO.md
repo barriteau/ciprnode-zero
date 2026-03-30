@@ -21,21 +21,20 @@ Legend:
 - [✔] Reducir los íconos con media queries
 - [✔] Reorder search filters horizontally
 - [✔] Hunt every rem in the styles and convert to em
-
-- […] Create the "Explore" button, it fills the page with random entries from the ciprdup
+- [✔] Add Ukrainian, Persian (Farsi) and Arabic languages
+- [✔] Create all the missing endpoints
+- [✔] Review HATEOAS in each endpoint, one by one
+- [✔] Update ALPS
+- [✔] Update the README.md with the latest changes
 
 - […] Reorder footer
-- […] Review HATEOAS in each endpoint, one by one
-- […] Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml
-- […] Implementation of the leech mode
-
-- […] Add Ukrainian, Persian (Farsi) and Arabic languages
-- […] Implement dark mode
-- […] Update ALPS
-- […] Update the README.md with the latest changes
+- […] Create the "Explore" button, it fills the page with random entries from the ciprdup
 
 - […] Ciprconf, a dead simple desktop app (Taury?) exclusively made to create the ciprnode.toml file
-- [🗙] Improve the texts in the "Help" page
+
+- […] Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml
+- […] Implementation of the leech mode
+- […] Implement dark mode
 
 ## External tasks
 

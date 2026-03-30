@@ -358,19 +358,40 @@ export const query = async (req, db, config, isResindex = false) => {
 
   // A. JSON / HAL
   if (accept.includes('application/json') || accept.includes('application/hal+json')) {
-    // Returned minimal JSON for now to focus on Frontend task
     const enrichedItems = items.map((item) => ({
       ...item,
       _links: { self: { href: `/${item.za}/` } },
     }));
 
+    const buildPageUrl = (pageNum) => {
+      const u = new URL(req.url);
+      if (u.searchParams.has('pages_num')) u.searchParams.delete('pages_num');
+      u.searchParams.set('pages[num]', pageNum);
+      return u.pathname + u.search;
+    };
+
+    const firstPageNum = allPageNums.length > 0 ? allPageNums[0] : 1;
+    const size = pages.length > 0 ? pages[0].limit : 50;
+    const totalPages = Math.max(1, Math.ceil(statsCount / size));
+
+    const _links = {
+      self: { href: new URL(req.url).pathname + new URL(req.url).search },
+      first: { href: buildPageUrl(1) },
+      last: { href: buildPageUrl(totalPages) },
+    };
+
+    if (firstPageNum > 1) {
+      _links.prev = { href: buildPageUrl(firstPageNum - 1) };
+    }
+    if (firstPageNum < totalPages) {
+      _links.next = { href: buildPageUrl(firstPageNum + 1) };
+    }
+
     const response = {
-      _links: {
-        self: { href: req.url },
-      },
-      count: isResindex ? statsCount : items.length, // Only this page count? Or total? Spec implies total 'count=42'
+      _links,
+      count: statsCount, 
       'pages[num]': allPageNums,
-      'pages[size]': pages.map((p) => p.limit), // simplified
+      'pages[size]': pages.map((p) => p.limit),
       _embedded: {
         results: enrichedItems,
       },
