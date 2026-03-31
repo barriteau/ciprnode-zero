@@ -143,6 +143,7 @@ export const query = async (req, db, config, isResindex = false) => {
   const options = {
     query: params.get('q') || params.get('query') || '',
     mode: params.get('mode') || 'searching',
+    sort_by: params.get('sort_by') || null,
     ol: [],
     geo: {},
     timestamp: {},
@@ -427,8 +428,9 @@ export const query = async (req, db, config, isResindex = false) => {
     query: options.query,
     filters: options.filters,
     results: items,
+    isExplore: options.sort_by === 'random',
     allPageNums: allPageNums,
-    pagination: {
+    pagination: options.sort_by === 'random' ? null : {
       currentPage: currentPageUI,
       pageSize: defaultSize,
       hasPrevPage: currentPageUI > 1,

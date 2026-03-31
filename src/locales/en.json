@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "Mode",
-    "stats": "Last entry of {count} added at {date}"
+    "stats": "Last entry of {count} added at {date}",
+    "explore": "Explore",
+    "toolbar_label": "Main toolbar",
+    "lang_switcher_label": "Select language"
   },
   "search": {
     "title": "Cosmic Index of Public Resources",
@@ -46,7 +49,8 @@
     "none": "No results found.",
     "universal": "Universal",
     "visit_ciprnode": "visit ciprnode.",
-    "intra_search": "intra-search"
+    "intra_search": "intra-search",
+    "explore_heading": "A random selection of entries to explore the Cipr"
   },
   "footer": {
     "profile": "API Profile",
@@ -56,7 +60,8 @@
     "install_mobile": "Cipr in your mobile",
     "install_ios": "To install Cipr on your device, tap the Share icon at the bottom of your screen and select 'Add to Home Screen'.",
     "install_fallback": "To install Cipr, please look for the 'Install' or 'Add to Home Screen' option in your browser menu.",
-    "source_code": "Source Code"
+    "source_code": "Source Code",
+    "label": "Footer links"
   },
   "pagination": {
     "previous": "Previous",

@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initSearchForm();
   initFilters();
+  initExplore();
   initLanguageSwitcher();
   initPwaInstall();
   initReverseGeocoding();
@@ -45,13 +46,79 @@ const initAutocomplete = () => {
   const latInput = document.querySelector('input[name="geo_latitude"]');
   const lonInput = document.querySelector('input[name="geo_longitude"]');
 
+  // ARIA Setup
+  input.setAttribute('role', 'combobox');
+  input.setAttribute('aria-autocomplete', 'list');
+  input.setAttribute('aria-expanded', 'false');
+  input.setAttribute('aria-controls', 'autocomplete-results');
+  resultsContainer.setAttribute('role', 'listbox');
+
   let debounceTimer;
+  let activeIndex = -1;
+  let currentItems = [];
+
+  const closeDropdown = () => {
+    resultsContainer.classList.add('hidden');
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+    activeIndex = -1;
+    currentItems = [];
+  };
+
+  const openDropdown = () => {
+    resultsContainer.classList.remove('hidden');
+    input.setAttribute('aria-expanded', 'true');
+    activeIndex = -1;
+  };
+
+  const setActiveItem = (index) => {
+    if (!currentItems.length) return;
+    if (index < 0) index = currentItems.length - 1;
+    if (index >= currentItems.length) index = 0;
+    
+    activeIndex = index;
+    currentItems.forEach((item, i) => {
+      if (i === activeIndex) {
+        item.el.classList.add('active');
+        item.el.setAttribute('aria-selected', 'true');
+        input.setAttribute('aria-activedescendant', item.el.id);
+        item.el.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.el.classList.remove('active');
+        item.el.setAttribute('aria-selected', 'false');
+      }
+    });
+  };
+
+  input.addEventListener('keydown', (e) => {
+    if (resultsContainer.classList.contains('hidden')) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setActiveItem(activeIndex + 1);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setActiveItem(activeIndex - 1);
+        break;
+      case 'Enter':
+        if (activeIndex >= 0 && currentItems[activeIndex]) {
+          e.preventDefault();
+          currentItems[activeIndex].el.click();
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        closeDropdown();
+        break;
+    }
+  });
 
   input.addEventListener('input', (e) => {
     const query = e.target.value;
     clearTimeout(debounceTimer);
 
-    // Clear coords if user clears input
     if (query.length === 0) {
       latInput.value = '';
       lonInput.value = '';
@@ -59,7 +126,7 @@ const initAutocomplete = () => {
 
     if (query.length < 3) {
       resultsContainer.innerHTML = '';
-      resultsContainer.classList.add('hidden');
+      closeDropdown();
       return;
     }
 
@@ -68,11 +135,16 @@ const initAutocomplete = () => {
         .then((res) => res.json())
         .then((data) => {
           resultsContainer.innerHTML = '';
+          currentItems = [];
+          
           if (data.features && data.features.length > 0) {
-            resultsContainer.classList.remove('hidden');
-            data.features.forEach((feature) => {
+            openDropdown();
+            data.features.forEach((feature, index) => {
               const div = document.createElement('div');
               div.className = 'autocomplete-item';
+              div.id = `location-option-${index}`;
+              div.setAttribute('role', 'option');
+              div.setAttribute('aria-selected', 'false');
 
               const props = feature.properties;
               let label = props.name || '';
@@ -84,29 +156,29 @@ const initAutocomplete = () => {
 
               div.addEventListener('click', () => {
                 input.value = div.textContent;
-                // Photon returns [lon, lat]
                 latInput.value = feature.geometry.coordinates[1];
                 lonInput.value = feature.geometry.coordinates[0];
                 const radiusInput = document.getElementById('geo_radius');
                 if (radiusInput && !radiusInput.value) {
                   radiusInput.value = '50';
                 }
-                resultsContainer.classList.add('hidden');
+                closeDropdown();
               });
+              
               resultsContainer.appendChild(div);
+              currentItems.push({ el: div, data: feature });
             });
           } else {
-            resultsContainer.classList.add('hidden');
+            closeDropdown();
           }
         })
         .catch((err) => console.error('Geocoding error:', err));
     }, 300);
   });
 
-  // Hide on click outside
   document.addEventListener('click', (e) => {
     if (!input.contains(e.target) && !resultsContainer.contains(e.target)) {
-      resultsContainer.classList.add('hidden');
+      closeDropdown();
     }
   });
 };
@@ -119,7 +191,74 @@ const initLanguageAutocomplete = () => {
   const langInput = document.querySelector('input[name="primary_lang"]');
   const resetBtn = document.getElementById('language-reset-btn');
 
+  // ARIA Setup
+  input.setAttribute('role', 'combobox');
+  input.setAttribute('aria-autocomplete', 'list');
+  input.setAttribute('aria-expanded', 'false');
+  input.setAttribute('aria-controls', 'language-autocomplete-results');
+  resultsContainer.setAttribute('role', 'listbox');
+
   let debounceTimer;
+  let activeIndex = -1;
+  let currentItems = [];
+
+  const closeDropdown = () => {
+    resultsContainer.classList.add('hidden');
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+    activeIndex = -1;
+    currentItems = [];
+  };
+
+  const openDropdown = () => {
+    resultsContainer.classList.remove('hidden');
+    input.setAttribute('aria-expanded', 'true');
+    activeIndex = -1;
+  };
+
+  const setActiveItem = (index) => {
+    if (!currentItems.length) return;
+    if (index < 0) index = currentItems.length - 1;
+    if (index >= currentItems.length) index = 0;
+    
+    activeIndex = index;
+    currentItems.forEach((item, i) => {
+      if (i === activeIndex) {
+        item.el.classList.add('active');
+        item.el.setAttribute('aria-selected', 'true');
+        input.setAttribute('aria-activedescendant', item.el.id);
+        item.el.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.el.classList.remove('active');
+        item.el.setAttribute('aria-selected', 'false');
+      }
+    });
+  };
+
+  input.addEventListener('keydown', (e) => {
+    if (resultsContainer.classList.contains('hidden')) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setActiveItem(activeIndex + 1);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setActiveItem(activeIndex - 1);
+        break;
+      case 'Enter':
+        if (activeIndex >= 0 && currentItems[activeIndex]) {
+          e.preventDefault();
+          currentItems[activeIndex].el.click();
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        closeDropdown();
+        break;
+    }
+  });
 
   // Show reset button if there's already a value
   if (langInput && langInput.value) {
@@ -133,7 +272,7 @@ const initLanguageAutocomplete = () => {
     if (query.length === 0) {
       langInput.value = '';
       if (resetBtn) resetBtn.classList.add('hidden');
-      resultsContainer.classList.add('hidden');
+      closeDropdown();
       return;
     }
 
@@ -144,23 +283,30 @@ const initLanguageAutocomplete = () => {
         .then((res) => res.json())
         .then((data) => {
           resultsContainer.innerHTML = '';
+          currentItems = [];
+          
           if (data && data.length > 0) {
-            resultsContainer.classList.remove('hidden');
-            data.forEach((lang) => {
+            openDropdown();
+            data.forEach((lang, index) => {
               const div = document.createElement('div');
               div.className = 'autocomplete-item';
+              div.id = `lang-option-${index}`;
+              div.setAttribute('role', 'option');
+              div.setAttribute('aria-selected', 'false');
               // Display format: English - Español (es)
               div.textContent = `${lang.lang_name_en} - ${lang.lang_name} (${lang.lang_code})`;
 
               div.addEventListener('click', () => {
                 input.value = div.textContent;
                 langInput.value = lang.lang_code;
-                resultsContainer.classList.add('hidden');
+                closeDropdown();
               });
+              
               resultsContainer.appendChild(div);
+              currentItems.push({ el: div, data: lang });
             });
           } else {
-            resultsContainer.classList.add('hidden');
+            closeDropdown();
           }
         })
         .catch((err) => console.error('Language fetch error:', err));
@@ -172,7 +318,7 @@ const initLanguageAutocomplete = () => {
       input.value = '';
       langInput.value = '';
       resetBtn.classList.add('hidden');
-      resultsContainer.classList.add('hidden');
+      closeDropdown();
     });
   }
 
@@ -182,7 +328,7 @@ const initLanguageAutocomplete = () => {
       !input.contains(e.target) && !resultsContainer.contains(e.target) &&
       (!resetBtn || !resetBtn.contains(e.target))
     ) {
-      resultsContainer.classList.add('hidden');
+      closeDropdown();
     }
   });
 };
@@ -258,6 +404,57 @@ const initFilters = () => {
     });
     resetBtn.dataset.listenerAttached = 'true';
   }
+};
+
+/**
+ * Clears the search input and all filters when the Explore button is clicked.
+ * The HTMX request itself is handled by the hx-get attribute on the anchor.
+ */
+const initExplore = () => {
+  const exploreBtn = document.getElementById('explore');
+  if (!exploreBtn || exploreBtn.dataset.listenerAttached) return;
+
+  exploreBtn.addEventListener('click', () => {
+    // Clear search input
+    const searchInput = document.getElementById('cipr-search');
+    if (searchInput) {
+      searchInput.value = '';
+      searchInput.classList.remove('fts-invalid');
+    }
+
+    // Reset mode to default (searching)
+    const searchingRadio = document.getElementById('searching');
+    if (searchingRadio) searchingRadio.checked = true;
+
+    // Reset search mode info text
+    const infoDiv = document.getElementById('search-bar-info');
+    if (infoDiv) {
+      const defaultText = infoDiv.getAttribute('data-info-searching');
+      if (defaultText) infoDiv.textContent = defaultText;
+    }
+
+    // Clear all filter inputs
+    const filters = document.getElementById('search-filters');
+    if (filters) {
+      filters.querySelectorAll('input:not([type=checkbox]), select').forEach((i) => i.value = '');
+      filters.querySelectorAll('input[type=checkbox]').forEach((i) => i.checked = false);
+      const olAny = document.getElementById('ol-any');
+      if (olAny) olAny.checked = true;
+      const unit = document.getElementById('geo_unit');
+      if (unit) unit.value = 'km';
+      // Clear language hidden input and reset button
+      const langHidden = document.querySelector('input[name="primary_lang"]');
+      if (langHidden) langHidden.value = '';
+      const langResetBtn = document.getElementById('language-reset-btn');
+      if (langResetBtn) langResetBtn.classList.add('hidden');
+    }
+
+    // Close the filter details panel
+    const searchOptions = document.getElementById('search-options');
+    if (searchOptions) searchOptions.removeAttribute('open');
+  });
+
+  exploreBtn.dataset.listenerAttached = 'true';
 };
 
 const initLanguageSwitcher = () => {

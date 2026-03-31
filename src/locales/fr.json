@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "Mode",
-    "stats": "Dernière entrée de {count} ajoutée le {date}"
+    "stats": "Dernière entrée de {count} ajoutée le {date}",
+    "explore": "Explorer",
+    "toolbar_label": "Barre d'outils principale",
+    "lang_switcher_label": "Sélectionner la langue"
   },
   "search": {
     "title": "Index Cosmique des Ressources Publiques",
@@ -46,7 +49,8 @@
     "none": "Aucun résultat trouvé.",
     "universal": "Universel",
     "visit_ciprnode": "visiter ciprnode.",
-    "intra_search": "recherche interne"
+    "intra_search": "recherche interne",
+    "explore_heading": "Une sélection aléatoire d'entrées pour explorer le Cipr"
   },
   "footer": {
     "profile": "Profil API",
@@ -56,7 +60,8 @@
     "install_mobile": "Cipr sur votre mobile",
     "install_ios": "Pour installer Cipr sur votre appareil, appuyez sur l'icône Partager en bas de votre écran et sélectionnez 'Sur l'écran d'accueil'.",
     "install_fallback": "Pour installer Cipr, recherchez l'option 'Installer' ou 'Sur l'écran d'accueil' dans le menu de votre navigateur.",
-    "source_code": "Code Source"
+    "source_code": "Code Source",
+    "label": "Liens de pied de page"
   },
   "pagination": {
     "previous": "Précédent",

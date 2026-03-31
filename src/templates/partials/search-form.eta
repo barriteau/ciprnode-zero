@@ -5,34 +5,34 @@
   </p>
 </h1>
 
-<form id="main-search-form" action="/" method="QUERY" hx-method="QUERY" hx-action="/" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML">
+<form id="main-search-form" aria-label="<%= it.t('search.title') %>" action="/" method="QUERY" hx-method="QUERY" hx-action="/" hx-push-url="true" hx-target="#search-results-wrapper" hx-swap="innerHTML">
 
   <div id="search-bar">
     <details id="search-help">
       <summary title="<%= it.t('search.operators_tooltip_title') %>">
         <a>
-          <svg-icon class="help light"></svg-icon>
+          <svg-icon class="help light" aria-hidden="true"></svg-icon>
         </a>
       </summary>
       <div id="search-help-panel"><%= it.t('search.operators_tooltip') %></div>
     </details>
 
-    <input id="cipr-search" type="text" name="q" value="<%= it.query || '' %>" placeholder="<%= it.t('search.placeholder') %>" autocomplete="off" spellcheck="false" />
+    <input id="cipr-search" type="text" name="q" value="<%= it.query || '' %>" placeholder="<%= it.t('search.placeholder') %>" aria-label="<%= it.t('search.placeholder') %>" autocomplete="off" spellcheck="false" />
 
     <span id="search-mode-toggle" class="toggle-group">
       <input type="radio" name="mode" id="searching" value="searching" <%= !it.mode || it.mode === 'searching' ? 'checked="checked"' : '' %> />
       <label for="searching">
-        <svg-icon class="cipr-search"></svg-icon>
+        <svg-icon class="cipr-search" aria-hidden="true"></svg-icon>
       </label>
 
       <input type="radio" name="mode" id="seeking" value="seeking" <%= it.mode === 'seeking' ? 'checked="checked"' : '' %> />
       <label for="seeking">
-        <svg-icon class="seeking-line"></svg-icon>
+        <svg-icon class="seeking-line" aria-hidden="true"></svg-icon>
       </label>
 
       <input type="radio" name="mode" id="offering" value="offering" <%= it.mode === 'offering' ? 'checked="checked"' : '' %> />
       <label for="offering">
-        <svg-icon class="offering-line"></svg-icon>
+        <svg-icon class="offering-line" aria-hidden="true"></svg-icon>
       </label>
     </span>
 
@@ -64,7 +64,7 @@
         <legend><%= it.t('search.filters.location') %></legend>
         <div>
           <label for="location-search"><%= it.t('search.filters.near') %></label>
-          <input type="text" id="location-search" placeholder="<%= it.t('search.filters.near_placeholder') %>" autocomplete="off" />
+          <input type="text" id="location-search" placeholder="<%= it.t('search.filters.near_placeholder') %>" aria-label="<%= it.t('search.filters.near_placeholder') %>" autocomplete="off" />
           <div id="autocomplete-results" class="autocomplete-results hidden"></div>
         </div>
 

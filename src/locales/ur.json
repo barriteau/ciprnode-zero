@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "موڈ",
-    "stats": "{count} میں سے آخری اندراج {date} کو شامل کیا گیا"
+    "stats": "{count} میں سے آخری اندراج {date} کو شامل کیا گیا",
+    "explore": "دریافت کریں",
+    "toolbar_label": "مرکزی ٹول بار",
+    "lang_switcher_label": "زبان منتخب کریں"
   },
   "search": {
     "title": "عوامی وسائل کا کائناتی انڈیکس",
@@ -46,7 +49,8 @@
     "none": "کوئی نتیجہ نہیں ملا۔",
     "universal": "آفاقی",
     "visit_ciprnode": "ciprnode کا دورہ کریں۔",
-    "intra_search": "انٹرا-سرچ"
+    "intra_search": "انٹرا-سرچ",
+    "explore_heading": "Cipr کی تلاش کے لیے اندراجات کا بے ترتیب انتخاب"
   },
   "footer": {
     "profile": "API پروفائل",
@@ -56,7 +60,8 @@
     "install_mobile": "آپ کے موبائل پر Cipr",
     "install_ios": "اپنے ڈیوائس پر Cipr انسٹال کرنے کے لیے، اسکرین کے نیچے شیئر آئیکن پر ٹیپ کریں اور 'Add to Home Screen' منتخب کریں۔",
     "install_fallback": "Cipr انسٹال کرنے کے لیے، براہ کرم اپنے براؤزر مینو میں 'Install' یا 'Add to Home Screen' کا آپشن تلاش کریں۔",
-    "source_code": "سورس کوڈ"
+    "source_code": "سورس کوڈ",
+    "label": "فوٹر لنکس"
   },
   "pagination": {
     "previous": "پچھلا",

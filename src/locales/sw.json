@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "Hali",
-    "stats": "Ingizo la mwisho la {count} liliongezwa saa {date}"
+    "stats": "Ingizo la mwisho la {count} liliongezwa saa {date}",
+    "explore": "Chunguza",
+    "toolbar_label": "Mwambaa zana kuu",
+    "lang_switcher_label": "Chagua lugha"
   },
   "search": {
     "title": "Faharasa ya Kosmiki ya Rasilimali za Umma",
@@ -46,7 +49,8 @@
     "none": "Hakuna matokeo yaliyopatikana.",
     "universal": "Kwa Ulimwengu",
     "visit_ciprnode": "tembelea ciprnode.",
-    "intra_search": "utafutaji-wa-ndani"
+    "intra_search": "utafutaji-wa-ndani",
+    "explore_heading": "Uchaguzi wa nasibu wa maingizo ya kuchunguza Cipr"
   },
   "footer": {
     "profile": "Profaili ya API",
@@ -56,7 +60,8 @@
     "install_mobile": "Cipr kwenye simu yako",
     "install_ios": "Ili kusakinisha Cipr kwenye kifaa chako, gusa aikoni ya Shiriki kwenye sehemu ya chini ya skrini yako na uchague 'Ongeza kwenye Skrini ya Mwanzo'.",
     "install_fallback": "Ili kusakinisha Cipr, tafadhali tafuta chaguo la 'Sakinisha' au 'Ongeza kwenye Skrini ya Mwanzo' katika menyu ya kivinjari chako.",
-    "source_code": "Msimbo Mkuu"
+    "source_code": "Msimbo Mkuu",
+    "label": "Viungo vya chini"
   },
   "pagination": {
     "previous": "Iliyopita",

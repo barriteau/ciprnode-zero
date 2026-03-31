@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "Mode",
-    "stats": "Entri terakhir dari {count} ditambahkan pada {date}"
+    "stats": "Entri terakhir dari {count} ditambahkan pada {date}",
+    "explore": "Jelajahi",
+    "toolbar_label": "Bilah alat utama",
+    "lang_switcher_label": "Pilih bahasa"
   },
   "search": {
     "title": "Indeks Kosmis Sumber Daya Publik",
@@ -46,7 +49,8 @@
     "none": "Tidak ada hasil yang ditemukan.",
     "universal": "Universal",
     "visit_ciprnode": "kunjungi ciprnode.",
-    "intra_search": "pencarian-internal"
+    "intra_search": "pencarian-internal",
+    "explore_heading": "Pilihan acak entri untuk menjelajahi Cipr"
   },
   "footer": {
     "profile": "Profil API",
@@ -56,7 +60,8 @@
     "install_mobile": "Cipr di ponsel Anda",
     "install_ios": "Untuk menginstal Cipr di perangkat Anda, ketuk ikon Bagikan di bagian bawah layar dan pilih 'Tambahkan ke Layar Utama'.",
     "install_fallback": "Untuk menginstal Cipr, silakan cari opsi 'Instal' atau 'Tambahkan ke Layar Utama' di menu browser Anda.",
-    "source_code": "Kode Sumber"
+    "source_code": "Kode Sumber",
+    "label": "Tautan catatan kaki"
   },
   "pagination": {
     "previous": "Sebelumnya",

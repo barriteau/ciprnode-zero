@@ -3,5 +3,4 @@
 <%~ include('../partials/search-form.eta', it) %>
 
 <div id="search-results-wrapper">
-    <%~ include('../partials/results.eta', it) %>
 </div>

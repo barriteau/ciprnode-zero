@@ -208,7 +208,7 @@ const sanitizeFtsQuery = (raw) => {
 };
 
 export const searchEntries = (db, options = {}) => {
-  const { query: rawQuery, ol, geo, timestamp, pages, primary_lang, mode } = options;
+  const { query: rawQuery, ol, geo, timestamp, pages, primary_lang, mode, sort_by } = options;
   const query = sanitizeFtsQuery(rawQuery);
   // Construct Base SQL
 
@@ -224,6 +224,11 @@ export const searchEntries = (db, options = {}) => {
     if (mode === 'seeking') weights = '32.0, 16.0, 8.0, 1.0, 1.0, 32.0';
     if (mode === 'offering') weights = '32.0, 16.0, 8.0, 1.0, 32.0, 1.0';
     orderBy = `ORDER BY bm25(ciprdup_fts, ${weights}) ASC, ciprdup.timestamp ASC`;
+  } else if (sort_by) {
+    // sort_by only applies when there's no FTS query (BM25 always wins for text search)
+    if (sort_by === 'random') orderBy = 'ORDER BY RANDOM()';
+    else if (sort_by === 'desc') orderBy = 'ORDER BY ciprdup.timestamp DESC';
+    // 'asc' is already the default
   }
 
   // Re-build params for the exact order: FTS match param first?

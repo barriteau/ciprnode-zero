@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "الوضع",
-    "stats": "تمت إضافة الإدخال الأخير من {count} في {date}"
+    "stats": "تمت إضافة الإدخال الأخير من {count} في {date}",
+    "explore": "استكشاف",
+    "toolbar_label": "شريط الأدوات الرئيسي",
+    "lang_switcher_label": "اختر اللغة"
   },
   "search": {
     "title": "الفهرس الكوني للموارد العامة",
@@ -46,7 +49,8 @@
     "none": "لم يتم العثور على نتائج.",
     "universal": "عالمي",
     "visit_ciprnode": "قم بزيارة ciprnode.",
-    "intra_search": "بحث داخلي"
+    "intra_search": "بحث داخلي",
+    "explore_heading": "مجموعة عشوائية من الإدخالات لاستكشاف Cipr"
   },
   "footer": {
     "profile": "ملف تعريف API",
@@ -56,7 +60,8 @@
     "install_mobile": "Cipr على هاتفك المحمول",
     "install_ios": "لتثبيت Cipr على جهازك، انقر على أيقونة المشاركة أسفل الشاشة واختر 'Add to Home Screen'.",
     "install_fallback": "لتثبيت Cipr، يرجى البحث عن خيار 'Install' أو 'Add to Home Screen' في قائمة المتصفح.",
-    "source_code": "الكود المصدري"
+    "source_code": "الكود المصدري",
+    "label": "روابط التذييل"
   },
   "pagination": {
     "previous": "السابق",

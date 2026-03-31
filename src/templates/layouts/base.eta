@@ -102,6 +102,7 @@
 </head>
 
 <body>
+  <a href="#wide" class="skip-link"><%= it.t('a11y.skip_to_content') %></a>
   <%~ include('../partials/header.eta', it) %>
   <noscript>
     <p id="noscript">

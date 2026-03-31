@@ -13,7 +13,37 @@
     --body-color: #090909;
 }
 
+/* --- Skip to content link (a11y) --- */
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+    inset-inline-start: 0;
+    z-index: 9999;
+    padding: 0.5em 1em;
+    background: #015F6B;
+    color: #ffffff;
+    font-family: "Libertinus-Sans", sans-serif;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
 /* --- General --- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
 
 html {
     scroll-behavior: smooth;
@@ -922,12 +952,14 @@ aside#search-panel>#ri-search-body {
 }
 
 body:has(input[form="search-form"]:checked) aside#search-panel,
-body:has(input[form="ri-search-form"]:checked) aside#search-panel {
+body:has(input[form="ri-search-form"]:checked) aside#search-panel,
+body.ri-panel-open aside#search-panel {
    inset-inline-end: 0;
 }
 
 body:has(input[form="search-form"]:checked) aside#search-panel #search-overlay,
-body:has(input[form="ri-search-form"]:checked) aside#search-panel #search-overlay {
+body:has(input[form="ri-search-form"]:checked) aside#search-panel #search-overlay,
+body.ri-panel-open aside#search-panel #search-overlay {
     display: block;
 }
 
@@ -1023,7 +1055,12 @@ dialog {
     padding: 0;
 }
 
-dialog:focus {
+dialog:focus-visible {
+    outline: 2px solid #015F6B;
+    outline-offset: 2px;
+}
+
+dialog:focus:not(:focus-visible) {
     outline: none;
 }
 
@@ -1453,6 +1490,12 @@ ol.toc li:last-child:before {
   filter: invert(21%) sepia(77%) saturate(5925%) hue-rotate(118deg) brightness(95%) contrast(106%);
 }
 
+.toggle-group input[type="radio"]:focus-visible+label {
+    outline: 2px solid #015F6B;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
 /* --- Search bar info --- */
 
 #search-bar-info {
@@ -1460,7 +1503,7 @@ ol.toc li:last-child:before {
     font-size: 0.8em;
     font-weight: bold;
     text-align: end;
-    color: #008000;
+    color: #005a00;
     margin-bottom: 1em;
 }
 
@@ -1476,7 +1519,7 @@ ol.toc li:last-child:before {
 }
 
 details#search-options summary {
-    background-color: #efefef;
+    background-color: transparent; /* #efefef;*/
     margin-bottom: 1em;
     padding: 0 1em;
 }
@@ -1672,6 +1715,17 @@ div.actions>label>a {
 div.actions>label.intra-search-label>a {
     color: #00b6e4;
     border-color:#00b6e4;
+}
+
+button.intra-search-btn {
+    font-size: 0.75em;
+    font-family: "Libertinus Sans", sans-serif;
+    background-color: transparent;
+    color: #00b6e4;
+    border: 1px solid #00b6e4;
+    padding: 0 4px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 /* --- Pagination --- */

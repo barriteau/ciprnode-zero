@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "模式",
-    "stats": "最后添加的 {count} 条记录于 {date}"
+    "stats": "最后添加的 {count} 条记录于 {date}",
+    "explore": "探索",
+    "toolbar_label": "主工具栏",
+    "lang_switcher_label": "选择语言"
   },
   "search": {
     "title": "公共资源宇宙索引",
@@ -45,7 +48,8 @@
     "none": "未找到结果。",
     "universal": "普遍",
     "visit_ciprnode": "访问 ciprnode.",
-    "intra_search": "内部搜索"
+    "intra_search": "内部搜索",
+    "explore_heading": "随机选取的Cipr条目"
   },
   "footer": {
     "profile": "API 资料",
@@ -55,7 +59,8 @@
     "install_mobile": "手机版 Cipr",
     "install_ios": "要在您的设备上安装 Cipr，请点按屏幕底部的共享图标，然后选择“添加到主屏幕”。",
     "install_fallback": "要安装 Cipr，请在浏览器菜单中查找“安装”或“添加到主屏幕”选项。",
-    "source_code": "源代码"
+    "source_code": "源代码",
+    "label": "页脚链接"
   },
   "pagination": {
     "previous": "上一页",

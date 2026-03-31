@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "মোড",
-    "stats": "{count} এর মধ্যে সর্বশেষ এন্ট্রি {date} এ যোগ করা হয়েছে"
+    "stats": "{count} এর মধ্যে সর্বশেষ এন্ট্রি {date} এ যোগ করা হয়েছে",
+    "explore": "অন্বেষণ",
+    "toolbar_label": "প্রধান টুলবার",
+    "lang_switcher_label": "ভাষা নির্বাচন করুন"
   },
   "search": {
     "title": "পাবলিক রিসোর্সের কসমিক সূচক",
@@ -46,7 +49,8 @@
     "none": "কোনো ফলাফল পাওয়া যায়নি।",
     "universal": "সর্বজনীন",
     "visit_ciprnode": "ciprnode ভিজিট করুন।",
-    "intra_search": "অভ্যন্তরীণ অনুসন্ধান"
+    "intra_search": "অভ্যন্তরীণ অনুসন্ধান",
+    "explore_heading": "Cipr অন্বেষণ করার জন্য এন্ট্রিগুলির একটি এলোমেলো নির্বাচন"
   },
   "footer": {
     "profile": "এপিআই প্রোফাইল",
@@ -56,7 +60,8 @@
     "install_mobile": "আপনার মোবাইলে Cipr",
     "install_ios": "আপনার ডিভাইসে Cipr ইনস্টল করতে, স্ক্রিনের নিচে শেয়ার আইকনে ট্যাপ করুন এবং 'Add to Home Screen' নির্বাচন করুন।",
     "install_fallback": "Cipr ইনস্টল করতে, দয়া করে আপনার ব্রাউজার মেনুতে 'Install' বা 'Add to Home Screen' অপশন খুঁজুন।",
-    "source_code": "সোর্স কোড"
+    "source_code": "সোর্স কোড",
+    "label": "ফুটার লিঙ্ক"
   },
   "pagination": {
     "previous": "আগের",

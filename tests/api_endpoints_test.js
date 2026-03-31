@@ -130,5 +130,14 @@ Deno.test('API Endpoints Test Suite', async (t) => {
     assert(Array.isArray(body));
   });
 
+  await t.step('GET /?sort_by=random returns randomized results (Explore)', async () => {
+    const req = new Request('http://localhost/?sort_by=random', { method: 'GET', headers: { accept: 'application/hal+json' } });
+    const res = await handleRequest(req, db, mockConfig);
+    assertEquals(res.status, 200);
+    const body = await res.json();
+    assert(body._embedded.results.length > 0);
+    assert(body.count > 0);
+  });
+
   db.close();
 });

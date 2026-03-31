@@ -1,14 +1,14 @@
-  <aside id="search-panel">
+  <aside id="search-panel" aria-label="<%= it.t('intra_search.heading') %>">
     <button id="search-overlay" tabindex="-1" form="ri-search-form" type="reset" aria-label="<%= it.t('intra_search.close') %>"></button>
     <div id="ri-search-body">
       <button id="ri-search-close" tabindex="-1" form="ri-search-form" type="reset" aria-label="<%= it.t('intra_search.toggle') %>">
-        <svg-icon class="cross small"></svg-icon>
+        <svg-icon class="cross small" aria-hidden="true"></svg-icon>
       </button>
 
       <h2><%= it.t('intra_search.heading') %> <span id="ri-search-za"></span></h2>
 
       <form id="ri-search-form">
-        <input id="ri-search" type="search" placeholder="<%= it.t('intra_search.placeholder') %>" autocomplete="off" spellcheck="false" />
+        <input id="ri-search" type="search" placeholder="<%= it.t('intra_search.placeholder') %>" aria-label="<%= it.t('intra_search.placeholder') %>" autocomplete="off" spellcheck="false" />
       </form>
 
       <ol id="ri-search-results"></ol>

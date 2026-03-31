@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "Cogo",
-    "stats": "{count} kɔnɔna, a laban farala a kan waati {date}"
+    "stats": "{count} kɔnɔna, a laban farala a kan waati {date}",
+    "explore": "Dɔgɔtɔgɔ",
+    "toolbar_label": "Baara kɛminɛnba",
+    "lang_switcher_label": "Kan sugandi"
   },
   "search": {
     "title": "Duniɲa bɛɛ ka foroba nafolow sɛbɛnba",
@@ -46,7 +49,8 @@
     "none": "Fosi ma sɔrɔ.",
     "universal": "Duniɲa bɛɛ",
     "visit_ciprnode": "Ta ciprnode la.",
-    "intra_search": "Kɔnɔ-ɲinini"
+    "intra_search": "Kɔnɔ-ɲinini",
+    "explore_heading": "Cipr sɛbɛnniw dɔw b'a la sɔrɔli la"
   },
   "footer": {
     "profile": "API ɲɛfɔli",
@@ -56,7 +60,8 @@
     "install_mobile": "Cipr i ka telefɔni kan",
     "install_ios": "Ka Cipr sigi i ka minɛn kan, i bɛ tila-tila taamasiyɛn digi ɛkaran duguma, ka 'Add to Home Screen' sugandi.",
     "install_fallback": "Ka Cipr sigi, i bɛ 'Install' walima 'Add to Home Screen' ɲini i ka ɛntɛrinɛti ɲinilan kɔnɔ.",
-    "source_code": "Kɔdi bɔyɔrɔ"
+    "source_code": "Kɔdi bɔyɔrɔ",
+    "label": "Jukɔrɔ yɔrɔw"
   },
   "pagination": {
     "previous": "A tɛmɛnen",

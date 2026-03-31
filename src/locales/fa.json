@@ -5,7 +5,10 @@
   },
   "header": {
     "mode_toggle": "حالت",
-    "stats": "آخرین ورودی از {count} در {date} اضافه شد"
+    "stats": "آخرین ورودی از {count} در {date} اضافه شد",
+    "explore": "کاوش",
+    "toolbar_label": "نوار ابزار اصلی",
+    "lang_switcher_label": "انتخاب زبان"
   },
   "search": {
     "title": "نمایه کیهانی منابع عمومی",
@@ -46,7 +49,8 @@
     "none": "هیچ نتیجه‌ای یافت نشد.",
     "universal": "جهانی",
     "visit_ciprnode": "از ciprnode بازدید کنید.",
-    "intra_search": "جستجوی درون‌سایتی"
+    "intra_search": "جستجوی درون‌سایتی",
+    "explore_heading": "مجموعه‌ای تصادفی از ورودی‌ها برای کاوش در Cipr"
   },
   "footer": {
     "profile": "نمایه API",
@@ -56,7 +60,8 @@
     "install_mobile": "Cipr در موبایل شما",
     "install_ios": "برای نصب Cipr روی دستگاه خود، روی نماد اشتراک‌گذاری در پایین صفحه ضربه بزنید و «Add to Home Screen» را انتخاب کنید.",
     "install_fallback": "برای نصب Cipr، لطفاً در منوی مرورگر خود به دنبال گزینه «Install» یا «Add to Home Screen» بگردید.",
-    "source_code": "کد منبع"
+    "source_code": "کد منبع",
+    "label": "پیوندهای پانویس"
   },
   "pagination": {
     "previous": "قبلی",

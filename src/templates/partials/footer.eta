@@ -1,4 +1,4 @@
-<footer>
+<footer aria-label="<%= it.t('footer.label') %>">
   <span>
     <a href="/profiles/cipr.json"><%= it.t('footer.profile') %></a>
   </span>
@@ -7,20 +7,11 @@
     <a href="http://cipr.info"><%= it.t('footer.get_indexed') %></a>
   </span>
 
-  <span>
-    <a id="pwa-install-btn" class="hidden" tabindex="0" role="button" data-ios-msg="<%= it.t('footer.install_ios') %>" data-fallback-msg="<%= it.t('footer.install_fallback') %>">
-      <span class="desktop-only">
-        <%= it.t('footer.install_desktop') %> <b class="svg-icon install-desktop inline"></b>
-      </span>
-      <span class="mobile-only">
-        <%= it.t('footer.install_mobile') %> <b class="svg-icon install-mobile inline"></b>
-      </span>
-    </a>
-  </span>
-
+  <!--
   <span>
     <a href="https://codeberg.org/Ciprnode-zero">Codeberg (<%= it.t('footer.source_code') %>)</a>
   </span>
+  -->
 
   <span>
     <a href="https://juan.barriteau.net/LPA/" rel="license" title="Licencia publica apodistintiva">
@@ -30,5 +21,16 @@
     <a id="to-author-footer" href="https://juan.barriteau.net/" rel="author" title="Juan Barriteau">
       <strong>Juan Barriteau</strong>
     </a>
+  </span>
+
+  <span>
+    <button type="button" id="pwa-install-btn" class="hidden" data-ios-msg="<%= it.t('footer.install_ios') %>" data-fallback-msg="<%= it.t('footer.install_fallback') %>">
+      <span class="desktop-only">
+        <%= it.t('footer.install_desktop') %> <b class="svg-icon install-desktop inline" aria-hidden="true"></b>
+      </span>
+      <span class="mobile-only">
+        <%= it.t('footer.install_mobile') %> <b class="svg-icon install-mobile inline" aria-hidden="true"></b>
+      </span>
+    </button>
   </span>
 </footer>

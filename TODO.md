@@ -2,11 +2,11 @@
 
 Legend:
 
-[…] tarea pendiente
-[¿?] tarea que requiere información adicional para ejecutarse
-[¡!] tarea a riesgo de ser descartada
-[🗙] tarea descartada
-[✔] tarea finalizada
+- […] tarea pendiente
+- [¿?] tarea que requiere información adicional para ejecutarse
+- [¡!] tarea a riesgo de ser descartada
+- [🗙] tarea descartada
+- [✔] tarea finalizada
 
 ## General tasks
 
@@ -26,11 +26,14 @@ Legend:
 - [✔] Review HATEOAS in each endpoint, one by one
 - [✔] Update ALPS
 - [✔] Update the README.md with the latest changes
-
-- […] Reorder footer
-- […] Create the "Explore" button, it fills the page with random entries from the ciprdup
+- [✔] Create the "Explore" button, it fills the page with random entries from the ciprdup
+- […] Validate accessibility
+- [✔] Reorder footer
 
 - […] Ciprconf, a dead simple desktop app (Taury?) exclusively made to create the ciprnode.toml file
+- […] RCU...
+
+## Delayed tasks
 
 - […] Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml
 - […] Implementation of the leech mode
