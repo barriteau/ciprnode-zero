@@ -27,7 +27,7 @@ Legend:
 - [✔] Update ALPS
 - [✔] Update the README.md with the latest changes
 - [✔] Create the "Explore" button, it fills the page with random entries from the ciprdup
-- […] Validate accessibility
+- [✔] Validate accessibility
 - [✔] Reorder footer
 
 - […] Ciprconf, a dead simple desktop app (Taury?) exclusively made to create the ciprnode.toml file
@@ -48,13 +48,13 @@ Legend:
 - […] Create a way to receive BTC/USDT/USDC (payments and patronage / pagos y mecenazgo)
   - Don't buy me a coffee, just buy me time, all I need is time ;)
   - non-custodial APIs:
-    - https://nowpayments.io/ (0.5% fee)
-    - https://www.blockonomics.co/ (1% fee)
+    - [https://nowpayments.io/](https://nowpayments.io/) (0.5% fee)
+    - [https://www.blockonomics.co/](https://www.blockonomics.co/) (1% fee)
   - Non-custodial self-hosted APIs:
-    - https://shkeeper.io/
+    - [https://shkeeper.io/](https://shkeeper.io/)
   - Self-hosted payment processors:
-    - https://www.payram.com/
-    - https://bitcart.ai/
+    - [https://www.payram.com/](https://www.payram.com/)
+    - [https://bitcart.ai/](https://bitcart.ai/)
 
 ## Special tasks
 

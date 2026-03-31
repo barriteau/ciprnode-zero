@@ -122,15 +122,15 @@ deno task start
 
 ### Development Tasks
 
-| Task            | Command               | Description                                          |
-|:----------------|:-----------------------|:-----------------------------------------------------|
-| Start           | `deno task start`      | Production start                                     |
-| Dev (watch)     | `deno task dev`        | Watch mode with auto-reload on source changes        |
-| Front-end only  | `deno task front-dev`  | Skips sync/DNS/scheduler — for UI development        |
-| Debug           | `deno task debug`      | Watch mode with `--debug` flag                       |
-| Test            | `deno task test`       | Run all tests                                        |
-| Build           | `deno task build`      | Compile to standalone binary                         |
-| Stop            | `deno task stop`       | Stops a running background instance                  |
+| Task           | Command               | Description                                   |
+|:---------------|:----------------------|:----------------------------------------------|
+| Start          | `deno task start`     | Production start                              |
+| Dev (watch)    | `deno task dev`       | Watch mode with auto-reload on source changes |
+| Front-end only | `deno task front-dev` | Skips sync/DNS/scheduler — for UI development |
+| Debug          | `deno task debug`     | Watch mode with `--debug` flag                |
+| Test           | `deno task test`      | Run all tests                                 |
+| Build          | `deno task build`     | Compile to standalone binary                  |
+| Stop           | `deno task stop`      | Stops a running background instance           |
 
 ## Configuration
 
@@ -211,7 +211,7 @@ Sensitive credentials should be set via environment variables (or a `.env` file 
 
 ### Project Structure
 
-```
+```txt
 Ciprnode zero/
 ├── main.js                       # Entry point
 ├── ciprnode.toml                  # Configuration file
