@@ -6,7 +6,7 @@
 import { countEntries, getLanguageMap, getLatestTimestamp, searchEntries } from '../../db/repo.js';
 import { render } from '../views/renderer.js';
 import { captureSearchTerms } from '../../core/fts_generator.js';
-import { msg } from '../../core/utils.js';
+import { msg, readBodyWithLimit } from '../../core/utils.js';
 
 /**
  * Handles HEAD /ri/ requests to determine ISE availability.
@@ -57,9 +57,12 @@ export const query = async (req, db, config, isResindex = false) => {
   let bodyText = '';
   try {
     if (req.body) {
-      bodyText = await req.text();
+      bodyText = await readBodyWithLimit(req, 2048);
     }
   } catch (e) {
+    if (e.message === 'Payload Too Large') {
+      return new Response('Payload Too Large', { status: 413 });
+    }
     msg('Error reading body:', e);
   }
 
@@ -150,6 +153,10 @@ export const query = async (req, db, config, isResindex = false) => {
     pages: [],
     primary_lang: [],
   };
+
+  if (options.query && options.query.length > 128) {
+    return new Response('Search query exceeds maximum allowed length of 128 characters.', { status: 400 });
+  }
 
   // Asynchronously capture search terms for Reliability Validation pool
   if (options.query) {

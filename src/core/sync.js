@@ -7,7 +7,7 @@ import { countEntries, getEntry, insertEntry } from '../db/repo.js';
 // import { verifyCiprHash } from './dns.js'; // Replaced by verifyNode
 import { verifyNode } from './verification.js';
 // import { createSha256Hash } from './crypto.js'; // Replaced by generateCiprHash
-import { calculateNodesPerPulse, generateCiprHash, msg } from './utils.js';
+import { calculateNodesPerPulse, generateCiprHash, msg, safeFetch } from './utils.js';
 
 /**
  * Performs the initial sync if the database is empty.
@@ -94,7 +94,7 @@ export const initialSync = async (config, db) => {
   const fetchAndProcess = async (urlStr) => {
 
     try {
-      const response = await fetch(urlStr, {
+      const response = await safeFetch(urlStr, {
         headers: { 'Accept': 'application/hal+json' },
       });
 

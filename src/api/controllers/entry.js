@@ -62,7 +62,7 @@ export const get = (req, db, _config, za) => {
 };
 
 import { verifyNode } from '../../core/verification.js';
-import { generateCiprHash } from '../../core/utils.js';
+import { generateCiprHash, readBodyWithLimit } from '../../core/utils.js';
 
 /**
  * Handles PUT /za/ requests (Upsert).
@@ -71,8 +71,12 @@ export const put = async (req, db, config, za) => {
   // 1. Parse Body
   let body;
   try {
-    body = await req.json();
-  } catch {
+    const bodyText = await readBodyWithLimit(req, 8192); // 8KB Max strict limit
+    body = JSON.parse(bodyText);
+  } catch (err) {
+    if (err.message === 'Payload Too Large') {
+      return new Response('Payload Too Large', { status: 413 });
+    }
     return new Response('Invalid JSON', { status: 400 });
   }
 
@@ -86,6 +90,20 @@ export const put = async (req, db, config, za) => {
     if (config.debug) msg(`[DBG] PUT ${za}: Self-update ignored (Protected).`);
     // Return 200 OK as if successful, but do nothing.
     return new Response(null, { status: 200, headers: { Location: `/${za}/` } });
+  }
+
+  // 2.7 Field-level Request Size Limits (Defense in Depth against Hash-Complexity DoS)
+  const keywordsStr = Array.isArray(body.keywords) ? body.keywords.join(' ') : body.keywords;
+  if (
+    (body.za && body.za.length > 255) ||
+    (body.title && body.title.length > 64) ||
+    (body.description && body.description.length > 256) ||
+    (keywordsStr && keywordsStr.length > 512) ||
+    (body.offering && body.offering.length > 128) ||
+    (body.seeking && body.seeking.length > 128) ||
+    (body.primary_lang && body.primary_lang.length > 2)
+  ) {
+    return new Response('Field exceeds maximum allowed limit', { status: 413 });
   }
 
   // 3. Verify Sender (Critical Step per Spec)
@@ -119,7 +137,6 @@ export const put = async (req, db, config, za) => {
   }
 
   // 4. Insert/Update
-  const keywordsStr = Array.isArray(body.keywords) ? body.keywords.join(' ') : body.keywords;
 
   const inserted = insertEntry(db, {
     ...body,

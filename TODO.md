@@ -41,6 +41,7 @@ Legend:
 
 ## External tasks
 
+- […] Buy me a coffee to Payoneer?
 - […] Finish the HTRGen
 - […] Create the cipr.info HTR with the Specification, the usage guide and the FAQ, and publish its ciprnode
 - […] Create the guasa.art HTR and publish its ciprnode

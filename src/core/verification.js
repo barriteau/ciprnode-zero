@@ -4,7 +4,7 @@
  */
 
 import { verifyCiprHash } from './dns.js';
-import { msg } from './utils.js';
+import { msg, safeFetch } from './utils.js';
 
 /**
  * Verifies if a ciprnode is valid by checking both DNS TXT record and HTTP reachability.
@@ -54,7 +54,7 @@ export const verifyNodeHttp = async (za, config = {}) => {
         msg(`[DBG] Verifying HTTP HEAD (Attempt ${attempt}/${maxRetries}): ${url}`);
       }
 
-      const response = await fetch(url, {
+      const response = await safeFetch(url, {
         method: 'HEAD',
         signal: AbortSignal.timeout(10000),
       });
@@ -153,7 +153,7 @@ export const verifyReliability = async (
 
   try {
 
-    const response = await fetch(url.toString(), {
+    const response = await safeFetch(url.toString(), {
       method: 'QUERY',
       headers: {
         'Accept': 'application/hal+json',

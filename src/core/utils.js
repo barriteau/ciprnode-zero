@@ -270,3 +270,125 @@ export const generateCiprHash = async (
 
   return await createSha256Hash(input);
 };
+
+/**
+ * Reads a Request body stream with a strict byte limit to prevent memory exhaustion (DoS).
+ * @param {Request} req The standard Request object.
+ * @param {number} limitBytes Maximum allowed payload size in bytes.
+ * @returns {Promise<string>} The body as text if within limit.
+ * @throws {Error} If the payload exceeds the byte limit.
+ */
+export const readBodyWithLimit = async (req, limitBytes) => {
+  if (!req.body) return '';
+
+  // Fast-fail checking header, though headers can be spoofed
+  const contentLength = req.headers.get('content-length');
+  if (contentLength && parseInt(contentLength, 10) > limitBytes) {
+    throw new Error('Payload Too Large');
+  }
+
+  const reader = req.body.getReader();
+  const decoder = new TextDecoder();
+  let text = '';
+  let bytesRead = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      bytesRead += value.length;
+      if (bytesRead > limitBytes) {
+        reader.cancel('Payload Too Large');
+        throw new Error('Payload Too Large');
+      }
+
+      // decode stream buffer into string chunk
+      text += decoder.decode(value, { stream: true });
+    }
+    // flush final character decode boundary bytes
+    text += decoder.decode();
+    return text;
+  } finally {
+    reader.releaseLock();
+  }
+};
+
+/**
+ * Validates if an IP address belongs to a private network (RFC 1918, localhost, link-local, or unique local).
+ * @param {string} ip The IP string (v4 or v6).
+ * @returns {boolean} True if the IP is internal/private.
+ */
+export const isPrivateIP = (ip) => {
+  if (ip.startsWith('127.')) return true; // loopback
+  if (ip.startsWith('10.')) return true; // private A
+  if (ip.startsWith('192.168.')) return true; // private C
+  if (ip.startsWith('169.254.')) return true; // local-link
+
+  // 172.16.0.0 - 172.31.255.255 (private B)
+  if (ip.startsWith('172.')) {
+    const parts = ip.split('.');
+    if (parts.length > 1) {
+      const secondOctet = parseInt(parts[1], 10);
+      if (secondOctet >= 16 && secondOctet <= 31) return true;
+    }
+  }
+
+  // IPv6
+  if (ip === '::1') return true;
+  if (/^(fc|fd|fe80)/i.test(ip)) return true;
+
+  return false;
+};
+
+/**
+ * A safe HTTP fetch wrapper that prevents SSRF via DNS rebinding and enforces
+ * a standardized User-Agent to mitigate generic bot-blocking (e.g. Cloudflare).
+ * @param {string|URL} input The URL to fetch.
+ * @param {RequestInit} [init={}] Fetch options.
+ * @returns {Promise<Response>} Processed fetch.
+ */
+export const safeFetch = async (input, init = {}) => {
+  const url = new URL(typeof input === 'string' ? input : input.toString());
+  const host = url.hostname;
+
+  // Basic IP shape detection
+  const isIPFormat = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(host) || host.includes(':');
+
+  if (isIPFormat) {
+    if (isPrivateIP(host)) {
+      throw new Error(`SSRF Prevention: Private IP address blocked: ${host}`);
+    }
+  } else {
+    // Manually resolve DNS before fetching to catch SSRF rebinding pointing to private IPs
+    try {
+      const aRecords = await Deno.resolveDns(host, 'A');
+      for (const ip of aRecords) {
+        if (isPrivateIP(ip)) {
+          throw new Error(`SSRF Prevention: Host resolves to private IPv4: ${ip}`);
+        }
+      }
+    } catch (e) {
+      if (e.message.includes('SSRF Prevention')) throw e;
+    }
+
+    try {
+      const aaaaRecords = await Deno.resolveDns(host, 'AAAA');
+      for (const ip of aaaaRecords) {
+        if (isPrivateIP(ip)) {
+          throw new Error(`SSRF Prevention: Host resolves to private IPv6: ${ip}`);
+        }
+      }
+    } catch (e) {
+      if (e.message.includes('SSRF Prevention')) throw e;
+    }
+  }
+
+  // Enforce global custom user-agent for CF bypass/WAF logs
+  const headers = new Headers(init.headers || {});
+  headers.set('User-Agent', 'Ciprnode zero/1.0 (https://cipr.info)');
+
+  const safeInit = { ...init, headers };
+
+  return fetch(input, safeInit);
+};

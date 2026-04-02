@@ -6,7 +6,7 @@
  */
 
 import { encodeBase64Url } from '@std/encoding/base64url';
-import { msg, LOG_LEVEL } from './utils.js';
+import { msg, LOG_LEVEL, safeFetch } from './utils.js';
 
 /**
  * Verifies if the Ciprnode has a valid DNS entry.
@@ -231,7 +231,7 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
     stdUrl.searchParams.set('dns', base64Query);
 
     try {
-      const res = await fetch(stdUrl, {
+      const res = await safeFetch(stdUrl, {
         headers: { 'Accept': 'application/dns-message' },
         signal: AbortSignal.timeout(TIMEOUT_MS),
       });

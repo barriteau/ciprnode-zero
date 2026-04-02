@@ -4,7 +4,7 @@
  */
 
 import { countEntries, getEntry, searchEntries } from '../db/repo.js';
-import { calculateNodesPerPulse, msg } from '../core/utils.js';
+import { calculateNodesPerPulse, msg, safeFetch } from '../core/utils.js';
 import { validateCiprConfig } from '../core/validator.js';
 // import { verifyNode } from '../core/verification.js'; // reused? No, broadcast is PUT.
 
@@ -80,7 +80,7 @@ const broadcastUpdate = async (config, db) => {
 
       const peerUrl = `https://ciprnode.${row.za}/${config.za}`; // PUT /<za>
       try {
-        const response = await fetch(peerUrl, {
+        const response = await safeFetch(peerUrl, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -226,7 +226,7 @@ const sendPulseRequest = (config, targetZa, method, body, resourceZa) => {
     }
 
     // We don't await the result strictly to block...
-    fetch(url, { ...options, signal: AbortSignal.timeout(10000) }).then((res) => {
+    safeFetch(url, { ...options, signal: AbortSignal.timeout(10000) }).then((res) => {
       if (config.log_level >= 2) {
         const parsedUrl = new URL(url);
         msg(`Outgoing request:\n  Method: ${method}\n  Path: ${parsedUrl.pathname}\n  To: ${parsedUrl.hostname}`, 'REQ');
