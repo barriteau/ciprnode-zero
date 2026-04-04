@@ -343,14 +343,6 @@ main {
     min-height: calc(100vh - 16em);
 }
 
-main#wide {
-    min-height: calc(100vh - 10em);
-}
-
-main.support {
-    min-height: calc(100vh - 9em);
-}
-
 main p,
 main li {
     text-align: justify;

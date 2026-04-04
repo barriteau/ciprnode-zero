@@ -49,12 +49,12 @@
         </a>
       </label>
 
-      <button type="button" id="intra-search-btn-<%= item.za %>"
-              class="js-req hidden intra-search-btn"
-              data-za="<%= item.za %>"
-              aria-expanded="false">
-        <%= it.t('results.intra_search') %> *.<%= item.za %>
-      </button>
+      <label id="intra-search-label-<%= item.za %>" for="intra-search-toggle-<%= item.za %>" tabindex="0" class="js-req disabled hidden intra-search-label">
+        <a>
+          <%= it.t('results.intra_search') %> *.<%= item.za %>
+          <input id="intra-search-toggle-<%= item.za %>" class="search-toggle" type="checkbox" role="button" form="ri-search-form" aria-pressed="true" />
+        </a>
+      </label>
     </div>
   </article>
   <% }) %>

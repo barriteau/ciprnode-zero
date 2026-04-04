@@ -36,3 +36,6 @@ logs/
 
 # Agents
 AGENTS.md
+
+# Scripts
+scripts/maintenance/

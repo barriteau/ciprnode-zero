@@ -29,23 +29,15 @@ Legend:
 - [✔] Create the "Explore" button, it fills the page with random entries from the ciprdup
 - [✔] Validate accessibility
 - [✔] Reorder footer
-
-- […] Ciprconf, a dead simple desktop app (Taury?) exclusively made to create the ciprnode.toml file
-- […] RCU...
-
-## Delayed tasks
-
-- […] Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml
-- […] Implementation of the leech mode
-- […] Implement dark mode
+- […] Deploy and run my ciprnodes from Proxmox
 
 ## External tasks
 
-- […] Buy me a coffee to Payoneer?
 - […] Finish the HTRGen
 - […] Create the cipr.info HTR with the Specification, the usage guide and the FAQ, and publish its ciprnode
 - […] Create the guasa.art HTR and publish its ciprnode
-- […] Create the juan.barriteau.net and cgt.barriteau.net HTRs and publish their ciprnode
+- […] Update the juan.barriteau.net and cgt.barriteau.net HTRs and publish their ciprnode
+
 - […] Create a way to receive BTC/USDT/USDC (payments and patronage / pagos y mecenazgo)
   - Don't buy me a coffee, just buy me time, all I need is time ;)
   - non-custodial APIs:
@@ -56,6 +48,15 @@ Legend:
   - Self-hosted payment processors:
     - [https://www.payram.com/](https://www.payram.com/)
     - [https://bitcart.ai/](https://bitcart.ai/)
+
+- […] Start the communication campaign
+
+- […] Design the RCU under Cipr
+
+- […] Ciprconf, a dead simple desktop app (Taury?) exclusively made to create the ciprnode.toml file
+- […] Create the A or CNAME record in the DNS during the first startup process, it implies asking the destination IP or domain in ciprnode.toml
+- […] Implementation of the leech mode
+- […] Implement dark mode
 
 ## Special tasks
 

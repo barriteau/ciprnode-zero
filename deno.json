@@ -7,7 +7,7 @@
     "stop": "deno run --allow-net --allow-read --allow-write --allow-env scripts/core/cli_control.js stop",
     "restart": "deno task stop && deno task start",
     "test": "deno test --allow-read --allow-env --allow-net --allow-ffi",
-    "build": "deno run --allow-run --allow-read --allow-write --allow-env scripts/maintenance/build.js"
+    "build": "deno run --allow-run --allow-read --allow-write --allow-env scripts/build.js"
   },
   "imports": {
     "@eta-dev/eta": "jsr:@eta-dev/eta@^3.5.0",
