@@ -21,7 +21,7 @@ export const headRi = (_req, _db, config) => {
   if (config.ise_provider && config.ise_provider.length > 0) {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
-  return new Response(null, { status: 501, headers: corsHeaders }); // Not Implemented
+  return new Response(null, { status: 204, headers: corsHeaders }); // No Content
 };
 
 /**

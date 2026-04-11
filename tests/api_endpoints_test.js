@@ -91,14 +91,14 @@ Deno.test('API Endpoints Test Suite', async (t) => {
       body: JSON.stringify(putBody)
     });
     const res = await handleRequest(req, db, mockConfig);
-    assert([200, 201].includes(res.status));
+    assert([202].includes(res.status));
   });
 
   await t.step('DELETE /{za}/ ignores delete if node is successfully validated', async () => {
     // Since our mock returns true, it considers the node valid (protection logic)
     const req = new Request('http://localhost/example.com/', { method: 'DELETE' });
     const res = await handleRequest(req, db, mockConfig);
-    assertEquals(res.status, 200); // Handled transparently
+    assertEquals(res.status, 202); // Handled transparently
   });
 
   await t.step('QUERY / returns semantic HAL links and embedded results', async () => {

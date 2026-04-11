@@ -88,8 +88,8 @@ export const put = async (req, db, config, za) => {
   // 2.5 Ignore Self-Update (Per Spec)
   if (za === config.za) {
     if (config.debug) msg(`[DBG] PUT ${za}: Self-update ignored (Protected).`);
-    // Return 200 OK as if successful, but do nothing.
-    return new Response(null, { status: 200, headers: { Location: `/${za}/` } });
+    // Return 202 Accepted as if successful, but do nothing.
+    return new Response(null, { status: 202, headers: { Location: `/${za}/` } });
   }
 
   // 2.7 Field-level Request Size Limits (Defense in Depth against Hash-Complexity DoS)
@@ -145,11 +145,11 @@ export const put = async (req, db, config, za) => {
   });
 
   if (inserted) {
-    return new Response(null, { status: 201, headers: { Location: `/${za}/` } });
+    return new Response(null, { status: 202, headers: { Location: `/${za}/` } });
   } else {
     // If inserted is false, it means the entry existed and was identical (no changes made).
     // This is an idempotent success.
-    return new Response(null, { status: 200, headers: { Location: `/${za}/` } });
+    return new Response(null, { status: 202, headers: { Location: `/${za}/` } });
   }
 };
 
@@ -161,13 +161,13 @@ export const del = async (_req, db, config, za) => {
   const entry = getEntry(db, za);
   if (!entry) {
     if (config.debug) msg(`[DBG] DELETE ${za}: Ignored (Not found locally).`);
-    return new Response(null, { status: 200 }); // "Ignored but status 200" per spec? Or 404? Spec says "response must be status 200 anyway"
+    return new Response(null, { status: 202 }); // "Ignored but status 200" per spec? Or 404? Spec says "response must be status 200 anyway"
   }
 
   // 1.5 Ignore Self-Delete (Per Spec)
   if (za === config.za) {
     if (config.debug) msg(`[DBG] DELETE ${za}: Self-deletion ignored (Protected).`);
-    return new Response(null, { status: 200 });
+    return new Response(null, { status: 202 });
   }
 
   // 2. Verify the resource (Viral Deletion Logic)
@@ -200,13 +200,13 @@ export const del = async (_req, db, config, za) => {
     if (config.debug) {
       msg(`[DBG] DELETE ${za}: Node verified successfully. Retaining entry.`);
     }
-    return new Response(null, { status: 200 });
+    return new Response(null, { status: 202 });
   } else {
     // 3b. Validation Fails -> Execute DELETE
     msg(`[DELETE] Request for ${za} ACCEPTED. Node failed validation.`);
     if (config.debug) msg(`[DBG] DELETE ${za}: Node verification failed. Deleting entry.`);
     deleteEntry(db, za);
-    return new Response(null, { status: 200 });
+    return new Response(null, { status: 202 });
   }
 };
 

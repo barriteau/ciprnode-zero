@@ -1,22 +1,16 @@
   <nav id="toolbar" class="wide" aria-label="<%= it.t('header.toolbar_label') %>">
     <div>
-      <small id="stats-info">
-        <a href="<%= it.parentUrl || '/' %>" id="ciprnode-za"><%= it.parentUrl || it.configZa %></a>
-      </small>
+      <a href="<%= it.parentUrl || '/' %>" id="ciprnode-za"><%= it.parentUrl || it.configZa %></a>
     </div>
 
     <div>
-      <button type="button" id="explore"
-         hx-get="/?sort_by=random"
-         hx-target="#search-results-wrapper"
-         hx-swap="innerHTML"
-         hx-push-url="false"><%= it.t('header.explore') %></button>
+      <button type="button" id="explore" hx-get="/?sort_by=random" hx-target="#search-results-wrapper" hx-swap="innerHTML" hx-push-url="false"><%= it.t('header.explore') %></button>
     </div>
 
     <div>
       <select id="lang-switcher" aria-label="<%= it.t('header.lang_switcher_label') %>" title="<%= it.languageNames[it.locale] %>">
         <% it.supportedLocales.forEach(function(lang) { %>
-        <option value="<%= lang %>" title="<%= it.languageNames[lang] %>" <%= it.locale === lang ? 'selected' : '' %>><%= lang.toUpperCase() %></option>
+        <option value="<%= lang %>" title="<%= it.languageNames[lang] %>" <%= it.locale === lang ? "selected" : "" %>><%= lang.toUpperCase() %></option>
         <% }) %>
       </select>
     </div>

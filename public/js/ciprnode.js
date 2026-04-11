@@ -75,7 +75,7 @@ const initAutocomplete = () => {
     if (!currentItems.length) return;
     if (index < 0) index = currentItems.length - 1;
     if (index >= currentItems.length) index = 0;
-    
+
     activeIndex = index;
     currentItems.forEach((item, i) => {
       if (i === activeIndex) {
@@ -136,7 +136,7 @@ const initAutocomplete = () => {
         .then((data) => {
           resultsContainer.innerHTML = '';
           currentItems = [];
-          
+
           if (data.features && data.features.length > 0) {
             openDropdown();
             data.features.forEach((feature, index) => {
@@ -164,7 +164,7 @@ const initAutocomplete = () => {
                 }
                 closeDropdown();
               });
-              
+
               resultsContainer.appendChild(div);
               currentItems.push({ el: div, data: feature });
             });
@@ -220,7 +220,7 @@ const initLanguageAutocomplete = () => {
     if (!currentItems.length) return;
     if (index < 0) index = currentItems.length - 1;
     if (index >= currentItems.length) index = 0;
-    
+
     activeIndex = index;
     currentItems.forEach((item, i) => {
       if (i === activeIndex) {
@@ -284,7 +284,7 @@ const initLanguageAutocomplete = () => {
         .then((data) => {
           resultsContainer.innerHTML = '';
           currentItems = [];
-          
+
           if (data && data.length > 0) {
             openDropdown();
             data.forEach((lang, index) => {
@@ -301,7 +301,7 @@ const initLanguageAutocomplete = () => {
                 langInput.value = lang.lang_code;
                 closeDropdown();
               });
-              
+
               resultsContainer.appendChild(div);
               currentItems.push({ el: div, data: lang });
             });
@@ -716,7 +716,7 @@ const initResindexCheck = async () => {
 
   try {
     const response = await fetch('/ri/', { method: 'HEAD' });
-    isAvailable = response.ok; // 200 OK means it has providers. 501 means it doesn't.
+    isAvailable = response.status === 200; // 200 OK means it has providers. 204 means it doesn't.
 
     sessionStorage.setItem(
       cacheKey,
@@ -797,7 +797,7 @@ const initIntraSearchAvailability = () => {
     let isAvailable = false;
     try {
       const response = await fetch(`https://ciprnode.${za}/ri/`, { method: 'HEAD' });
-      isAvailable = response.ok;
+      isAvailable = response.status === 200;
       sessionStorage.setItem(
         cacheKey,
         JSON.stringify({ data: isAvailable, expiry: Date.now() + 240000 }),
@@ -889,8 +889,9 @@ const initIntraSearch = () => {
 
             const h3 = document.createElement('h3');
             const a = document.createElement('a');
-            const itemUrl = item.url.startsWith('/') ? item.url : `/${item.url}`;
-            a.href = `https://ciprnode.${currentZa}${itemUrl}`;
+            // const itemUrl = item.url.startsWith('/') ? item.url : `/${item.url}`;
+            // a.href = `https://ciprnode.${currentZa}${itemUrl}`;
+            a.href = item.url;
             a.textContent = item.title;
             h3.appendChild(a);
 
@@ -936,7 +937,11 @@ const initServiceWorker = () => {
     }).catch((err) => console.error('SW Registration failed', err));
 
     let refreshing = false;
+    const isFirstInstall = !navigator.serviceWorker.controller;
+    
     navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (isFirstInstall) return; // Prevent reload on first time visit
+      
       if (!refreshing) {
         refreshing = true;
         // Navigate with a cache-busting query param so the browser fetches fresh

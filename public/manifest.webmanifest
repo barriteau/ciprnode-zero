@@ -1,38 +1,33 @@
 {
-  "name": "Ciprface",
-  "short_name": "Cipr",
-  "description": "Cosmic Index of Public Resources",
+  "name": "Ciprnode_zero",
+  "short_name": "Cn0",
+  "description": "Ciprnode zero, a first ciprnode PoC",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "64x64",
-      "type": "image/x-icon"
-    },
-    {
       "src": "/figures/pwa-192x192.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "sizes": "192x192"
+      "purpose": "any maskable"
     },
     {
       "src": "/figures/pwa-512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "sizes": "512x512"
+      "purpose": "any maskable"
     }
   ],
   "screenshots": [
     {
       "src": "/figures/screenshot-wide.png",
-      "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide"
     },
     {
       "src": "/figures/screenshot-mobile.png",
-      "sizes": "720x1280",
       "type": "image/png",
       "form_factor": "narrow"
     }

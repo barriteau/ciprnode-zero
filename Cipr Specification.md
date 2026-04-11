@@ -421,7 +421,7 @@ Content-Type: application/json; charset=utf-8
 ```
 
 ```http
-HTTP/1.1 201 Created
+HTTP/1.1 202 Accepted
 Location: /guasa.art/
 Content-Length: 0
 ```
@@ -445,7 +445,7 @@ Host: ciprnode.barriteau.net
 ```
 
 ```http
-HTTP/1.1 200 OK
+HTTP/1.1 202 Accepted
 Content-Length: 0
 ```
 

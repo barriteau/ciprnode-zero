@@ -167,8 +167,12 @@ author = "Author Name"
 author_url = "https://..."
 subject = "Topic"
 publisher = "Publisher"
+contributor = "Contributor"      # Comma-separated if multiple
+isbn = "ISBN or DOI"             # Optional formal identifier
+coverage = "Spatial/Temporal"    # Optional coverage description
 rights = "CC BY 4.0"
 rights_url = "https://creativecommons.org/licenses/by/4.0/"
+unavailable_after = "31 Dec 2099 23:59:59 GMT" # Optional expiry date
 
 [ciprface]
 page_size = 10                   # Results per page
@@ -176,6 +180,7 @@ page_size = 10                   # Results per page
 [network]
 port = 443                       # Listening port (443 in production)
 bootstrap_node = "https://ciprnode.cipr.info"
+leech_from = "cipr.info"         # Leech mode target (NOT IMPLEMENTED YET)
 expected_propagation_time = 120000  # ms
 test_words = "dog casa network"  # Words for reliability validation
 do53 = ["1.1.1.1", "8.8.8.8"]   # DNS over UDP resolvers
@@ -184,6 +189,7 @@ doh = ["https://dns.google/dns-query"]  # DNS over HTTPS endpoints
 [dns_provider]
 name = "cloudflare"              # "cloudflare" or "desec"
 # api_token = "..."              # Use CIPR_DNS_API_TOKEN env var instead
+# zone_id = "..."                # Use CIPR_DNS_ZONE_ID env var instead (used by desec)
 ```
 
 ### Secrets Management
@@ -279,3 +285,77 @@ Built with minimalism in mind, relying on the Deno Standard Library plus two foc
 | **`@std/assert`**   | Assertion library for tests.                          |
 | **`@db/sqlite`**    | Zero-dependency SQLite driver for the local database. |
 | **`@eta-dev/eta`**  | Lightweight templating engine for the ciprface.       |
+
+---
+
+## Cipr for users
+
+Those who are already familiar with search engine service providers^[Say, Google Search.] probably know how they work:
+
+― They crawl the web with software-made bots that follow links to discover content.
+
+― They index, parse and organize the content of every website the bot visits to create their searchable map of the Internet.
+
+― When a search is performed, the query is pre-processed by some sort of algorithm to handle spell-checking, identify synonyms, and understand the intent behind the query.
+
+― Once the query is processed and submitted to the index, the resulting matching set is *weighted* using another sort of algorithm that determine quality, relevance, credibility and authority.
+
+― The final matching set is generated after applying a last sort of algorithm to personalize based in the user context^[Location, language settings, device in use, search history, known preferences, previous interactions, and other collected data.].
+
+― Search engine service providers in the advertising business join their clients' related links together with the final matching set.
+
+― Search engine service providers in the AI business include relevant AI-generated content on top of the final matching set.
+
+### The Cipr comes different, because:
+
+― It has no provider, no person or organization runs it, its *searchable map of the Internet* is collectively made.
+
+― It does not crawls the web, only indexes what people willingly publish^[Although this could be a major drawback while adoption is low, focused or specialized communities can take full advantage of the Cipr from the start.].
+
+― It knows nothing about its users, so query optimization and filtering by location, language, and time, can only be made purposely by them.
+
+― The result set when searching the Cipr is *weighted* using a single and dead simple algorithm that only cares about text matching and user applied filtering. No one's valuation, assessment, opinion, views, judgement, beliefs, interpretation, appraisal, values, interests or criteria is considered, nobody but the user decides what is of quality, relevant, credible, or authoritative.
+
+― When querying the Cipr, the user have alternatives when it comes to advertisement and AI generated content, and it's very easy to avoid all of that.
+
+## Cipr for resource owners, website publishers, content creators
+
+When it comes to have a resource indexed by a regular search engine, there are two options:
+
+― Wait days, weeks, months, years or an eternity for the bots to discover it by themselves.
+
+― Submit a request accomplishing the search engine service provider requisites, and wait for weeks or months for their acceptance or rejection.
+
+### The Cipr comes different:
+
+― Get indexed in is just about configuring and deploying a simple node―a ciprnode―on the Internet. *Configuring* in this context means: naming and describing the resource, defining the keywords to make it discoverable, and adding some optional entries^[Location, language, offensiveness level, offering, etc.] to ease filtering.
+
+― Once the aforementioned node is up and running, it takes only a few minutes for the resource to be already indexed and discoverable, no one's approval is needed.
+
+― Once indexed, a resource becomes as important as any other one in the Cipr and the game of having it found is played only between the publishers and their potential audience^[Instead of SEO, lets call this game CDO: Cipr Discoverability Optimization.].
+
+― Updating an entry in the Cipr is also easy and a matter of minutes. Same thing for opting out, the de-indexing process is as quick as stopping the deployed node and wait a few minutes for it to disappear from the index.
+
+## Cipr for developers or service providers
+
+The Cipr opens the door to creating a unique environment of applications and services around it. Some of them could be:
+
+- Full ciprnode implementations
+- Ciprface alternative UIs
+- DNS providers integrations
+- ISE (Internal Search Engine) adapters
+- Resource discoverability optimizers
+- LLM based resource discoverability optimizers
+- Configuration file generators and optimizers
+- LLM based configuration file generators and optimizers
+- Automation tolls
+- LLM based automation tolls
+- Analysis tools
+- LLM based analysis tools
+- Query optimization tools
+- LLM based query optimization tools
+- Query pre-processing tools
+- LLM based query pre-processing tools
+- Ciprnode multi-tenancy applications and platforms
+
+---

@@ -177,7 +177,20 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
   };
 
   const handler = async (request, info) => {
-    const response = await innerHandler(request, info);
+    let response = await innerHandler(request, info);
+    
+    // Add Security Headers
+    const headers = new Headers(response.headers);
+    headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+    headers.set('X-Content-Type-Options', 'nosniff');
+    headers.set('X-Frame-Options', 'DENY');
+    headers.set('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; frame-ancestors 'none'; form-action 'self'; connect-src 'self' https: wss:;");
+
+    response = new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: headers
+    });
     
     // We import LOG_LEVEL from utils to check level
     // Wait, LOG_LEVEL is not explicitly imported yet let's check

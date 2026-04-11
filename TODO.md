@@ -29,7 +29,21 @@ Legend:
 - [✔] Create the "Explore" button, it fills the page with random entries from the ciprdup
 - [✔] Validate accessibility
 - [✔] Reorder footer
-- […] Deploy and run my ciprnodes from Proxmox
+- [✔] Intra-search links problem: https://ciprnode.barriteau.net/https:/cgt.barriteau.net/
+- [✔] Language is not being shown!
+
+- […] Deploy and run the 8 ciprnodes from Proxmox
+  - [✔] Create new ciprnodes VM
+  - [✔] Connect with it via SSH with public key
+  - […] Create scripts/deploy_nodes_vm.js, exactly like deploy_node_local.js but that additionally starts or restarts the existing/running ciprnode services
+  - […] Create scripts/launch_terminal_vm.js, exactly like launch_terminal_local.js
+
+- [✔] All PUT and DELETE requests must respond with the HTTP Status `202 Accepted`, not `200 OK` like they do now.
+- [✔] The `HEAD /ri/` requests must answer with HTTP Status `204 No Content`, instead of `501 Not Implemented` like they do now, when no resindex is available in the ciprnode.
+- [✔] In it makes sense, add security HTTP headers, the headers to be aware of are: HTTP Strict Transport Security (HSTS): Enforces the use of HTTPS, mitigating man-in-the-middle attacks and protocol downgrade attempts. Content Security Policy (CSP): Constrains web page resources to prevent cross-site scripting and data injection attacks. X-Content-Type-Options: Prevents browsers from MIME-sniffing a response away from the declared content type, curbing MIME-type confusion attacks. X-Frame-Options: Protects users from clickjacking attacks by controlling whether a browser should render the page in a <frame>, <iframe>, <embed>, or <object>.
+- [✔] Ensure all the configuration parameters on ciprnode.toml are described in the README.md
+
+- […] Improve the seeking/offering UI
 
 ## External tasks
 
@@ -38,16 +52,16 @@ Legend:
 - […] Create the guasa.art HTR and publish its ciprnode
 - […] Update the juan.barriteau.net and cgt.barriteau.net HTRs and publish their ciprnode
 
-- […] Create a way to receive BTC/USDT/USDC (payments and patronage / pagos y mecenazgo)
-  - Don't buy me a coffee, just buy me time, all I need is time ;)
-  - non-custodial APIs:
-    - [https://nowpayments.io/](https://nowpayments.io/) (0.5% fee)
-    - [https://www.blockonomics.co/](https://www.blockonomics.co/) (1% fee)
+- […] Create a way to receive BTC/USDT/USDC (payments and patronage / pagos y mecenazgo), something like "Don't buy me a coffee, just buy me time, all I need is time ;)"
+  - Non-custodial APIs:
+    - […] [https://www.blockonomics.co/](https://www.blockonomics.co/) (1% fee)
+    - […] [https://geyser.fund/](https://geyser.fund/) ($25 launch fee + 0% to 5% fee)
+    - [🗙] [https://nowpayments.io/](https://nowpayments.io/) (0.5% fee)
   - Non-custodial self-hosted APIs:
-    - [https://shkeeper.io/](https://shkeeper.io/)
+    - [🗙] [https://shkeeper.io/](https://shkeeper.io/)
   - Self-hosted payment processors:
-    - [https://www.payram.com/](https://www.payram.com/)
-    - [https://bitcart.ai/](https://bitcart.ai/)
+    - [🗙] [https://www.payram.com/](https://www.payram.com/)
+    - [🗙] [https://bitcart.ai/](https://bitcart.ai/)
 
 - […] Start the communication campaign
 
@@ -146,3 +160,13 @@ The legend at the bottom for this scene is:
 A final text appears in the center of the scene:
 
 «Now, instead of complaining, you can just move on ;)»
+
+
+
+| Port | Purpose                                                                               |
+|------|---------------------------------------------------------------------------------------|
+| 80   | Used for running the Frontend (FE) on standard HTTP protocol                          |
+| 8080 | Used for running the Backend (BE) services on HTTP                                    |
+| 443  | Required for the Frontend when serving the application over HTTPS (secure connection) |
+| 8443 | Required for the Backend when serving APIs over HTTPS (secure connection)             |
+| 5432 | Used by the PostgreSQL Database for database connections                              |
