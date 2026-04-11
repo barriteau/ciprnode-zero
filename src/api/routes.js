@@ -35,9 +35,6 @@ export const handleRequest = (request, db, config) => {
     if (method === 'HEAD') {
       return RootController.head(request, db, config);
     }
-    if (method === 'HEAD') {
-      return RootController.head(request, db, config);
-    }
   }
 
   // 1.5 Languages autocomplete endpoint

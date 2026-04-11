@@ -12,7 +12,10 @@ import { initRenderer, render } from './views/renderer.js';
  * @returns {Response}
  */
 const withCompression = (req, res) => {
-  if (!res.body || res.status !== 200 && res.status !== 201) return res;
+  // Only compress responses that have a body; skip regardless of status code.
+  // The previous check (status !== 200 && status !== 201) was overly restrictive
+  // and excluded valid compressible responses like 202, 4xx with bodies, etc. (Vector H fix)
+  if (!res.body) return res;
 
   const acceptEncoding = req.headers.get('accept-encoding') || '';
   if (!acceptEncoding.includes('gzip')) return res;
@@ -176,7 +179,61 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
     }
   };
 
+  // --- Per-IP Rate Limiter for P2P write endpoints (PUT / DELETE) ---
+  // These endpoints trigger expensive verification chains (DNS + HTTP + QUERY).
+  // An uncapped flood can exhaust outbound connections and stall the event loop.
+  /** @type {Map<string, { put: number, del: number, resetAt: number }>} */
+  const rateLimitMap = new Map();
+  const RL_WINDOW_MS = 60_000;   // 1-minute sliding window
+  const RL_MAX_PUT   = 30;       // max PUT requests per IP per window
+  const RL_MAX_DEL   = 20;       // max DELETE requests per IP per window
+
+  // Periodic GC to avoid unbounded map growth (runs every 5 minutes)
+  setInterval(() => {
+    const now = Date.now();
+    for (const [ip, entry] of rateLimitMap) {
+      if (now > entry.resetAt) rateLimitMap.delete(ip);
+    }
+  }, 5 * 60_000);
+
+  /**
+   * Checks and increments the per-IP rate counter for a given method.
+   * @param {string} ip
+   * @param {'put'|'del'} method
+   * @returns {boolean} True if the request is within limit, false if it must be rejected.
+   */
+  const checkRateLimit = (ip, method) => {
+    const now = Date.now();
+    let entry = rateLimitMap.get(ip);
+    if (!entry || now > entry.resetAt) {
+      entry = { put: 0, del: 0, resetAt: now + RL_WINDOW_MS };
+      rateLimitMap.set(ip, entry);
+    }
+    const limit = method === 'put' ? RL_MAX_PUT : RL_MAX_DEL;
+    if (entry[method] >= limit) return false;
+    entry[method]++;
+    return true;
+  };
+
   const handler = async (request, info) => {
+    const method = request.method.toUpperCase();
+    // Vector B: when behind Cloudflare, remoteAddr is always a CF edge IP.
+    // CF-Connecting-IP carries the real client IP — use it for rate limiting.
+    const clientIp = request.headers.get('CF-Connecting-IP') ??
+      info?.remoteAddr?.hostname ??
+      'unknown';
+
+    // Rate-limit PUT and DELETE globally before any processing
+    if (method === 'PUT' || method === 'DELETE') {
+      const rlKey = method === 'PUT' ? 'put' : 'del';
+      if (!checkRateLimit(clientIp, rlKey)) {
+        return new Response('Too Many Requests', {
+          status: 429,
+          headers: { 'Retry-After': '60' },
+        });
+      }
+    }
+
     let response = await innerHandler(request, info);
     
     // Add Security Headers

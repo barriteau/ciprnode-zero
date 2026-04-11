@@ -109,7 +109,15 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
       test_words: typeof (network.test_words || data.test_words) === 'string'
         ? (network.test_words || data.test_words).split(/\s+/).filter((k) => k.length > 0)
         : (Array.isArray(network.test_words || data.test_words) ? (network.test_words || data.test_words) : undefined),
-      log_level: typeof data.log_level === 'number' ? data.log_level : undefined,
+      log_level: (() => {
+        // --log-level=N or --log_level=N CLI arg takes precedence over ciprnode.toml.
+        const cliArg = Deno.args.find((a) => /^--log[_-]level=/.test(a));
+        if (cliArg) {
+          const n = parseInt(cliArg.split('=')[1], 10);
+          if (!isNaN(n) && n >= 0 && n <= 2) return n;
+        }
+        return typeof data.log_level === 'number' ? data.log_level : undefined;
+      })(),
       debug: Deno.args.includes('--debug') || data.debug === true || false,
       // Optional [meta_data] section — passed through as-is; individual keys may be absent.
       meta_data: data.meta_data && typeof data.meta_data === 'object' ? data.meta_data : undefined,

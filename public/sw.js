@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ciprface-20260411004935';
+const CACHE_NAME = 'ciprface-20260411142458';
 const STATIC_ASSETS = [
   '/css/htr.css',
   '/css/reset.css',

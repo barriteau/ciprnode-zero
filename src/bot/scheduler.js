@@ -114,104 +114,109 @@ import { deleteEntry } from '../db/repo.js';
  * @param {import('@db/sqlite').Database} db
  * @param {import('../core/config.js').CiprNodeConfig} config
  */
+/** Maximum number of concurrent audit/reliability verifications per pulse to avoid network flooding. */
+const PULSE_CONCURRENCY_LIMIT = 5;
+
+/**
+ * Runs a batch of async tasks with a concurrency cap.
+ * @param {Array<() => Promise<any>>} tasks - Array of zero-argument async functions.
+ * @param {number} limit - Max concurrent executions.
+ * @returns {Promise<void>}
+ */
+const runConcurrent = async (tasks, limit) => {
+  const queue = [...tasks];
+  const running = new Set();
+
+  const runNext = () => {
+    if (queue.length === 0) return;
+    const task = queue.shift();
+    const p = task().finally(() => {
+      running.delete(p);
+      return runNext();
+    });
+    running.add(p);
+  };
+
+  const initial = Math.min(limit, queue.length);
+  await Promise.allSettled(Array.from({ length: initial }, runNext));
+
+  // Drain any remaining
+  if (running.size > 0) await Promise.allSettled([...running]);
+};
+
+/**
+ * Runs a cycle of random audits and viral propagation.
+ * Entries are audited concurrently (up to PULSE_CONCURRENCY_LIMIT) to prevent
+ * sequential verification from stacking beyond the pulse interval at higher counts.
+ * @param {import('@db/sqlite').Database} db
+ * @param {import('../core/config.js').CiprNodeConfig} config
+ */
 const runPulseChecks = async (db, config) => {
-  // console.log('CiprPulse: Running background checks...');
   const totalNodes = countEntries(db);
   if (totalNodes === 0) return;
 
   const nodesPerPulse = calculateNodesPerPulse(totalNodes, config.expected_propagation_time);
 
-  // 1. Select N random entries from DB to audit
-  // Logic: "Randomly select calculateNodesPerPulse() entries from its ciprdup"
-  const auditCount = nodesPerPulse;
-
-  // Efficient random selection for SQLite
-  // Note: For very large DBs, rowid range query is faster than ORDER BY RANDOM(), but this is fine for now.
   const auditEntries = db.prepare(`SELECT * FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`)
-    .all(
-      config.za,
-      auditCount,
-    );
+    .all(config.za, nodesPerPulse);
 
   if (auditEntries.length === 0) return;
 
-  msg(`Auditing ${auditEntries.length} entries...`);
+  msg(`Auditing ${auditEntries.length} entries (concurrency: ${PULSE_CONCURRENCY_LIMIT})...`);
 
-  for (const entry of auditEntries) {
-    if (!entry.za) continue;
-
-    // A. Integrity Check (Hash) & Verification
-    // Reconstruct Hash
-    const calculatedHash = await generateCiprHash(
-      entry.za,
-      entry.title,
-      entry.description,
-      entry.keywords,
-      entry.offering,
-      entry.seeking,
-      entry.primary_lang,
-      entry.ol,
-      entry.latitude,
-      entry.longitude,
-    );
-
-    // "check their correctness with the validator.js functions"
-    const isValid = await verifyNode(config, entry.za, calculatedHash);
-
-    // Select N random peers to propagate to (PUT or DELETE)
-    // "send a PUT/DELETE to calculateNodesPerPulse() randomly selected nodes"
-    // We shouldn't send to ourselves or the node we just checked (unless it's invalid?)
-    // Actually, sending to random peers is the spec.
-    const peerEntries = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`)
-      .all(
-        config.za,
-        nodesPerPulse,
+  // Deduplicate by za (Vector C: prevent concurrent tasks from racing on the same entry)
+  const seen = new Set();
+  const tasks = auditEntries
+    .filter((entry) => entry.za && !seen.has(entry.za) && seen.add(entry.za))
+    .map((entry) => async () => {
+      const calculatedHash = await generateCiprHash(
+        entry.za, entry.title, entry.description, entry.keywords,
+        entry.offering, entry.seeking, entry.primary_lang,
+        entry.ol, entry.latitude, entry.longitude,
       );
 
-    const targets = peerEntries;
+      const isValid = await verifyNode(config, entry.za, calculatedHash);
 
-    if (isValid) {
-      // B. Valid Entry -> Propagate PUT
-      if (config.debug) {
-        msg(
-          `${entry.za} is VALID. Propagating PUT to ${targets.length} peers.`,
-        );
+      const peerEntries = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`)
+        .all(config.za, nodesPerPulse);
+
+      if (isValid) {
+        if (config.debug) msg(`${entry.za} is VALID. Propagating PUT to ${peerEntries.length} peers.`);
+        for (const target of peerEntries) {
+          if (target.za !== entry.za) sendPulseRequest(config, target.za, 'PUT', entry);
+        }
+      } else {
+        msg(`${entry.za} is INVALID/UNREACHABLE. Deleting locally and propagating DELETE.`, 'WA');
+        deleteEntry(db, entry.za);
+        for (const target of peerEntries) {
+          sendPulseRequest(config, target.za, 'DELETE', null, entry.za);
+        }
       }
+    });
 
-      for (const target of targets) {
-        // Send PUT
-        // Note: Avoid sending back to the source if known? Random is fine.
-        if (target.za === entry.za) continue; // Don't send PUT to the node itself (it knows)
-
-        sendPulseRequest(config, target.za, 'PUT', entry);
-      }
-    } else {
-      // C. Invalid Entry -> Propagate DELETE
-      msg(
-        `${entry.za} is INVALID/UNREACHABLE. Deleting locally and propagating DELETE.`,
-        'WA'
-      );
-
-      // 1. Delete locally
-      deleteEntry(db, entry.za);
-
-      // 2. Propagate DELETE
-      for (const target of targets) {
-        // Skip if target matches the entry we are deleting (it might be the dead node)
-        // Actually, if it's dead, sending DELETE to it is futile but harmless.
-        // If it's malicious/invalid, telling it to delete itself is funny but maybe useful?
-        // Spec says "validations fails -> DELETE to N nodes".
-        sendPulseRequest(config, target.za, 'DELETE', null, entry.za);
-      }
-    }
-  }
+  await runConcurrent(tasks, PULSE_CONCURRENCY_LIMIT);
 };
 
 /**
- * Helper to send Pulse requests (PUT/DELETE)
+ * Sends a fire-and-forget PUT or DELETE request to a peer.
+ * PUT payloads always have their timestamp freshened to `Date.now()` before
+ * sending — without this, entries older than 24h are rejected by the receiver's
+ * Currentness Validation check (Vector A fix).
+ * @param {import('../core/config.js').CiprNodeConfig} config
+ * @param {string} targetZa - Target peer zone apex.
+ * @param {'PUT'|'DELETE'} method
+ * @param {Object|null} body - Entry payload (PUT only).
+ * @param {string} [resourceZa] - Za of the resource being deleted (DELETE only).
  */
 const sendPulseRequest = (config, targetZa, method, body, resourceZa) => {
-  const url = `https://ciprnode.${targetZa}/${resourceZa || body.za}/`;
+  // Vector E: guard against undefined resource identity before constructing URL
+  const entryZa = resourceZa || (body && body.za);
+  if (!entryZa) {
+    if (config.debug) msg(`[DBG] sendPulseRequest: called with no resolvable za. Skipping.`, 'WA');
+    return;
+  }
+
+  const url = `https://ciprnode.${targetZa}/${entryZa}/`;
   try {
     const options = {
       method: method,
@@ -222,10 +227,11 @@ const sendPulseRequest = (config, targetZa, method, body, resourceZa) => {
 
     if (method === 'PUT' && body) {
       options.headers['Content-Type'] = 'application/json';
-      options.body = JSON.stringify(body);
+      // Vector A: freshen timestamp so the receiving node's 24h Currentness Validation passes.
+      const freshBody = { ...body, timestamp: Math.floor(Date.now() / 1000) };
+      options.body = JSON.stringify(freshBody);
     }
 
-    // We don't await the result strictly to block...
     safeFetch(url, { ...options, signal: AbortSignal.timeout(10000) }).then((res) => {
       if (config.log_level >= 2) {
         const parsedUrl = new URL(url);
@@ -237,7 +243,6 @@ const sendPulseRequest = (config, targetZa, method, body, resourceZa) => {
       }
     }).catch((err) => {
       const errMsg = err.message || '';
-      // Check for common connection errors
       if (
         errMsg.includes('connection error') || errMsg.includes('connection reset') ||
         errMsg.includes('connection refused') || errMsg.includes('Failed to fetch')
@@ -348,6 +353,7 @@ const runSelfValidation = async (config, db) => {
 
 /**
  * Runs a Reliability Validation checking peer result ranking consistency.
+ * Peers are checked concurrently (up to PULSE_CONCURRENCY_LIMIT).
  * @param {import('@db/sqlite').Database} db
  * @param {import('../core/config.js').CiprNodeConfig} config
  */
@@ -357,13 +363,11 @@ const runReliabilityChecks = async (db, config) => {
 
   const nodesPerPulse = calculateNodesPerPulse(totalNodes, config.expected_propagation_time);
 
-  // 1. Generate Parameters
   const ftsExpression = generateRandomFTSExpression(config);
-  const pagesNum = Math.floor(Math.random() * 10) + 1; // 1 to 10
+  const pagesNum = Math.floor(Math.random() * 10) + 1;
   const pagesSize = Math.random() < 0.5 ? 20 : 50;
   const paginationParams = { num: pagesNum, size: pagesSize };
 
-  // 2. Execute Local Baseline Query
   const startOffset = (pagesNum - 1) * pagesSize;
   const options = {
     query: ftsExpression,
@@ -378,56 +382,34 @@ const runReliabilityChecks = async (db, config) => {
   const baselineItems = searchEntries(db, options);
   const baselineRank = baselineItems.map((item) => item.za);
 
-  // 3. Select Target Peers (Timestamp older than 1 hour)
-  // Unix timestamp in seconds for 1 hour ago
   const oneHourAgo = Math.floor(Date.now() / 1000) - 3600;
-
-  // Try to gather N targets
-  // Technically, we try to gather up to N targets that match. If there are fewer than N available, we just use what we found.
   const targets = db.prepare(
     `SELECT za FROM ciprdup WHERE za != ? AND timestamp <= ? ORDER BY RANDOM() LIMIT ?`,
-  )
-    .all(config.za, oneHourAgo, nodesPerPulse);
+  ).all(config.za, oneHourAgo, nodesPerPulse);
 
   if (targets.length === 0) {
-    if (config.debug) {
-      msg('No eligible peers (older than 1h) available for Reliability Check.');
-    }
+    if (config.debug) msg('No eligible peers (older than 1h) available for Reliability Check.');
     return;
   }
 
-  if (config.debug) {
-    msg(`Running Reliability Check on ${targets.length} peer(s).`);
-  }
+  if (config.debug) msg(`Running Reliability Check on ${targets.length} peer(s) (concurrency: ${PULSE_CONCURRENCY_LIMIT}).`);
 
-  // 4. Validate and Enforce
-  for (const target of targets) {
-    // Await prevents overloading network if there are many targets, matching pulse behavior mostly.
-    const isReliable = await verifyReliability(
-      target.za,
-      ftsExpression,
-      paginationParams,
-      baselineRank,
-      config,
-    );
+  const tasks = targets.map((target) => async () => {
+    const isReliable = await verifyReliability(target.za, ftsExpression, paginationParams, baselineRank, config);
 
     if (!isReliable) {
-      msg(
-        `${target.za} FAILED Reliability Check. Evicting and propagating DELETE...`,
-      );
-
-      // Delete locally
+      msg(`${target.za} FAILED Reliability Check. Evicting and propagating DELETE...`);
       deleteEntry(db, target.za);
 
-      // Propagate DELETE to random peers
       const peerEntries = db.prepare(
         `SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`,
-      )
-        .all(config.za, nodesPerPulse);
+      ).all(config.za, nodesPerPulse);
 
       for (const peer of peerEntries) {
         sendPulseRequest(config, peer.za, 'DELETE', null, target.za);
       }
     }
-  }
+  });
+
+  await runConcurrent(tasks, PULSE_CONCURRENCY_LIMIT);
 };

@@ -7,8 +7,7 @@ import { deleteEntry, getEntry, insertEntry } from '../../db/repo.js';
 import { halResponse } from '../views/hal.js';
 import { render } from '../views/renderer.js';
 import { msg } from '../../core/utils.js';
-// import { verifyCiprHash } from '../../core/dns.js'; // Replaced by verifyNode
-// import { createSha256Hash } from '../../core/crypto.js'; // Replaced by generateCiprHash
+import { searchEntries } from '../../db/repo.js';
 
 /**
  * Handles GET /za/ requests.
@@ -61,8 +60,9 @@ export const get = (req, db, _config, za) => {
   return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
 };
 
-import { verifyNode } from '../../core/verification.js';
+import { verifyNode, verifyReliability } from '../../core/verification.js';
 import { generateCiprHash, readBodyWithLimit } from '../../core/utils.js';
+import { generateRandomFTSExpression } from '../../core/fts_generator.js';
 
 /**
  * Handles PUT /za/ requests (Upsert).
@@ -90,6 +90,21 @@ export const put = async (req, db, config, za) => {
     if (config.debug) msg(`[DBG] PUT ${za}: Self-update ignored (Protected).`);
     // Return 202 Accepted as if successful, but do nothing.
     return new Response(null, { status: 202, headers: { Location: `/${za}/` } });
+  }
+
+  // 2.6 Currentness Validation: timestamp must not be older than 24 hours (spec §PUT §0)
+  // Also reject timestamps more than 5 minutes in the future to tolerate minor clock skew.
+  const nowSec = Math.floor(Date.now() / 1000);
+  const TWENTY_FOUR_HOURS = 86400;
+  const CLOCK_SKEW_TOLERANCE = 300; // 5 minutes
+  if (!body.timestamp) {
+    return new Response('Missing timestamp', { status: 400 });
+  }
+  if (body.timestamp > nowSec + CLOCK_SKEW_TOLERANCE) {
+    return new Response('Timestamp is too far in the future', { status: 400 });
+  }
+  if (body.timestamp < nowSec - TWENTY_FOUR_HOURS) {
+    return new Response('Timestamp is older than 24 hours', { status: 400 });
   }
 
   // 2.7 Field-level Request Size Limits (Defense in Depth against Hash-Complexity DoS)
@@ -134,6 +149,38 @@ export const put = async (req, db, config, za) => {
         status: 403,
       },
     );
+  }
+
+  // 3.5 Reliability Validation (spec §PUT §3): QUERY the sender and compare results
+  // with the local baseline to detect data-poisoned or diverged nodes.
+  try {
+    const ftsExpression = generateRandomFTSExpression(config);
+    const paginationParams = { num: 1, size: 10 };
+    const baselineItems = searchEntries(db, {
+      query: ftsExpression,
+      ol: [],
+      geo: {},
+      timestamp: {},
+      filters: {},
+      pages: [{ offset: 0, limit: 10, pageNum: 1 }],
+      primary_lang: [],
+    });
+    const baselineRank = baselineItems.map((item) => item.za);
+
+    const isReliable = await verifyReliability(za, ftsExpression, paginationParams, baselineRank, config);
+    if (!isReliable) {
+      if (config.debug) msg(`[DBG] PUT ${za}: Reliability Validation failed.`);
+      return new Response(
+        'Reliability Validation Failed. Search results diverge beyond acceptable threshold.',
+        { status: 409 },
+      );
+    }
+    if (config.debug) msg(`[DBG] PUT ${za}: Reliability Validation passed.`);
+  } catch (e) {
+    // Non-fatal: if the reliability check network call fails, log and continue.
+    // Failing open here is intentional — a transient network error should not
+    // permanently block a legitimate propagation.
+    if (config.debug) msg(`[DBG] PUT ${za}: Reliability check error (non-fatal): ${e.message}`);
   }
 
   // 4. Insert/Update

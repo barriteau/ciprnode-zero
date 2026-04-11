@@ -398,7 +398,7 @@ Content-Type: application/json; charset=utf-8
 
 #### Use of the `PUT` method
 
-A `PUT` request to `{za}` will add a new cipred resource to the Cipr if it doesn't exist or update it if it does. The request body must be JSON and must contain at least all the required fields for a cipred resource. The response has no body; the outcome is indicated by the HTTP status code (`201 Created` for new entries, `200 OK` for idempotent updates or self-insertions) and the `Location` header. Example:
+A `PUT` request to `{za}` will add a new cipred resource to the Cipr if it doesn't exist or update it if it does. The request body must be JSON and must contain at least all the required fields for a cipred resource. The response has no body; the outcome is indicated by the HTTP status code (`202 Accepted` for new entries, for idempotent updates or for self-insertions) and the `Location` header. Example:
 
 ```http
 PUT /guasa.art/ HTTP/1.1
@@ -437,7 +437,7 @@ The insertion won't be effective if at least one of those checks fails.
 
 #### Use of the `DELETE` method
 
-A `DELETE` request to `{za}` will remove a cipred resource from the Cipr if it exists. The response is always `200 OK` with no body, regardless of whether the entry was actually deleted or the deletion was rejected because the node passed validation. Self-deletions are silently ignored. Example:
+A `DELETE` request to `{za}` will remove a cipred resource from the Cipr if it exists. The response is always `202 Accepted` with no body, regardless of whether the entry was actually deleted or the deletion was rejected because the node passed validation. Self-deletions are silently ignored. Example:
 
 ```http
 DELETE /example.com/ HTTP/1.1
@@ -752,7 +752,7 @@ X-Cipr-Count: 1542
 Content-Length: 0
 ```
 
-A `HEAD` request to `/ri/` will verify the presence of a resindex in a ciprnode. Returns `200 OK` if the node has ISE (Internal Search Engine) providers configured, or `501 Not Implemented` if the resindex is not available. CORS headers are always included to allow cross-origin pings from other ciprnodes:
+A `HEAD` request to `/ri/` will verify the presence of a resindex in a ciprnode. Returns `200 OK` if the node has ISE (Internal Search Engine) providers configured, or `204 No Content` if the resindex is not available. CORS headers are always included to allow cross-origin pings from other ciprnodes:
 
 ```http
 HEAD /ri/ HTTP/1.1

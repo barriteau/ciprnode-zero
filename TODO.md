@@ -35,8 +35,17 @@ Legend:
 - […] Deploy and run the 8 ciprnodes from Proxmox
   - [✔] Create new ciprnodes VM
   - [✔] Connect with it via SSH with public key
-  - […] Create scripts/deploy_nodes_vm.js, exactly like deploy_node_local.js but that additionally starts or restarts the existing/running ciprnode services
-  - […] Create scripts/launch_terminal_vm.js, exactly like launch_terminal_local.js
+  - […] Create a scripts/maintenance/deploy_nodes_vm.js script similar to scripts/maintenance/deploy_nodes_local.js but with a few differences and a few added features:
+    - The deployment target is `/home/v12n/ciprnodes/` in the specific Ubuntu 22.04 VM in Proxmox accesible via `ssh v12n@192.168.1.98`, we already have the public key in the VM.
+    - The binary to deploy is `/dist/ciprnode-zero-linux-x64.tar.gz`.
+    - It must accept a list of ciprnodes to deploy
+    - It must install the ciprnode package in the destination VM as a systemd service if it is not yet installed.
+    - Before every deploy it must stop the ciprnode service in the destination VM if it is running.
+    - After every deploy it must start the ciprnode service in the destination VM.
+    - It must lookup the ciprnode.toml file for every element of the list in `D:\Proyectos_VSCode\Cipr\ciprnodes`, for example, if the list is `[ciprnode-zero-1, ciprnode-zero-2, ciprnode-zero-3]`, it must lookup the ciprnode.toml file in `D:\Proyectos_VSCode\Cipr\ciprnodes\ciprnode-zero-1\ciprnode.toml`, `D:\Proyectos_VSCode\Cipr\ciprnodes\ciprnode-zero-2\ciprnode.toml`, and `D:\Proyectos_VSCode\Cipr\ciprnodes\ciprnode-zero-3\ciprnode.toml`. And this .toml is the one to be put in every deployed ciprnode in the destination.
+    - The existing database in the VM (`ciprdup.db`) must be preserved, the ciprnode.toml must be replaces as described above, and everything else must be overwritten with the contents of `/dist/ciprnode-zero-linux-x64.tar.gz`.
+
+  - […] Style the Cipr in your mobile/desktop button to look as a A element
 
 - [✔] All PUT and DELETE requests must respond with the HTTP Status `202 Accepted`, not `200 OK` like they do now.
 - [✔] The `HEAD /ri/` requests must answer with HTTP Status `204 No Content`, instead of `501 Not Implemented` like they do now, when no resindex is available in the ciprnode.

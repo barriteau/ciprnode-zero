@@ -6,6 +6,7 @@ import { handleRequest } from '../src/api/routes.js';
 
 // Setup Mock Environment
 Deno.env.set('TEST_MOCK_VERIFY_NODE', 'true');
+Deno.env.set('TEST_MOCK_VERIFY_RELIABILITY', 'true');
 
 const createMockDb = () => {
   const db = new Database(':memory:');
@@ -83,7 +84,7 @@ Deno.test('API Endpoints Test Suite', async (t) => {
       title: 'New',
       description: 'Desc',
       keywords: 'kw',
-      timestamp: 1698418000,
+      timestamp: Math.floor(Date.now() / 1000), // fresh timestamp required by Currentness Validation
     };
     const req = new Request('http://localhost/new.com/', { 
       method: 'PUT', 
