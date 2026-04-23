@@ -505,7 +505,8 @@ const initPwaInstall = () => {
 
   // 5. Click Handler
   if (!installBtn.dataset.listenerAttached) {
-    installBtn.addEventListener('click', async () => {
+    installBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
       if (deferredPrompt) {
         // Native Chromium prompt
         deferredPrompt.prompt();

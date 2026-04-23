@@ -13,7 +13,7 @@ Legend:
 - [✔] Completar head en \src\templates\layouts\base.eta
 - [✔] move test_words to the root and all [meta_data] to [ciprface] in the .toml
 - [✔] Improve the console logging: silent, regular and debugging
-- [✔] NO 'using defaults' if config file is not found, error y pajuera (src\core\config.js)
+- [✔] NO 'using defaults' if config file is not found, error (src\core\config.js)
 - [✔] [ Search for: | I need: | I offer: ], add columns in ciprdup, change placeholder, change weight of the search accordingly
 - [✔] Revisar el autocomplete de location
 - [✔] Revisar el validador de los FTS5 expressions en la búsqueda
@@ -29,13 +29,13 @@ Legend:
 - [✔] Create the "Explore" button, it fills the page with random entries from the ciprdup
 - [✔] Validate accessibility
 - [✔] Reorder footer
-- [✔] Intra-search links problem: https://ciprnode.barriteau.net/https:/cgt.barriteau.net/
+- [✔] Intra-search links problem: `https://ciprnode.barriteau.net/https:/cgt.barriteau.net/`
 - [✔] Language is not being shown!
 
 - […] Deploy and run the 8 ciprnodes from Proxmox
   - [✔] Create new ciprnodes VM
   - [✔] Connect with it via SSH with public key
-  - […] Create a scripts/maintenance/deploy_nodes_vm.js script similar to scripts/maintenance/deploy_nodes_local.js but with a few differences and a few added features:
+  - [✔] Create a scripts/maintenance/deploy_nodes_vm.js script similar to scripts/maintenance/deploy_nodes_local.js but with a few differences and a few added features:
     - The deployment target is `/home/v12n/ciprnodes/` in the specific Ubuntu 22.04 VM in Proxmox accesible via `ssh v12n@192.168.1.98`, we already have the public key in the VM.
     - The binary to deploy is `/dist/ciprnode-zero-linux-x64.tar.gz`.
     - It must accept a list of ciprnodes to deploy
@@ -45,7 +45,7 @@ Legend:
     - It must lookup the ciprnode.toml file for every element of the list in `D:\Proyectos_VSCode\Cipr\ciprnodes`, for example, if the list is `[ciprnode-zero-1, ciprnode-zero-2, ciprnode-zero-3]`, it must lookup the ciprnode.toml file in `D:\Proyectos_VSCode\Cipr\ciprnodes\ciprnode-zero-1\ciprnode.toml`, `D:\Proyectos_VSCode\Cipr\ciprnodes\ciprnode-zero-2\ciprnode.toml`, and `D:\Proyectos_VSCode\Cipr\ciprnodes\ciprnode-zero-3\ciprnode.toml`. And this .toml is the one to be put in every deployed ciprnode in the destination.
     - The existing database in the VM (`ciprdup.db`) must be preserved, the ciprnode.toml must be replaces as described above, and everything else must be overwritten with the contents of `/dist/ciprnode-zero-linux-x64.tar.gz`.
 
-  - […] Style the Cipr in your mobile/desktop button to look as a A element
+  - [✔] Style the Cipr in your mobile/desktop button to look as a A element
 
 - [✔] All PUT and DELETE requests must respond with the HTTP Status `202 Accepted`, not `200 OK` like they do now.
 - [✔] The `HEAD /ri/` requests must answer with HTTP Status `204 No Content`, instead of `501 Not Implemented` like they do now, when no resindex is available in the ciprnode.
