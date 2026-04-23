@@ -20,7 +20,7 @@ import { exists } from '@std/fs';
  * @property {number} ol
  * @property {number} latitude
  * @property {number} longitude
- * @property {string} bootstrap_node
+ * @property {string[]} bootstrap_nodes
  * @property {number} page_size
  * @property {string} [primary_lang]
  * @property {string[]} test_words
@@ -103,7 +103,14 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
         : (Number(ciprEntry.ol) === 0 ? null : Number(ciprEntry.ol)),
       latitude: parseCoord(ciprEntry.latitude),
       longitude: parseCoord(ciprEntry.longitude),
-      bootstrap_node: network.bootstrap_node,
+      bootstrap_nodes: (() => {
+        const arr = network.bootstrap_nodes ?? data.network?.bootstrap_nodes ?? data.bootstrap_nodes;
+        if (arr) {
+          return Array.isArray(arr) ? arr : [arr];
+        }
+        const legacy = network.bootstrap_node ?? data.network?.bootstrap_node ?? data.bootstrap_node;
+        return legacy ? [legacy] : undefined;
+      })(),
       expected_propagation_time: network.expected_propagation_time !== undefined ? Number(network.expected_propagation_time) : undefined,
       page_size: data.ciprface?.page_size !== undefined ? Number(data.ciprface.page_size) : undefined,
       test_words: typeof (network.test_words || data.test_words) === 'string'

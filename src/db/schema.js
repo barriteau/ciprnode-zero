@@ -1,8 +1,46 @@
 import { msg } from '../core/utils.js';
+import langs from './languages.json' with { type: 'json' };
 /**
  * @file src/db/schema.js
  * @description Database schema definitions and initialization.
  */
+
+/**
+ * Seeds the languages table if it is empty.
+ * Creates the table if it does not exist.
+ * @param {import('@db/sqlite').Database} db - The database instance.
+ */
+export const seedLanguages = (db) => {
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS languages (
+        lang_code TEXT PRIMARY KEY,
+        lang_name TEXT NOT NULL,
+        lang_name_en TEXT NOT NULL
+      ) STRICT;
+    `);
+
+    const countResult = db.prepare('SELECT COUNT(*) as c FROM languages').get();
+    if (countResult && countResult.c > 0) {
+      msg('[OK] Languages table already seeded.');
+      return;
+    }
+
+    const insertLang = db.prepare(
+      'INSERT INTO languages (lang_code, lang_name, lang_name_en) VALUES (?, ?, ?)',
+    );
+
+    db.exec('BEGIN TRANSACTION;');
+    langs.forEach((lang) => {
+      insertLang.run(lang.lang_code, lang.lang_name, lang.lang_name_en);
+    });
+    db.exec('COMMIT;');
+
+    msg(`[OK] Seeded languages table with ${langs.length} entries.`);
+  } catch (e) {
+    msg('Could not seed languages table: ' + e.message, 'WA');
+  }
+};
 
 /**
  * Initializes the database schema.
@@ -15,22 +53,11 @@ export const initSchema = (db) => {
   ).get();
 
   if (tableExists) {
-    try {
-      const insertLang = db.prepare(
-        'INSERT OR IGNORE INTO languages (lang_code, lang_name, lang_name_en) VALUES (?, ?, ?)',
-      );
-      db.exec('BEGIN TRANSACTION;');
-      const langs = JSON.parse(Deno.readTextFileSync(new URL('./languages.json', import.meta.url)));
-      langs.forEach((lang) => {
-        insertLang.run(lang.lang_code, lang.lang_name, lang.lang_name_en);
-      });
-      db.exec('COMMIT TRANSACTION;');
-    } catch(e) { }
-    // Schema already exists, skipping
+    seedLanguages(db);
     return;
   }
 
-  msg(`Initializing Database Schema...`);
+  msg('Initializing Database Schema...');
 
   // 1. Main Table Creation with Constraints
   db.exec(`
@@ -95,23 +122,7 @@ export const initSchema = (db) => {
     ) STRICT;
   `);
 
-  // Seed languages. Read locally or fallback. In Deno, this requires fs read.
-  // We can just rely on the initialization script, but it is nice to have it embedded or read from JSON
-  try {
-    const langsPath = new URL('./languages.json', import.meta.url);
-    const langsJson = JSON.parse(Deno.readTextFileSync(langsPath));
-    const insertLang = db.prepare(
-      'INSERT OR IGNORE INTO languages (lang_code, lang_name, lang_name_en) VALUES (?, ?, ?)',
-    );
-
-    db.exec('BEGIN TRANSACTION;');
-    langsJson.forEach((lang) => {
-      insertLang.run(lang.lang_code, lang.lang_name, lang.lang_name_en);
-    });
-    db.exec('COMMIT TRANSACTION;');
-  } catch (e) {
-    msg('Could not seed languages table automatically from schema init: ' + e.message, 'WA');
-  }
+  seedLanguages(db);
 
   // 2. FTS5 Virtual Table (External Content)
   // We check if the FTS table exists to avoid errors on re-run
@@ -161,5 +172,5 @@ export const initSchema = (db) => {
       END;
   `);
 
-  msg(`[OK] Database schema initialized successfully.`);
+  msg('[OK] Database schema initialized successfully.');
 };

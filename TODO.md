@@ -169,13 +169,3 @@ The legend at the bottom for this scene is:
 A final text appears in the center of the scene:
 
 «Now, instead of complaining, you can just move on ;)»
-
-
-
-| Port | Purpose                                                                               |
-|------|---------------------------------------------------------------------------------------|
-| 80   | Used for running the Frontend (FE) on standard HTTP protocol                          |
-| 8080 | Used for running the Backend (BE) services on HTTP                                    |
-| 443  | Required for the Frontend when serving the application over HTTPS (secure connection) |
-| 8443 | Required for the Backend when serving APIs over HTTPS (secure connection)             |
-| 5432 | Used by the PostgreSQL Database for database connections                              |

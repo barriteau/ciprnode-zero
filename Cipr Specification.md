@@ -931,38 +931,17 @@ This step is done after a ciprnode has been installed and is able to operate as 
 Each ciprnode must be specifically configured before being added to the Cipr. At a minimum, the following parameters must be provided to be stored in a configuration file, database or something similar:
 
 ```toml
-[cipr_entry]
-# Minimal Cipr entry data
-za = "cipr.info"
-title = "Cosmic Index of Public Resources"
-description = "The home of the Cosmic Index of Public Resources, also known as the Cipr"
-keywords = "index directory search engine webring"
-primary_lang = "en"
-ol = 0
-latitude = 407128000
-longitude = -740060000
-
 [network]
 # Trusted bootstrap ciprnode to start syncing from
-bootstrap_node = "https://ciprnode.fsf.org/"
-
-# Expected time in milliseconds for a new or updated entry to infect the whole Cipr
-expected_propagation_time = 120000
-
-# A list of arbitrary words, not related with the keywords of your resource, used to
-# check the reliability of the ciprnodes in the Cipr.
-test_words = "dog el perro the casa amigo friend árboles social pero como"
-
-# DNS over UDP (Do53) used for bootstrapping DoH connections
-do53 = ["..."]
-
-# DNS over HTTPS (DoH) endpoints for regular queries
-doh = ["..."]
+bootstrap_nodes = [
+  "https://ciprnode.cipr.info",
+  "https://ciprnode.barriteau.net"
+]
 ```
 
 ### Ciprdup population
 
-Once the ciprnode is deployed and has its initial configuration, next action is to populate its ciprdup, the retrieval of entries begins with a `GET /` to the `bootstrap_node` and then it's possible to keep going with the gradually obtained zas.
+Once the ciprnode is deployed and has its initial configuration, next action is to populate its ciprdup, the retrieval of entries begins with a `GET /` to each one of the configured `bootstrap_nodes` and then it's possible to keep going with the gradually obtained zas.
 
 Note that, even when a `GET /` is a request for the whole Cipr, the response will always be paginated, it might be convenient to ask different nodes for different pages rather than just one.
 

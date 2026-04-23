@@ -114,8 +114,12 @@ page_size = 10
 # port = 443
 port = 8442
 
-# Trusted bootstrap ciprnode to start syncing from
-bootstrap_node = "https://ciprnode.cipr.info"
+# Trusted bootstrap ciprnodes to start syncing from
+bootstrap_nodes = [
+  "https://ciprnode.cipr.info",
+  "https://ciprnode.barriteau.net",
+  "https://ciprnode.guasa.art"
+]
 
 # Leech mode ***NOT IMPLEMENTED YET***: if not null, this ciprnode won't start and instead will
 # create a CNAME record in the DNS for the za pointing to the host of leech_from.

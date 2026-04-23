@@ -392,58 +392,17 @@ deno task start
 The node is fully configured via `ciprnode.toml`. All sections and parameters are documented below.
 
 ```toml
-# Environment: dev | test | prod
-env = "dev"
-
-# Console log level: 0 (silent), 1 (operational), 2 (verbose)
-log_level = 2
-
-# Write verbose output to /logs/ files (rotated at 256 MB, deleted after 24h)
-debug = false
-
-[cipr_entry]
-za = "example.com"               # Zone Apex: your domain (required)
-title = "My Node"                # Resource title (max 64 chars)
-description = "A description"   # Resource description (max 256 chars)
-keywords = "keyword1 keyword2"  # Space-separated keywords (max 512 chars)
-offering = "What you offer"     # Optional (max 128 chars)
-seeking = "What you seek"       # Optional (max 128 chars)
-primary_lang = "en"             # ISO 639-1 language code (optional)
-ol = 0                          # Offensiveness level: 0 (none) to 3 (universally offensive)
-latitude = 407128000            # WGS84 × 10,000,000, integer (use 0 to omit)
-longitude = -740060000          # WGS84 × 10,000,000, integer (use 0 to omit)
-
-# Repeat this block for each ISE provider (optional)
-[[ise_provider]]
-name = "pagefind"
-url = "https://your-site.com/"
-
-[meta_data]                          # Optional SEO metadata for the ciprface HTML
-author = "Author Name"
-author_url = "https://..."
-subject = "Topic"
-publisher = "Publisher"
-contributor = "Contributor"          # Comma-separated if multiple
-isbn = "ISBN or DOI"                 # Optional formal identifier
-coverage = "Spatial/Temporal"        # Optional coverage description
-rights = "CC BY 4.0"
-rights_url = "https://creativecommons.org/licenses/by/4.0/"
-unavailable_after = "31 Dec 2099 23:59:59 GMT"  # Optional expiry date
-
-[ciprface]
-page_size = 10                       # Results per page in the web interface
-
 [network]
 port = 443                           # Listening port (use 443 in production)
-bootstrap_node = "https://ciprnode.cipr.info"  # Trusted peer for initial sync
+bootstrap_nodes = [                  # Trusted peers for initial sync
+  "https://ciprnode.cipr.info",
+  "https://ciprnode.barriteau.net",
+  "https://ciprnode.guasa.art",
+]
 expected_propagation_time = 120000   # Pulse interval in ms (120s default)
 test_words = "dog casa network ..."  # Words used for Reliability Validation audits
 do53 = ["1.1.1.1", "9.9.9.9", ...]  # DNS-over-UDP resolvers for DoH bootstrapping
 doh = ["https://dns.google/dns-query", ...]  # DNS-over-HTTPS endpoints (min 3 required)
-
-[dns_provider]
-name = "cloudflare"                  # "cloudflare" or "desec"
-# api_token and zone_id are read from env vars (see below)
 ```
 
 ### Secrets Management
