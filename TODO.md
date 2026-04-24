@@ -32,7 +32,7 @@ Legend:
 - [✔] Intra-search links problem: `https://ciprnode.barriteau.net/https:/cgt.barriteau.net/`
 - [✔] Language is not being shown!
 
-- […] Deploy and run the 8 ciprnodes from Proxmox
+- [✔] Deploy and run the 8 ciprnodes from Proxmox
   - [✔] Create new ciprnodes VM
   - [✔] Connect with it via SSH with public key
   - [✔] Create a scripts/maintenance/deploy_nodes_vm.js script similar to scripts/maintenance/deploy_nodes_local.js but with a few differences and a few added features:
