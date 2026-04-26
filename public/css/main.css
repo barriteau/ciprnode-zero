@@ -59,7 +59,7 @@ html {
 body {
     overflow-y: scroll;
     overflow-x: hidden;
-    min-width: 320px;
+    min-width: 370px;
     margin-top: 3.4rem;
     background-color: var(--body-background-color);
     color: var(--body-color);
