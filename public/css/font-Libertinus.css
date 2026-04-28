@@ -11,7 +11,7 @@
     src: url("typography/Libertinus-Serif-Regular.woff2") format("woff2");
     font-style: normal;
     font-weight: normal;
-    font-display: block;
+    font-display: swap;
     font-stretch: normal;
 }
 
@@ -20,7 +20,7 @@
     src: url("typography/Libertinus-Serif-Italic.woff2") format("woff2");
     font-style: italic;
     font-weight: normal;
-    font-display: block;
+    font-display: swap;
     font-stretch: normal;
 }
 
@@ -29,7 +29,7 @@
     src: url("typography/Libertinus-Serif-Bold.woff2") format("woff2");
     font-style: normal;
     font-weight: bold;
-    font-display: block;
+    font-display: swap;
     font-stretch: normal;
 }
 
@@ -38,7 +38,7 @@
     src: url("typography/Libertinus-Serif-Bold-Italic.woff2") format("woff2");
     font-style: italic;
     font-weight: bold;
-    font-display: block;
+    font-display: swap;
     font-stretch: normal;
 }
 
@@ -48,7 +48,7 @@
     src: url("typography/Libertinus-Sans-Regular.woff2") format("woff2");
     font-style: normal;
     font-weight: normal;
-    font-display: block;
+    font-display: swap;
     font-stretch: normal;
 }
 
@@ -57,7 +57,7 @@
     src: url("typography/Libertinus-Sans-Italic.woff2") format("woff2");
     font-style: italic;
     font-weight: normal;
-    font-display: block;
+    font-display: swap;
     font-stretch: normal;
 }
 
@@ -66,6 +66,6 @@
     src: url("typography/Libertinus-Sans-Bold.woff2") format("woff2");
     font-style: normal;
     font-weight: bold;
-    font-display: block;
+    font-display: swap;
     font-stretch: normal;
 }

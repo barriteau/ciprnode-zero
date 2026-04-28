@@ -15,8 +15,8 @@ html {
 body {
     font-family: "Libertinus-Serif", serif;
     /* : Check for media query variations */
-    /* 1.25 rem = 20px because 16px = 1rem */
-    font-size: 1.25rem;
+    /* 1.25em = 20px because 16px = 1em */
+    font-size: 1.25em;
     line-height: var(--base-line-height);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -39,7 +39,7 @@ h1,
     line-height: 1.1;
     font-family: "Poller-One", sans-serif;
     word-break: break-word;
-    scroll-margin-top: 4rem;
+    scroll-margin-top: 4em;
     color: #444444;
 }
 
@@ -57,7 +57,7 @@ h6,
     line-height: 1.1;
     font-family: "Libertinus-Sans", sans-serif;
     word-break: break-word;
-    scroll-margin-top: 4rem;
+    scroll-margin-top: 4em;
     color: #444444;
 }
 
@@ -149,7 +149,7 @@ nav#toolbar {
 /* --- Tables --- */
 
 table {
-    font-size: 1rem;
+    font-size: 1em;
 }
 
 table caption {
@@ -219,14 +219,11 @@ a.footnote-ref {
     font-family: "Iosevka", monospace;
     color: #ff8000;
     font-weight: bold;
-    font-size: 1.1rem;
     margin: 0;
     padding: 0;
 }
 
 a.footnote-ref sup {
-    border: 2px solid transparent;
-    border-radius: 100%;
     margin: 0;
     padding: 0;
 }
@@ -235,7 +232,7 @@ a.footnote-ref sup {
 
 .sans {
     font-family: "Libertinus-Sans", sans-serif;
-    font-size: 1rem;
+    font-size: 1em;
 }
 
 .versalitas {
@@ -264,7 +261,7 @@ time {
 mjx-container,
 mjx-container.MathJax,
 mjx-container.CtxtMenu_Attached_0 {
-    font-size: 1.333rem !important;
+    font-size: 1.333em !important;
 }
 
 /* --- Placeholders --- */
