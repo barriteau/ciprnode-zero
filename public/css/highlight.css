@@ -1,0 +1,141 @@
+/* --- Highlight.js theme via CSS custom properties --- */
+
+:root {
+  --hljs-bg: #ffffff;
+  --hljs-fg: #1a1a1a;
+  --hljs-comment: #6a737d;
+  --hljs-keyword: #d73a49;
+  --hljs-string: #032f62;
+  --hljs-number: #005cc5;
+  --hljs-title: #6f42c1;
+  --hljs-type: #e36209;
+  --hljs-variable: #e36209;
+  --hljs-regex: #032f62;
+  --hljs-meta: #6a737d;
+  --hljs-attr: #005cc5;
+  --hljs-link: #0366d6;
+  --hljs-addition-bg: #dcffe4;
+  --hljs-deletion-bg: #ffeef0;
+  --hljs-formula-bg: #eeeeee;
+}
+
+html[data-color-scheme='dark'] {
+  --hljs-bg: #1e1e1e;
+  --hljs-fg: #d4d4d4;
+  --hljs-comment: #6a9955;
+  --hljs-keyword: #569cd6;
+  --hljs-string: #ce9178;
+  --hljs-number: #b5cea8;
+  --hljs-title: #dcdcaa;
+  --hljs-type: #4ec9b0;
+  --hljs-variable: #9cdcfe;
+  --hljs-regex: #d16969;
+  --hljs-meta: #808080;
+  --hljs-attr: #9cdcfe;
+  --hljs-link: #569cd6;
+  --hljs-addition-bg: #1a3a1a;
+  --hljs-deletion-bg: #3a1a1a;
+  --hljs-formula-bg: #2a2a2a;
+}
+
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em;
+}
+
+code.hljs {
+  padding: 3px 5px;
+}
+
+.hljs {
+  background: var(--hljs-bg);
+  color: var(--hljs-fg);
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--hljs-comment);
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-doctag,
+.hljs-name {
+  color: var(--hljs-keyword);
+}
+
+.hljs-string,
+.hljs-code {
+  color: var(--hljs-string);
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+  color: var(--hljs-number);
+}
+
+.hljs-title,
+.hljs-section {
+  color: var(--hljs-title);
+}
+
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-title.class_,
+.hljs-built_in,
+.hljs-params {
+  color: var(--hljs-type);
+}
+
+.hljs-variable,
+.hljs-template-variable {
+  color: var(--hljs-variable);
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: var(--hljs-regex);
+}
+
+.hljs-meta {
+  color: var(--hljs-meta);
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: var(--hljs-attr);
+}
+
+.hljs-tag {
+  color: var(--hljs-keyword);
+}
+
+.hljs-subst {
+  color: var(--hljs-fg);
+}
+
+.hljs-formula {
+  background-color: var(--hljs-formula-bg);
+  font-style: italic;
+}
+
+.hljs-addition {
+  background-color: var(--hljs-addition-bg);
+}
+
+.hljs-deletion {
+  background-color: var(--hljs-deletion-bg);
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}

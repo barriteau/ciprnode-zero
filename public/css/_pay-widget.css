@@ -1,0 +1,358 @@
+/* =============================================================================
+   Pay / Donate Blockonomics widgets
+   Covers: #pay-widget, #donate-widget, and the floating overlay dialogs
+   rendered dynamically into #pay-widget-msg / #donate-widget-msg by
+   Blockonomics.widget(). All selectors targeting dynamically-generated markup
+   use !important to beat the inline styles the Blockonomics JS injects.
+   ============================================================================= */
+
+/* --- Widget container --- */
+
+#pay-widget,
+#donate-widget {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35em;
+    max-width: 26em;
+    margin: 1.5em auto;
+    padding: 1.25em 1.5em 1.5em;
+    background-color: var(--color-bg-surface);
+    border: 2px solid var(--color-border-form);
+    border-radius: 4px;
+    font-family: 'Libertinus-Sans', sans-serif;
+    font-size: 1rem;
+}
+
+/* --- Field group: label stacked above its input --- */
+
+.widget-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+    margin-bottom: 0.45em;
+}
+
+.widget-field:last-of-type {
+    margin-bottom: 0.75em;
+}
+
+/* --- Labels --- */
+
+#pay-widget label,
+#donate-widget label {
+    display: block;
+    font-size: 0.82em;
+    font-weight: bold;
+    color: var(--color-fg-form);
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Plain text / email inputs --- */
+
+#pay-widget input[type='text'],
+#pay-widget input[type='email'],
+#donate-widget input[type='text'],
+#donate-widget input[type='email'] {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--color-body-background);
+    color: var(--color-fg-form);
+    border: 2px solid var(--color-border-form);
+    border-radius: 4px;
+    padding: 0.3em 0.5em;
+    font-family: inherit;
+    font-size: 1em;
+    transition: border-color 0.2s ease;
+}
+
+#pay-widget input[type='text']:focus,
+#pay-widget input[type='email']:focus,
+#donate-widget input[type='text']:focus,
+#donate-widget input[type='email']:focus {
+    outline: none;
+    border-color: var(--color-border-accent);
+}
+
+/* --- Amount row ($ prefix + number + USD suffix) --- */
+
+.widget-amount-row {
+    display: flex;
+    align-items: stretch;
+    border: 2px solid var(--color-border-form);
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--color-body-background);
+    transition: border-color 0.2s ease;
+}
+
+.widget-amount-row:focus-within {
+    border-color: var(--color-border-accent);
+}
+
+/* Invalid state on the wrapper (amount input gets no border of its own) */
+.widget-amount-row.widget-invalid {
+    border-color: var(--color-validation-error) !important;
+}
+
+.widget-unit-prefix,
+.widget-unit-suffix {
+    display: flex;
+    align-items: center;
+    padding: 0.3em 0.55em;
+    background-color: var(--color-bg-form);
+    color: var(--color-fg-muted);
+    font-size: 0.9em;
+    font-family: 'Iosevka', monospace;
+    white-space: nowrap;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.widget-unit-prefix {
+    border-right: 1px solid var(--color-border-form);
+}
+
+.widget-unit-suffix {
+    border-left: 1px solid var(--color-border-form);
+}
+
+#pay-widget-amount,
+#donate-widget-amount {
+    flex: 1 1 0;
+    min-width: 0;
+    border: none !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: transparent;
+    color: var(--color-fg-form);
+    padding: 0.3em 0.5em;
+    font-family: 'Iosevka', monospace;
+    font-size: 1em;
+    -moz-appearance: textfield;
+}
+
+#pay-widget-amount::-webkit-inner-spin-button,
+#pay-widget-amount::-webkit-outer-spin-button,
+#donate-widget-amount::-webkit-inner-spin-button,
+#donate-widget-amount::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* --- Buttons --- */
+
+#pay-widget-button,
+#donate-widget-button {
+    align-self: center;
+    background-color: var(--color-accent);
+    color: var(--color-accent-on);
+    border: 2px solid var(--color-accent);
+    border-radius: 4px;
+    padding: 0.4em 2em;
+    font-family: 'Libertinus-Sans', sans-serif;
+    font-size: 0.95em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#pay-widget-button:hover,
+#pay-widget-button:focus,
+#donate-widget-button:hover,
+#donate-widget-button:focus {
+    background-color: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+    outline: none;
+}
+
+#pay-widget-button:focus-visible,
+#donate-widget-button:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* --- Validation error state --- */
+
+/* Text / email inputs */
+#pay-widget input.widget-invalid,
+#donate-widget input.widget-invalid {
+    border-color: var(--color-validation-error) !important;
+}
+
+/* =============================================================================
+   Blockonomics message overlay (#pay-widget-msg / #donate-widget-msg)
+
+   The Blockonomics JS sets display:block on #*-widget-msg when the widget is
+   active and populates .blockonomics_message with inline-styled content.
+   We promote these containers to fixed fullscreen overlays using !important
+   to override the Blockonomics inline styles.
+   ============================================================================= */
+
+/* --- Base: hidden until JS sets display:block --- */
+
+#pay-widget-msg,
+#donate-widget-msg {
+    display: none;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 9000 !important;
+    background-color: transparent !important;
+    background-image: repeating-linear-gradient(
+        45deg,
+        #000000 0,
+        #000000 0.6px,
+        #00000077 0,
+        #00000077 50%
+    ) !important;
+    background-size: 6px 6px !important;
+    backdrop-filter: blur(0.4px) brightness(50%) !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Blockonomics sets style="display:block" — override to flex for centering */
+#pay-widget-msg[style*='display:block'],
+#pay-widget-msg[style*='display: block'],
+#donate-widget-msg[style*='display:block'],
+#donate-widget-msg[style*='display: block'] {
+    display: flex !important;
+}
+
+/* --- Inner card (.blockonomics_message) --- */
+
+#pay-widget-msg .blockonomics_message,
+#donate-widget-msg .blockonomics_message {
+    background-color: var(--color-bg-surface) !important;
+    color: var(--color-fg-primary) !important;
+    border: 2px solid var(--color-accent) !important;
+    border-radius: 4px !important;
+    padding: 1.5em !important;
+    max-width: min(92vw, 28em) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45) !important;
+    font-family: 'Libertinus-Sans', sans-serif !important;
+    font-size: 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1em !important;
+}
+
+/* --- QR + info row --- */
+
+#pay-widget-msg .blockonomics_message > div:first-child,
+#donate-widget-msg .blockonomics_message > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1em !important;
+}
+
+/* QR column */
+#pay-widget-msg .blockonomics_message > div:first-child > div:first-child,
+#donate-widget-msg .blockonomics_message > div:first-child > div:first-child {
+    flex: 0 0 auto !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+
+#pay-widget-msg .blockonomics_message > div:first-child > div:first-child p,
+#donate-widget-msg .blockonomics_message > div:first-child > div:first-child p {
+    text-align: center !important;
+}
+
+#pay-widget-msg canvas,
+#donate-widget-msg canvas {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    border: 1px solid var(--color-border-soft) !important;
+    border-radius: 4px !important;
+}
+
+/* Info column (address + BTC amount + timer) */
+#pay-widget-msg .blockonomics_message > div:first-child > div:last-child,
+#donate-widget-msg .blockonomics_message > div:first-child > div:last-child {
+    flex: 1 1 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.35em !important;
+}
+
+#pay-widget-msg .blockonomics_message > div:first-child > div:last-child > div,
+#donate-widget-msg .blockonomics_message > div:first-child > div:last-child > div {
+    color: var(--color-fg-form) !important;
+    font-size: 0.82em !important;
+    font-weight: bold !important;
+    margin: 0 !important;
+}
+
+/* Read-only address and amount inputs inside the card */
+#pay-widget-msg input[type='text'][readonly],
+#donate-widget-msg input[type='text'][readonly] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background-color: var(--color-bg-muted) !important;
+    color: var(--color-fg-primary) !important;
+    border: 1px solid var(--color-border-soft) !important;
+    border-radius: 4px !important;
+    padding: 0.25em 0.4em !important;
+    font-family: 'Iosevka', monospace !important;
+    font-size: 0.78em !important;
+    cursor: text !important;
+    user-select: all !important;
+}
+
+/* Countdown timer */
+#pay-widget-msg .time_remaining,
+#donate-widget-msg .time_remaining {
+    display: block !important;
+    text-align: center !important;
+    font-family: 'Iosevka', monospace !important;
+    font-size: 0.9em !important;
+    color: var(--color-fg-muted) !important;
+    margin-top: 0.25em !important;
+}
+
+/* --- Close link (.blockonomics_close) --- */
+
+#pay-widget-msg .blockonomics_close,
+#donate-widget-msg .blockonomics_close {
+    text-align: center !important;
+    border-top: 1px solid var(--color-border-soft) !important;
+    padding-top: 0.75em !important;
+    margin: 0 !important;
+}
+
+#pay-widget-msg .blockonomics_close a,
+#donate-widget-msg .blockonomics_close a {
+    display: inline-block !important;
+    color: var(--color-accent) !important;
+    font-family: 'Libertinus-Sans', sans-serif !important;
+    font-size: 0.9em !important;
+    font-weight: bold !important;
+    text-decoration: none !important;
+    padding: 0.3em 1.2em !important;
+    border: 1px solid var(--color-accent) !important;
+    border-radius: 4px !important;
+    transition: background-color 0.2s ease, color 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+#pay-widget-msg .blockonomics_close a:hover,
+#pay-widget-msg .blockonomics_close a:focus,
+#donate-widget-msg .blockonomics_close a:hover,
+#donate-widget-msg .blockonomics_close a:focus {
+    background-color: var(--color-accent) !important;
+    color: var(--color-accent-on) !important;
+    outline: none !important;
+}
+
+/* --- Dark mode: all values are --color-* tokens; _variables.css handles it. --- */

@@ -1,6 +1,6 @@
 <!-- This document follows the Pandoc Markdown standard -->
 
-# Cipr: Cosmic Index of Public Resources
+# Cipr: Cosmic Index of Public Resources {.root-cover-title}
 
 The *Cosmic^[Because Martians and Belters are welcome.] Index of Public Resources*, or *Cipr^[I like to pronounce it 'kee-per', but I'm not good enough at English to know, so do as you please.]*, is a decentralized, distributed, independent, public, universal, dynamic and queryable directory of websites and other reachable-by-DNS-resolution resources in the Internet.
 
@@ -66,7 +66,7 @@ Where `{za}` is the same as `sldl.tldl`. The literal *ciprnode* **must** be the 
 
 **Important note**: For some *country code top-level domains* (ccTLDs) the registration of *second level domains* is restricted or forbidden, this means that resources like `bbc.co.uk`, `up.edu.br` or `ivic.gob.ve` CAN NOT be indexed in the Cipr, this is because allowing ciprnodes under the 3LD allows the inclusion of infinite ciprnodes under a single za.
 
-![ciprsys](figures/ciprsys.svg)
+![ciprsys](_figures/ciprsys.svg)
 
 ### 1. Ciprdup
 
@@ -87,7 +87,7 @@ Table: Ciprdup fields with example data shown as table rows in a RDBMS:
 
 The fields of the ciprdup are:
 
-#### `za`
+#### za
 
 *Zone Apex* of the resource in the Domain Name System.
 
@@ -97,7 +97,7 @@ The fields of the ciprdup are:
   - Primary key: yes.
   - FTS searchable: yes.
 
-#### `title`
+#### title
 
 The indexed resource's title.
 
@@ -107,7 +107,7 @@ The indexed resource's title.
   - Primary key: no.
   - FTS searchable: yes.
 
-#### `description`
+#### description
 
 The resource's description.
 
@@ -117,7 +117,7 @@ The resource's description.
   - Primary key: no.
   - FTS searchable: yes.
 
-#### `keywords`
+#### keywords
 
 Keywords for the resource.
 
@@ -127,7 +127,7 @@ Keywords for the resource.
   - Primary key: no.
   - FTS searchable: yes.
 
-#### `offering`
+#### offering
 
  What is offered or shared through the resource.
 
@@ -137,7 +137,7 @@ Keywords for the resource.
   - Primary key: no.
   - FTS searchable: yes.
 
-#### `seeking`
+#### seeking
 
 What the owner of the resource is looking for.
 
@@ -147,7 +147,7 @@ What the owner of the resource is looking for.
   - Primary key: no.
   - FTS searchable: yes.
 
-#### `primary_lang`
+#### primary_lang
 
 The primary language for the resource.
 
@@ -157,7 +157,7 @@ The primary language for the resource.
   - Primary key: no.
   - FTS searchable: no.
 
-#### `ol`
+#### ol
 
 Offensiveness level, a subjective indicator of how offensive the resource content could be from its publisher's point of view.
 
@@ -179,7 +179,7 @@ It is suggested to provide extra information in the description field to clarify
   - Primary key: no.
   - FTS searchable: no.
 
-#### `latitude`
+#### latitude
 
 Geographic latitude of the resource, the integer value resulting of multiplying the real number that represents the latitude coordinate in WGS 84 (EPSG:4326) format by 10000000. The publisher is free to decide the level of precision to use.
 
@@ -189,7 +189,7 @@ Geographic latitude of the resource, the integer value resulting of multiplying 
   - Primary key: no.
   - FTS searchable: no.
 
-#### `longitude`
+#### longitude
 
 Geographic longitude of the resource, the integer value resulting of multiplying the real number that represents the longitude coordinate in WGS 84 (EPSG:4326) format by 10000000. The publisher is free to decide the level of precision to use.
 
@@ -199,7 +199,7 @@ Geographic longitude of the resource, the integer value resulting of multiplying
   - Primary key: no.
   - FTS searchable: no.
 
-#### `timestamp`
+#### timestamp
 
 Coordinated Universal Time (UTC) timestamp of the last update of the resource represented with a valid Unix Epoch timestamp (seconds since 1970-01-01T00:00:00Z).
 
@@ -264,18 +264,14 @@ The CiprAPI exposes the following endpoints:
 - `GET /{za}/longitude/` - Retrieves the longitude of a specific cipred resource.
 - `GET /{za}/timestamp/` - Retrieves the timestamp of a specific cipred resource.
 - `GET /languages/` - Retrieves the contents of the languages database table. Only to be called from the local ciprface.
-
 - `PUT /{za}/` - Adds a new cipred resource to the Cipr.
-
 - `DELETE /{za}/` - Removes a cipred resource from the Cipr.
-
 - `QUERY /` - Queries the ciprdup of the ciprnode with a given `FTS expression+filters`.
 - `QUERY /ri/` - Queries the resindex (ri) of the cipred resource with a given `expression`.
-
 - `HEAD /` - Verifies the presence of a ciprnode in the Cipr.
 - `HEAD /ri/` - Verifies the presence of a resindex (ri) in the ciprnode.
 
-#### Use of the `GET` method
+#### Use of the GET method
 
 A `GET` request to `/` accepts the `pages[size]` and `pages[num]` query parameters, being `size` an integer (n) indicating the expected number of entries per page, and `num` an integer or range indicating which page numbers are expected. A `GET` request to `/{za}/` will retrieve only one row with all the fields for a specific cipred resource or only one row with a specific field. All `GET` endpoints support content negotiation via the `Accept` header. Examples:
 
@@ -390,7 +386,7 @@ Content-Type: application/json; charset=utf-8
 ]
 ```
 
-#### Use of the `PUT` method
+#### Use of the PUT method
 
 A `PUT` request to `{za}` will add a new cipred resource to the Cipr if it doesn't exist or update it if it does. The request body must be JSON and must contain at least all the required fields for a cipred resource. The response has no body; the outcome is indicated by the HTTP status code (`202 Accepted` for new entries, for idempotent updates or for self-insertions) and the `Location` header. Example:
 
@@ -431,7 +427,7 @@ Additional defensive validations are applied before the sequence: rate limiting 
 
 The insertion won't be effective if at least one of the non-bypassed checks fails.
 
-#### Use of the `DELETE` method
+#### Use of the DELETE method
 
 A `DELETE` request to `{za}` will remove a cipred resource from the Cipr if it exists. The response is always `202 Accepted` with no body, regardless of whether the entry was actually deleted or the deletion was rejected because the node passed validation. Self-deletions are silently ignored. Example:
 
@@ -455,7 +451,7 @@ The *Reliability Validation* requires the use of a random `FTS expression` and r
 
 The deletion of an entry won't be effective if all of the three checks are successfully passed.
 
-#### Use of the `QUERY` method
+#### Use of the QUERY method
 
 A `QUERY /` request must be able to receive the `pages[num]` and `pages[size]` query parameters, being `num` an array of integers (n) and/or ranges (n-m) indicating which page numbers are expected, and `size` an array of integers (n) indicating the expected number of entries per page. For example:
 
@@ -709,7 +705,7 @@ Even when desirable, the resindex ranking algorithm for search results doesn't n
 
 A ciprnode must provide a set of minimum mechanisms to allow resource owners creating adapters for the `QUERY /ri/` endpoint act as a client to whatever they have as their resource's search system, being it client-side site search tools, static site search tools, lightweight server-side search tools, enterprise/heavyweight search tools, search-as-a-service (hosted) tools, etc.
 
-#### Use of the `HEAD` method
+#### Use of the HEAD method
 
 A `HEAD` request to `/` will verify the presence of a ciprnode in the Cipr. The response includes an `X-Cipr-Count` header with the total number of entries in the ciprdup. Example:
 

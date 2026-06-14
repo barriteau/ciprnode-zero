@@ -1,0 +1,343 @@
+/* --- Panel shared base --- */
+
+.panel-close {
+    position: absolute;
+    top: 0;
+   inset-inline-end: 0;
+    border: 0;
+    padding: .33em;
+    margin: 0;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--color-fg-muted);
+    font-size: 1.66em;
+    z-index: 0;
+}
+
+.panel-overlay {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    opacity: 0.65;
+    background-size: 6px 6px;
+    background-image: repeating-linear-gradient(45deg, #000000 0, #000000 0.6px, #00000077 0, #00000077 50%);
+    display: none;
+}
+
+.panel {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0;
+    padding: 0;
+}
+
+.panel-body {
+    position: absolute;
+    top: 3.4em;
+    height: calc(100vh - 3.4rem);
+    width: 80vw;
+    max-width: 1024px;
+    margin: 0;
+    padding: 0;
+    background: var(--color-bg-overlay);
+    border-radius: 0;
+    overflow-y: scroll;
+}
+
+.panel-body > h2 {
+    margin: 0;
+    padding-block-start: 2em; padding-block-end: 1em; padding-inline-start: 1em; padding-inline-end: 0;
+}
+
+/* --- ToC panel --- */
+
+nav#toolbar label input#toc-toggle {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+
+nav#toolbar label,
+nav#toolbar label svg-icon.toc {
+    cursor: pointer;
+    position: relative;
+}
+
+nav#toolbar a[disabled],
+nav#toolbar a[disabled] svg-icon {
+    cursor: not-allowed;
+}
+
+aside#toc-panel {
+    inset-inline-start: -100vw;
+    transition: left 0.2s ease;
+}
+
+aside#toc-panel>button#toc-overlay {
+   inset-inline-start: 0;
+}
+
+aside#toc-panel>#toc-body {
+   inset-inline-start: 0;
+    border-start-end-radius: 4px;
+    border-end-end-radius: 4px;
+    padding: 1em;
+}
+
+aside#toc-panel>#toc-body nav {
+    padding-bottom: 3em;
+}
+
+body:has(input[form="toc-form"]:checked) aside#toc-panel {
+   inset-inline-start: 0;
+}
+
+body:has(input[form="toc-form"]:checked) aside#toc-panel #toc-overlay {
+    display: block;
+}
+
+body:has(input[form="toc-form"]:checked) label svg-icon.toc {
+    filter: invert(66%) sepia(96%) saturate(2549%) hue-rotate(142deg) brightness(89%) contrast(103%);
+}
+
+#toc-body>nav {
+    white-space: pre-line;
+    margin-top: 1em;
+}
+
+#toc-body>nav a {
+    font-weight: normal;
+    break-after: always;
+}
+
+#toc-body>nav a::after {
+    content: "\A";
+}
+
+#toc-body>nav em a {
+    color: var(--color-footnote);
+    font-weight: bold;
+}
+
+#toc-body>nav a.in-0::before {
+    content: '● ';
+}
+
+#toc-body>nav a.in-1::before,
+#toc-body>nav a.in-2::before,
+#toc-body>nav a.in-3::before,
+#toc-body>nav a.in-4::before,
+#toc-body>nav a.in-5::before,
+#toc-body>nav a.in-6::before {
+    content: '• ';
+}
+
+#toc-body>nav a.in-0 {
+    margin-inline-start: 0;
+    font-size: 1.5em;
+}
+
+#toc-body>nav a.in-1 {
+    margin-inline-start: 1em;
+    font-size: 1.4em;
+}
+
+#toc-body>nav a.in-2 {
+    margin-inline-start: 2em;
+    font-size: 1.3em;
+}
+
+#toc-body>nav a.in-3 {
+    margin-inline-start: 3em;
+    font-size: 1.2em;
+}
+
+#toc-body>nav a.in-4 {
+    margin-inline-start: 4em;
+    font-size: 1.1em;
+}
+
+#toc-body>nav a.in-5 {
+    margin-inline-start: 5em;
+    font-size: 1em;
+}
+
+#toc-body>nav a.in-6 {
+    margin-inline-start: 6em;
+    font-size: 0.9em;
+}
+
+#toc-body>nav>a>strong {
+    color: var(--color-accent);
+    border-bottom: 1px dotted var(--color-border-accent);
+}
+
+/* --- Annotations panel --- */
+
+aside#annotations-panel {
+   inset-inline-end: -100vw;
+    transition: right 0.2s ease;
+}
+
+nav#toolbar label input#annotations-toggle {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+
+nav#toolbar label svg-icon.annotations {
+    cursor: pointer;
+}
+
+aside#annotations-panel>button#annotations-overlay {
+   inset-inline-end: 0;
+}
+
+aside#annotations-panel>#annotations-body {
+   inset-inline-end: 0;
+    border-start-end-radius: 4px;
+    border-end-end-radius: 4px;
+}
+
+aside#annotations-panel>#annotations-body>p {
+    margin: 1em;
+}
+
+body:has(input[form="annotations-form"]:checked) aside#annotations-panel {
+   inset-inline-end: 0;
+}
+
+body:has(input[form="annotations-form"]:checked) aside#annotations-panel #annotations-overlay {
+    display: block;
+}
+
+body:has(input[form="annotations-form"]:checked) label svg-icon.annotations {
+    filter: invert(66%) sepia(96%) saturate(2549%) hue-rotate(142deg) brightness(89%) contrast(103%);
+}
+
+ol#annotations-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#annotations-list>li {
+    margin-block: 1em; margin-inline-start: 0.5em; margin-inline-end: 0;
+    padding: 0;
+}
+
+ol#annotations-list>li.not-here,
+ol#annotations-list>li.here {
+    border-inline-start: 8px solid var(--color-highlight-local);
+}
+
+ol#annotations-list>li.foreign-author {
+    border-inline-start: 8px solid var(--color-highlight-foreign);
+}
+
+#annotations-list>li>figure {
+    margin: 0;
+    padding-block: 0; padding-inline-start: 0.5em; padding-inline-end: 0;
+}
+
+ol#annotations-list>li>figure>figcaption {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1em;
+}
+
+ol#annotations-list>li>figure>figcaption>span.actions {
+    font-size: 1em;
+}
+
+#annotations-list>li>figure>div.excerpt {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+#annotations-list>li>figure>div.excerpt>a {
+    color: var(--color-annotations-excerpt);
+    transition: color 0.5s;
+}
+
+#annotations-list>li>figure>div.excerpt>a:link {
+    color: var(--color-annotations-excerpt);
+}
+
+#annotations-list>li>figure>div.excerpt>a:hover {
+    color: var(--color-accent-glow);
+}
+
+#annotations-list>li>figure>div.excerpt>a:active {
+    color: var(--color-accent-glow);
+}
+
+/* --- Search panel --- */
+
+aside#search-panel {
+   inset-inline-end: -100vw;
+    transition: right 0.2s ease;
+}
+
+label input#search-toggle,
+label input.search-toggle {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+
+label svg-icon.search {
+    cursor: pointer;
+}
+
+aside#search-panel>button#search-overlay {
+   inset-inline-end: 0;
+}
+
+aside#search-panel>#search-body,
+aside#search-panel>#ri-search-body {
+   inset-inline-end: 0;
+    border-start-end-radius: 4px;
+    border-end-end-radius: 4px;
+}
+
+#search-form,
+#ri-search-form {
+    padding: 1em;
+}
+
+#search-form input,
+#ri-search-form input {
+    width: 100%;
+}
+
+body:has(input[form="search-form"]:checked) aside#search-panel,
+body:has(input[form="ri-search-form"]:checked) aside#search-panel,
+body.ri-panel-open aside#search-panel {
+   inset-inline-end: 0;
+}
+
+body:has(input[form="search-form"]:checked) aside#search-panel #search-overlay,
+body:has(input[form="ri-search-form"]:checked) aside#search-panel #search-overlay,
+body.ri-panel-open aside#search-panel #search-overlay {
+    display: block;
+}
+
+body:has(input[form="search-form"]:checked) label svg-icon.search,
+body:has(input[form="ri-search-form"]:checked) label svg-icon.search {
+    filter: invert(66%) sepia(96%) saturate(2549%) hue-rotate(142deg) brightness(89%) contrast(103%);
+}

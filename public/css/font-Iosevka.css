@@ -5,7 +5,7 @@
     src: url("typography/Iosevka-Regular.woff2") format("woff2");
     font-style: normal;
     font-weight: normal;
-    font-display: optional;
+    font-display: swap;
     font-stretch: normal;
 }
 
@@ -14,7 +14,7 @@
     src: url("typography/Iosevka-Italic.woff2") format("woff2");
     font-style: italic;
     font-weight: normal;
-    font-display: optional;
+    font-display: swap;
     font-stretch: normal;
 }
 
@@ -23,7 +23,7 @@
     src: url("typography/Iosevka-Bold.woff2") format("woff2");
     font-style: normal;
     font-weight: bold;
-    font-display: optional;
+    font-display: swap;
     font-stretch: normal;
 }
 
@@ -32,6 +32,6 @@
     src: url("typography/Iosevka-Bold-Italic.woff2") format("woff2");
     font-style: italic;
     font-weight: bold;
-    font-display: optional;
+    font-display: swap;
     font-stretch: normal;
 }

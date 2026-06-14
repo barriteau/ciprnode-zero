@@ -4,11 +4,6 @@
    MEDIA QUERIES
    ========================================= */
 
-/* --- Dark Mode System Preferences --- */
-@media (prefers-color-scheme: dark) {
-  /* TODO */
-}
-
 /* --- 1664px (Extra Large Desktop) --- */
 @media screen and (min-width: 1664px) {
 
@@ -16,7 +11,7 @@
   nav#foot-nav,
   footer,
   dialog {
-    max-width: 45vw;
+    max-width: 60vw;
   }
 
   main#wide {
@@ -98,7 +93,18 @@
 /* --- 640px (Standard Mobile) --- */
 @media screen and (max-width: 640px) {
   body {
-    font-size: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  nav#toolbar svg-icon {
+    height: 1.2em;
+    width: 1.2em;
+    mask-size: 1.2em;
+  }
+
+  nav#toolbar>div>a,
+  nav#toolbar>div>label {
+    margin-inline-end: 0;
   }
 
   #search-filters {

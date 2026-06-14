@@ -4,13 +4,13 @@
 # dev
 # test
 # prod
-env = "dev"
+env = "prod"
 
 # Log level
 # 0: silent
 # 1: operational
 # 2: verbose
-log_level = 2
+log_level = 0
 
 # A 'true' value here writes the the same output of 'log_level = 2' to
 # the logs files (ciprnode-*.log) in the /logs/ folder.
@@ -23,25 +23,25 @@ debug = false
 za = "barriteau.net"
 
 # The title of the resource to index, max 64 characters
-title = "La red de Juan Barriteau"
+title = "Juan Barriteau"
 
 # A brief description of the resource, max 256 characters
-description = "Todo lo que Juan hace en red, redes con gente o sin ella"
+description = "Web personal y publicaciones de Juan Barriteau"
 
 # Space separated list of keywords, max 512 characters, case insensitive. Alternatively, keywords
 # can be provided as an array of strings: keywords = ["project", "top", "network", "infrastructure"]
-keywords = "red redes infra infraestructura network infrastructure connection conexión conexiones"
+keywords = "juan barriteau yelema crónica torbí torbia estado liberalismo libertarianismo anarquismo comunismo capitalismo socialismo"
 
 # What is offered or shared through your resource. This includes, but is not restricted to, tangible products, professional or casual
 # services, expertise, personal skills, attributes, qualities and traits that others might find valuable, interesting or attractive.
-offering = "Freelance software development services"
+offering = "Software development services, Spanish lessons"
 
 # What you are looking for or who you want to connect with. This could be specific items, a helping hand, someone
 # with a particular skill set or specific characteristics from collaborators, personal or professional connections.
-seeking = "Blockchain indie developer"
+seeking = ""
 
 # Primary language of the resource, the main one, leave it empty if the resource is universally accesible.
-primary_lang = "kn"
+primary_lang = "es"
 
 # Offensiveness Level of the resource
 # 0: Non offensive content
@@ -52,8 +52,10 @@ ol = 0
 
 # Geographical coordinates in WGS 84 (EPSG:4326) format multiplied by 10000000 to obtain an
 # integer value. Any precision level allowed. Use 0 if geolocation is irrelevant for the resource.
-latitude = 223027110
-longitude = 1141772160
+Latitude = 105055430
+Longitude = -668990110
+#latitude = 105444722
+#longitude = -667867138
 
 #: Internal Search Engine (ISE) Providers (optional)
 # These represent external APIs used for executing `QUERY /ri/` equivalent searches.
@@ -62,9 +64,9 @@ longitude = 1141772160
 name = "pagefind"
 url = "https://cgt.barriteau.net/"
 
-# [[ise_provider]]
-# name = "pagefind"
-# url = "https://juan.barriteau.net/"
+[[ise_provider]]
+name = "pagefind"
+url = "https://juan.barriteau.net/"
 
 #: Extra metadata for the ciprface. It is not part of the indexed data, this just makes the ciprnode easier to find on the web.
 [meta_data]
@@ -76,7 +78,7 @@ author = "Juan Barriteau"
 author_url = "https://juan.barriteau.net/"
 
 # Topic / subject summary of the site (used in meta[name=topic] and DC.Subject)
-subject = "Redes, infraestructura, conexiones y proyectos de Juan Barriteau"
+subject = "Web personal y publicaciones de Juan Barriteau"
 
 # Publisher name (DC.Publisher)
 publisher = "Juan Barriteau"
@@ -112,7 +114,7 @@ page_size = 10
 # A ciprnode listens only in the port 443, change this
 # value only for testing purposes or if you are behind a proxy
 # port = 443
-port = 8442
+port = 8446
 
 # Trusted bootstrap ciprnodes to start syncing from
 bootstrap_nodes = [

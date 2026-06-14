@@ -1,0 +1,375 @@
+/* --- Dialog --- */
+
+dialog {
+    margin: auto;
+    max-width: 50vw;
+    min-width: 340px;
+    background-color: var(--color-bg-surface);
+    color: var(--color-body-text);
+    border: 2px solid var(--color-accent);
+    border-radius: 4px;
+    font-size: 0.8em;
+    text-align: justify;
+    padding: 1em;
+    z-index: 10000;
+}
+
+dialog:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+dialog:focus:not(:focus-visible) {
+    outline: none;
+}
+
+dialog>p {
+    padding: 2.2em;
+    margin: 0;
+}
+
+dialog::backdrop {
+    opacity: 0.65;
+    background-size: 6px 6px;
+    background-image: repeating-linear-gradient(45deg, #000000 0, #000000 .6px, #00000077 0, #00000077 50%);
+    backdrop-filter: blur(0.4px) brightness(50%);
+}
+
+dialog .dialog-close {
+    position: absolute;
+    top: 0;
+    inset-inline-end: 0;
+    margin: 0;
+    padding: 4px;
+    border-width: 0;
+}
+
+/* --- Selection floating button --- */
+
+button#selection-floating-btn {
+    position: fixed;
+    z-index: 9998;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--color-accent);
+    background-color: var(--color-bg-overlay);
+    color: var(--color-accent);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    padding: 0;
+    margin: 0;
+}
+
+button#selection-floating-btn:hover {
+    transform: scale(1.1);
+    background-color: var(--color-bg-form);
+}
+
+button#selection-floating-btn.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+button#selection-floating-btn svg-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* --- Selection-dialog --- */
+
+dialog#selection-dialog form {
+    margin: 0;
+    padding: 2.3em 1.4em 1.2em 1.4em;
+}
+
+dialog#selection-dialog>form>a {
+    font-weight: normal;
+    font-size: 1.25em;
+}
+
+dialog#selection-dialog>form>details>summary>a {
+    font-size: 1em;
+}
+
+/*
+dialog#selection-dialog summary {
+    list-style-type: none;
+}
+*/
+
+dialog#selection-dialog fieldset {
+    border: 0;
+    margin: 0;
+    padding: .25em 0;
+}
+
+dialog#selection-dialog fieldset div {
+    border: 0;
+    margin: auto;
+    text-align: center;
+    padding-top: 1em;
+}
+
+dialog#selection-dialog div#selection-annotation-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: .25em;
+    width: 100%;
+    margin: .25em 0 1em 0;
+    text-align: center;
+}
+
+dialog#selection-dialog div#selection-annotation-actions button {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+dialog#selection-dialog textarea {
+    width: 100%;
+    height: 10em;
+    text-align: justify;
+}
+
+dialog#selection-dialog button {
+    border: 0; /*1px solid var(--color-accent);*/
+    /*border-radius: 4px;*/
+    color: var(--color-accent);
+    background-color: transparent; /*var(--color-bg-overlay);*/
+}
+
+dialog#selection-dialog details {
+    margin-bottom: 0.5em;
+}
+
+dialog#selection-dialog div#qr-container svg {
+    margin: 1em auto;
+}
+
+/* --- Confirm dialog --- */
+
+dialog#notification-dialog div#notification-message {
+    margin-bottom: 1.5em;
+    text-align: center;
+}
+
+dialog#notification-dialog form {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+}
+
+dialog button {
+    border: 1px solid var(--color-accent);
+    /*border-radius: 4px;*/
+    color: var(--color-accent);
+    background-color: transparent; /*background-color: var(--color-bg-overlay);*/
+    padding: 0.4em 1.2em;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+dialog button:hover,
+dialog button:focus {
+    background-color: transparent; /*background-color: var(--color-accent);*/
+    color: var(--color-accent-on);
+}
+
+dialog#confirmation-dialog div#dialog-message {
+    margin-bottom: 1.5em;
+    text-align: center;
+}
+
+dialog#confirmation-dialog form {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+}
+
+/* --- Choice dialog --- */
+
+dialog#choice-dialog {
+    max-width: 30em;
+}
+
+dialog#choice-dialog div#choice-message {
+    margin-bottom: 1.5em;
+    text-align: center;
+}
+
+dialog#choice-dialog div#choice-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.5em;
+    flex-wrap: wrap;
+}
+
+/* --- Edit annotation dialog --- */
+
+dialog#edit-annotation-dialog form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    padding: 2.3em 1.4em 1.2em 1.4em;
+}
+
+dialog#edit-annotation-dialog textarea {
+    width: 100%;
+    height: 10em;
+    text-align: justify;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    padding: 0.5em;
+    font-family: inherit;
+    font-size: inherit;
+    resize: vertical;
+}
+
+dialog#edit-annotation-dialog div#edit-annotation-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5em;
+}
+
+/* --- Prompt dialog --- */
+
+dialog#prompt-dialog form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    padding: 2.3em 1.4em 1.2em 1.4em;
+}
+
+dialog#prompt-dialog input {
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    padding: 0.5em;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+dialog#prompt-dialog div#prompt-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5em;
+}
+
+/* --- Author select dialog --- */
+
+dialog#author-select-dialog {
+    max-width: 24em;
+}
+
+dialog#author-select-dialog div#author-select-message {
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+dialog#author-select-dialog div#author-select-list {
+    margin-bottom: 1.5em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    justify-content: center;
+}
+
+dialog#author-select-dialog div#author-select-list label {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    cursor: pointer;
+    padding: 0.25em 0.6em;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    background-color: var(--color-bg-form);
+    transition: all 0.2s ease;
+}
+
+dialog#author-select-dialog div#author-select-list label:hover {
+    background-color: var(--color-bg-fieldset);
+}
+
+dialog#author-select-dialog div#author-select-list label:has(input:checked) {
+    background-color: var(--color-accent);
+    color: var(--color-accent-on);
+}
+
+dialog#author-select-dialog div#author-select-list input[type="checkbox"] {
+    accent-color: var(--color-accent);
+}
+
+dialog#author-select-dialog div#author-select-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.5em;
+}
+
+.marker-block {
+    position: relative;
+}
+
+.marker-block>b.svg-icon.seal {
+    position: absolute;
+    inset-inline-start: -2.5em;
+    top: 0.15em;
+    width: 2em;
+    height: 3.75em;
+    background-color: transparent;
+}
+
+.marker-block>b.svg-icon.seal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='96' height='96'%3E%3Cpath style='fill:none;stroke:%23015f6b;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.25;stroke-dasharray:none' d='M3 2h18v20l-9-6-9 6z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+li>p.marker-block>b.svg-icon.seal {
+    inset-inline-start: -4.5em;
+}
+
+h1.marker-block>b.svg-icon.seal,
+h2.marker-block>b.svg-icon.seal,
+h3.marker-block>b.svg-icon.seal,
+h4.marker-block>b.svg-icon.seal,
+h5.marker-block>b.svg-icon.seal,
+h6.marker-block>b.svg-icon.seal {
+    inset-inline-start: -2.15em;
+}
+
+pre.marker-block>b.svg-icon.seal,
+blockquote.marker-block>b.svg-icon.seal {
+    inset-inline-start: -2.15em;
+}
+
+#marker-entry {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-block: 0.5em;
+    margin-inline-start: 0.5em;
+    padding: 0.25em 0.5em;
+    border-inline-start: 8px solid var(--color-accent);
+}
+
+#marker-entry>svg-icon.marker {
+    width: 1em;
+    height: 1.25em;
+}
+
+#marker-entry>a#panel-to-marker {
+    color: var(--color-accent);
+    font-weight: bold;
+}
+
+#marker-entry .actions {
+    margin-inline-start: auto;
+}

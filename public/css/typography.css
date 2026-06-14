@@ -2,11 +2,6 @@
 
 /* --- Defaults --- */
 
-:root {
-    --base-font-size: 16px;
-    --base-line-height: 1.3;
-}
-
 html {
     font-size: var(--base-font-size);
     line-height: var(--base-line-height);
@@ -35,12 +30,13 @@ body {
 h1,
 .hx,
 .h1 {
-    margin: 1em 0 0 0;
+    margin: 1.25lh 0 0.75lh 0;
     line-height: 1.1;
     font-family: "Poller-One", sans-serif;
+    font-weight: normal;
     word-break: break-word;
     scroll-margin-top: 4em;
-    color: #444444;
+    color: var(--color-fg-heading);
 }
 
 h2,
@@ -53,12 +49,13 @@ h6,
 .h4,
 .h5,
 .h6 {
-    margin: 1em 0 0 0;
+    margin: 1.25lh 0 0.75lh 0;
     line-height: 1.1;
     font-family: "Libertinus-Sans", sans-serif;
+    font-weight: bold;
     word-break: break-word;
     scroll-margin-top: 4em;
-    color: #444444;
+    color: var(--color-fg-heading);
 }
 
 .hx,
@@ -137,7 +134,7 @@ h6 small,
 .h6 small {
     font-size: 0.6666em;
     font-weight: normal;
-    color: #454545;
+    color: var(--color-fg-subtitle);
 }
 
 /* --- head ---*/
@@ -149,7 +146,7 @@ nav#toolbar {
 /* --- Tables --- */
 
 table {
-    font-size: 1em;
+    font-size: 0.75em;
 }
 
 table caption {
@@ -161,24 +158,29 @@ table caption {
 a {
     text-decoration: none;
     cursor: pointer;
-    color: #015F6B;
+    color: var(--color-accent);
     transition: color 0.5s;
 }
 
+main a {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
 a:link {
-    color: #015F6B;
+    color: var(--color-accent);
 }
 
 a:hover {
-    color: #00bad3;
+    color: var(--color-accent-glow);
 }
 
 a:active {
-    color: #00bad3;
+    color: var(--color-accent-glow);
 }
 
 a:visited {
-    color: #6a757e;
+    color: var(--color-link-visited);
 }
 
 a:link,
@@ -191,7 +193,7 @@ a:focus {
 
 a:focus-visible,
 summary:focus-visible {
-    outline: 2px solid #015F6B;
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
     border-radius: 4px;
 }
@@ -199,7 +201,7 @@ summary:focus-visible {
 a:focus:not(:focus-visible),
 summary:focus:not(:focus-visible) {
     outline: none;
-    background-color: #cccccc44;
+    background-color: var(--color-focus-ring);
     border-radius: 4px;
 }
 
@@ -209,7 +211,7 @@ a.disabled:hover,
 a.disabled:active,
 a.disabled:visited,
 a.disabled:focus {
-    color: #676767;
+    color: var(--color-fg-subtitle);
     cursor: default;
 }
 
@@ -217,15 +219,11 @@ a.disabled:focus {
 
 a.footnote-ref {
     font-family: "Iosevka", monospace;
-    color: #ff8000;
+    color: var(--color-footnote);
     font-weight: bold;
     margin: 0;
     padding: 0;
-}
-
-a.footnote-ref sup {
-    margin: 0;
-    padding: 0;
+    line-height: 0;
 }
 
 /* --- Font variations --- */
@@ -249,7 +247,7 @@ time {
     font-family: "Iosevka", monospace;
     font-size: 0.85em;
     line-height: 1.25;
-    color: #000000;
+    color: var(--color-fg-primary);
     page-break-inside: avoid;
     word-wrap: break-word;
 }
