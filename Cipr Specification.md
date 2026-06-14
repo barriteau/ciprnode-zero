@@ -152,7 +152,7 @@ What the owner of the resource is looking for.
 The primary language for the resource.
 
 - **Constrains**:
-  - Allowed values/length: `/^[a-z]{1,2}$/u`
+  - Allowed values/length: `/^[a-z]{2}$/u`
   - empty allowed: yes.
   - Primary key: no.
   - FTS searchable: no.
@@ -163,7 +163,7 @@ Offensiveness level, a subjective indicator of how offensive the resource conten
 
 Taking as a starting point that in this context a *group* is any community, congregation, circle, clan, league, tribe, collective, gang, faction, union, guild or any other form of association based on: sexual orientation, social position, region, ethnicity, culture, nationality, age, profession, gender identity, political views, religious views, ideological views or any other type of affinity; the possible values for the **ol** field are:
 
-**`empty`**: *Non Offensive Content*, indicates the content is not offensive to any person or social group.
+**`NULL`**: *Non Offensive Content*, indicates the content is not offensive to any person or social group.
 
 **`1`**: *Individually Offensive Content*, indicates the content could be offensive to specific individuals, to one or more specific persons not related by any particular type of affinity between them.
 
@@ -184,7 +184,7 @@ It is suggested to provide extra information in the description field to clarify
 Geographic latitude of the resource, the integer value resulting of multiplying the real number that represents the latitude coordinate in WGS 84 (EPSG:4326) format by 10000000. The publisher is free to decide the level of precision to use.
 
 - **Constrains**:
-  - Allowed values/length: `/^[\d]{9}$/`
+  - Allowed values/length: integer in range `[-900000000, 900000000]`
   - empty allowed: yes, only if longitude is also empty.
   - Primary key: no.
   - FTS searchable: no.
@@ -194,7 +194,7 @@ Geographic latitude of the resource, the integer value resulting of multiplying 
 Geographic longitude of the resource, the integer value resulting of multiplying the real number that represents the longitude coordinate in WGS 84 (EPSG:4326) format by 10000000. The publisher is free to decide the level of precision to use.
 
 - **Constrains**:
-  - Allowed values/length: `/^[\d]{9}$/`
+  - Allowed values/length: integer in range `[-1800000000, 1800000000]`
   - empty allowed: yes, only if latitude is also empty.
   - Primary key: no.
   - FTS searchable: no.
@@ -204,7 +204,7 @@ Geographic longitude of the resource, the integer value resulting of multiplying
 Coordinated Universal Time (UTC) timestamp of the last update of the resource represented with a valid Unix Epoch timestamp (seconds since 1970-01-01T00:00:00Z).
 
 - **Constrains**:
-  - Allowed values/length: `/^[\d]{10}$/`
+  - Allowed values/length: `/^[\d]{10,12}$/`
   - empty allowed: no.
   - Primary key: no.
   - FTS searchable: no.
@@ -229,8 +229,6 @@ The CiprAPI supports the following media types for the information exchange:
 
 - `application/hal+json`
 - `application/hal+json; charset=utf-8`
-- `application/hal+xml`
-- `application/hal+xml; charset=utf-8`
 
 **Plain text**, when the `Accept:` header includes the following media types:
 
@@ -242,16 +240,12 @@ The CiprAPI supports the following media types for the information exchange:
 - `*/*`
 - `text/html`
 - `text/html; charset=utf-8`
-- `application/xhtml+xml`
-- `application/xhtml+xml; charset=utf-8`
 
 **Full HTML with HEAD and BODY tags^[This is basically the ciprface.]**, when the header `HX-Request:` is absent or has `false` value, and the `Accept:` header is absent or includes the following media types:
 
 - `*/*`
 - `text/html`
 - `text/html; charset=utf-8`
-- `application/xhtml+xml`
-- `application/xhtml+xml; charset=utf-8`
 
 No matter if it is requested or not, UTF-8 must be used always in any response and is assumed as the default charset for any request and response.
 
@@ -283,7 +277,7 @@ The CiprAPI exposes the following endpoints:
 
 #### Use of the `GET` method
 
-A `GET` request to `/` accepts the `pages[size]` query parameter, being `size` an integer (n) indicating the expected number of entries. The entries in the Cipr are not expected to be ordered, so pagination is not feasible. A `GET` request to `/{za}/` will retrieve only one row with all the fields for a specific cipred resource or only one row with a specific field. All `GET` endpoints support content negotiation via the `Accept` header. Examples:
+A `GET` request to `/` accepts the `pages[size]` and `pages[num]` query parameters, being `size` an integer (n) indicating the expected number of entries per page, and `num` an integer or range indicating which page numbers are expected. A `GET` request to `/{za}/` will retrieve only one row with all the fields for a specific cipred resource or only one row with a specific field. All `GET` endpoints support content negotiation via the `Accept` header. Examples:
 
 This request asks the Cipr to retrieve the full Cipr^[Limits and default pagination settings of the ciprnode will apply.]:
 
@@ -428,12 +422,14 @@ Content-Length: 0
 
 Before proceeding with the effective insertion/update of a `PUT`ed entry in the ciprdup, a ciprnode must execute the **Insertion Validation Sequence**:
 
-0. **Currentness Validation**: check that the value in the `timestamp` field is not older than 24 hours.
+0. **Currentness Validation**: check that the value in the `timestamp` field is not older than 24 hours and not more than 5 minutes in the future (to tolerate minor clock skew).
 1. **Ownership Validation**: DNS query to check if the TXT record for the new cipred resource exists and is valid.
 2. **Availability Validation**: `HEAD /` request to the `https://ciprnode.{za}` to check if the cipred resource is responding.
-3. **Reliability Validation**: `QUERY /` to `https://ciprnode.{za}` to validate the correctness of the resource's query results.
+3. **Reliability Validation**: `QUERY /` to `https://ciprnode.{za}` to validate the correctness of the resource's query results. If the network call fails due to a transient error, this step is bypassed (fails open) to avoid blocking legitimate propagation.
 
-The insertion won't be effective if at least one of those checks fails.
+Additional defensive validations are applied before the sequence: rate limiting per IP, body size limits, JSON validity, URL/body `za` consistency, self-update protection, and field-level length limits.
+
+The insertion won't be effective if at least one of the non-bypassed checks fails.
 
 #### Use of the `DELETE` method
 
@@ -510,12 +506,10 @@ Accept: application/hal+json; charset=utf-8
 {
   "query": "FTS expression",
   "ol": [0,1,2,3],
-  "geo": {
-    "latitude": "latitude",
-    "longitude": "longitude",
-    "geo_min_radius_km": "radius",
-    "geo_max_radius_km": "radius"
-  },
+  "geo_latitude": "latitude",
+  "geo_longitude": "longitude",
+  "geo_min_radius_km": "radius",
+  "geo_max_radius_km": "radius",
   "before": "timestamp",
   "after": "timestamp",
   "pages_num": [num],
@@ -554,14 +548,12 @@ Accept: application/hal+json; charset=utf-8
 {
   "query": "FTS expression",
   "ol": [0,1,2,3],
-  "geo": {
-    "latitude": "latitude",
-    "longitude": "longitude",
-    "geo_min_radius_km": "radius",
-    "geo_max_radius_km": "radius"
-  },
+  "geo_latitude": "latitude",
+  "geo_longitude": "longitude",
+  "geo_min_radius_km": "radius",
+  "geo_max_radius_km": "radius",
   "before": "timestamp",
-  "after": "timestamp"
+  "after": "timestamp",
   "pages_num": [num],
   "pages_size": [size]
 }
@@ -611,25 +603,6 @@ after=timestamp
 Note the last one is asking for the results to be returned as HTML fragments instead of JSON.
 
 Example responses to the above requests:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/x-www-form-urlencoded; charset=utf-8
-Date: Tue, 18 Feb 2026 10:09:00 GMT
-Content-Length: 368
-
-count=42
-&pages[current]=1
-&pages[total]=5
-&results[0][za]=sub.example.com
-&results[0][title]=FTS Expression Guide
-&results[0][description]=A complete guide to Full Text Search expressions.
-&results[0][timestamp]=1698417000
-&results[1][za]=blog.example.com
-&results[1][title]=My First FTS Post
-&results[1][description]=Testing the expression engine.
-&results[1][timestamp]=1698417055
-```
 
 ```http
 HTTP/1.1 200 OK
@@ -693,9 +666,8 @@ HTTP/1.1 200 OK
 Content-Type: text/html; charset=utf-8
 Date: Tue, 18 Feb 2026 10:09:00 GMT
 Content-Length: 512
-HX-Trigger-After-Swap: update-pagination
 
-<article class="cipr-result" data-za="sub.example.com">
+<article class="cipr-entry" data-za="sub.example.com">
     <h3><a href="/sub.example.com/">FTS Expression Guide</a></h3>
     <p class="description">A complete guide to Full Text Search expressions.</p>
     <small class="meta">
@@ -704,7 +676,7 @@ HX-Trigger-After-Swap: update-pagination
     </small>
 </article>
 
-<article class="cipr-result" data-za="blog.example.com">
+<article class="cipr-entry" data-za="blog.example.com">
     <h3><a href="/blog.example.com/">My First FTS Post</a></h3>
     <p class="description">Testing the expression engine.</p>
     <small class="meta">
@@ -713,14 +685,14 @@ HX-Trigger-After-Swap: update-pagination
     </small>
 </article>
 
-<div id="pagination-controls" hx-swap-oob="true">
-    <button disabled>1</button>
-    <button hx-get="/{za}/?pages[num]=2&pages[size]=10">2</button>
-    <button hx-get="/{za}/?pages[num]=3&pages[size]=10">3</button>
-</div>
+<nav class="pagination">
+    <a rel="prev" href="/?pages[num]=1&pages[size]=10">← Previous</a>
+    <span class="current">1</span>
+    <a rel="next" href="/?pages[num]=2&pages[size]=10">Next →</a>
+</nav>
 ```
 
-A `QUERY /ri/` request could receive `pages[num]` and `pages[size]` query parameters, and could also receive filters, but those are not mandatory and is up to the resource owner to decide if they want to use them.
+A `QUERY /ri/` request receives a `query` parameter with the search expression. Pagination and filtering are handled internally by each ISE provider according to its own capabilities.
 
 This queries the first page of search results from the resindex with the number of entries defaulted in the ciprnode's configuration:
 
@@ -769,7 +741,7 @@ Content-Length: 0
 Or if no resindex is configured:
 
 ```http
-HTTP/1.1 501 Not Implemented
+HTTP/1.1 204 No Content
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: HEAD, OPTIONS
 Content-Length: 0
@@ -789,7 +761,13 @@ The Ciprpulse is the set of interactions that occurs between ciprnodes with the 
 
 #### Scheduled Actions
 
-Every ciprnode must start one of the following actions every $I$ minutes: randomly select a set of $N$ entries from its ciprdup, and apply one step of the **Deletion Validation Sequence** to each one. For every resource that fails its audit, a `DELETE` request must be sent to $N$ ciprnodes selected at random from the ciprdup.
+Every ciprnode must start the following actions every $I$ milliseconds (where $I$ is the `expected_propagation_time`):
+
+1. **Audit and Propagation**: Randomly select a set of $N$ entries from its ciprdup (excluding self), and apply the full **Deletion Validation Sequence** (Ownership, Availability, and Reliability) to each one. For every resource that passes validation, a `PUT` request with a freshened `timestamp` must be sent to $N$ ciprnodes selected at random from the ciprdup. For every resource that fails its audit, a `DELETE` request must be sent to $N$ ciprnodes selected at random from the ciprdup.
+
+2. **Reliability Checks**: Generate a random FTS expression (using configured `test_words` and captured user search terms), execute it locally as a baseline, then send `QUERY` requests to $N$ randomly selected peers whose `timestamp` is older than 1 hour. Compare results using Jaccard set similarity (threshold ≥ 60%). Peers failing this check are evicted locally and a `DELETE` is propagated.
+
+3. **Self-Validation**: Every $3 \times I$ milliseconds, validate the local node's own configuration. On success, broadcast a `PUT` for the local entry to $N$ random peers. On persistent failure after retries, send a `DELETE` for the node's own `za` to $N$ random peers (self-destruct signal).
 
 ### 5. Ciprface
 
@@ -813,7 +791,7 @@ There is a **minimal set of features** that a ciprface must have in order to be 
 
 There are no restrictions regarding the use of additional features or elements in the ciprface, as long as they don't conflict with the minimal set of features. The domain holder has the final say about design, UI enhancements, ads, tracking, telemetry, fingerprinting, self-promotion, etc., in a healthy Cipr, the abundance of choices make irrelevant any wrongdoings in a particular ciprface.
 
-The ciprface must also provide a way to specify the order of the search results, for example, by relevance, by age, or by offensiveness level. The ciprface must also provide a way to specify the number of results to return, for example, by using a slider or a dropdown menu.
+The ciprface must also provide a way to specify the order of the search results, for example, by relevance or by age. The number of results per page is configured server-side by the node operator.
 
 ## Search expressions
 
@@ -969,9 +947,9 @@ When concatenating the string for the hash:
 By manual or automated means, a `TXT` record must be created in the corresponding DNS Zone namespace, something like:
 
 ```yaml
-Name: ciprnode.{za}
+Name: _cipr.{za}
 Record Type: TXT
-Value: "_cipr=ciprHash"
+Value: "ciprHash"
 TTL: 1800
 ```
 

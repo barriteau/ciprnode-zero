@@ -40,6 +40,221 @@ export const optionsRi = (_req, _db, _config) => {
 };
 
 /**
+ * Handles GET / requests — simple paginated listing of ciprdup entries.
+ * Per spec, returns randomly selected entries by default.
+ */
+export const list = async (req, db, config) => {
+  const url = new URL(req.url);
+  const params = new URLSearchParams(url.search);
+
+  const parseArray = (val) => {
+    if (!val) return [];
+    if (typeof val !== 'string') return Array.isArray(val) ? val : [val];
+    const cleaned = val.replace(/^\[|\]$/g, '');
+    if (!cleaned.trim()) return [];
+    return cleaned.split(',').map((s) => s.trim()).filter((s) => s);
+  };
+
+  const pNums = parseArray(params.get('pages[num]') || params.get('pages_num') || '');
+  const pSizes = parseArray(params.get('pages[size]') || params.get('pages_size') || '');
+  const pages = [];
+  const defaultSize = config.page_size || 50;
+  let currentPageUI = Number(params.get('page'));
+  const allPageNums = [];
+
+  if (currentPageUI) {
+    if (currentPageUI < 1) currentPageUI = 1;
+    if (currentPageUI > 100) currentPageUI = 100;
+    allPageNums.push(currentPageUI);
+    pages.push({
+      offset: (currentPageUI - 1) * defaultSize,
+      limit: defaultSize,
+      pageNum: currentPageUI,
+    });
+  } else {
+    const expandRange = (str) => {
+      if (str.includes('-')) {
+        const [start, end] = str.split('-').map(Number);
+        if (!isNaN(start) && !isNaN(end)) {
+          const res = [];
+          for (let i = start; i <= end; i++) res.push(i);
+          return res;
+        }
+      }
+      return [Number(str)];
+    };
+
+    pNums.forEach((p) => allPageNums.push(...expandRange(String(p))));
+    if (allPageNums.length === 0) allPageNums.push(1);
+
+    allPageNums.forEach((pageNum, idx) => {
+      const sizeStr = pSizes[idx] !== undefined
+        ? pSizes[idx]
+        : (pSizes.length > 0 ? pSizes[pSizes.length - 1] : defaultSize);
+      const size = Number(sizeStr) || defaultSize;
+      if (pageNum < 1) pageNum = 1;
+      if (pageNum > 100) pageNum = 100;
+      const offset = (pageNum - 1) * size;
+      pages.push({ offset, limit: size, pageNum });
+    });
+    currentPageUI = allPageNums[0];
+  }
+
+  const items = searchEntries(db, {
+    query: '',
+    ol: [],
+    geo: {},
+    timestamp: {},
+    pages,
+    primary_lang: [],
+    sort_by: 'random',
+  });
+  const statsCount = countEntries(db);
+
+  const langMap = getLanguageMap(db);
+  items.forEach((item) => {
+    if (item.primary_lang) {
+      const langData = langMap.get(item.primary_lang);
+      if (langData) {
+        item.lang_name = langData.lang_name;
+        item.lang_name_en = langData.lang_name_en;
+      }
+    }
+  });
+
+  const accept = req.headers.get('accept') || '';
+  const isFragment = req.headers.get('HX-Request') === 'true';
+
+  let locale = 'en';
+  const cookieHeader = req.headers.get('cookie') || '';
+  const match = cookieHeader.match(/cipr_lang=([a-z]{2})/);
+  if (match) {
+    locale = match[1];
+  } else {
+    const acceptLang = req.headers.get('accept-language');
+    if (acceptLang) {
+      locale = acceptLang.substring(0, 2).toLowerCase();
+    }
+  }
+
+  if (accept.includes('application/json') || accept.includes('application/hal+json')) {
+    const enrichedItems = items.map((item) => ({
+      ...item,
+      _links: { self: { href: `/${item.za}/` } },
+    }));
+
+    const buildPageUrl = (pageNum) => {
+      const u = new URL(req.url);
+      if (u.searchParams.has('pages_num')) u.searchParams.delete('pages_num');
+      u.searchParams.set('pages[num]', pageNum);
+      return u.pathname + u.search;
+    };
+
+    const firstPageNum = allPageNums.length > 0 ? allPageNums[0] : 1;
+    const size = pages.length > 0 ? pages[0].limit : defaultSize;
+    const totalPages = Math.max(1, Math.ceil(statsCount / size));
+
+    const _links = {
+      self: { href: new URL(req.url).pathname + new URL(req.url).search },
+      first: { href: buildPageUrl(1) },
+      last: { href: buildPageUrl(totalPages) },
+    };
+
+    if (firstPageNum > 1) {
+      _links.prev = { href: buildPageUrl(firstPageNum - 1) };
+    }
+    if (firstPageNum < totalPages) {
+      _links.next = { href: buildPageUrl(firstPageNum + 1) };
+    }
+
+    const response = {
+      _links,
+      count: statsCount,
+      'pages[num]': allPageNums,
+      'pages[size]': pages.map((p) => p.limit),
+      _embedded: {
+        results: enrichedItems,
+      },
+    };
+
+    return new Response(JSON.stringify(response), {
+      headers: { 'Content-Type': 'application/hal+json; charset=utf-8' },
+    });
+  }
+
+  const templateData = {
+    configZa: config.za,
+    stats: {
+      count: statsCount,
+      last_insert: (() => {
+        const latestTs = getLatestTimestamp(db);
+        const d = latestTs ? new Date(latestTs * 1000) : new Date();
+        return new Intl.DateTimeFormat(locale, {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).format(d);
+      })(),
+    },
+    query: '',
+    filters: {},
+    results: items,
+    isExplore: true,
+    allPageNums,
+    pagination: {
+      currentPage: currentPageUI,
+      pageSize: defaultSize,
+      hasPrevPage: currentPageUI > 1,
+      hasNextPage: items.length >= defaultSize && currentPageUI < 100,
+    },
+    meta: (() => {
+      const md = config.meta_data || {};
+      const lat = config.latitude;
+      const lon = config.longitude;
+      const geoPosition = (lat && lon)
+        ? `${(lat / 10_000_000).toFixed(7)};${(lon / 10_000_000).toFixed(7)}`
+        : null;
+      return {
+        title: config.title || null,
+        description: config.description || null,
+        keywords: config.keywords?.length ? config.keywords.join(', ') : null,
+        lang: config.primary_lang || null,
+        za: config.za || null,
+        geoPosition,
+        currentDate: new Date().toISOString().substring(0, 10),
+        author: md.author || null,
+        authorUrl: md.author_url || null,
+        subject: md.subject || null,
+        publisher: md.publisher || null,
+        contributor: md.contributor || null,
+        isbn: md.isbn || null,
+        coverage: md.coverage || null,
+        rights: md.rights || null,
+        rightsUrl: md.rights_url || null,
+        unavailableAfter: md.unavailable_after || null,
+      };
+    })(),
+  };
+
+  let html;
+  if (isFragment) {
+    html = render('partials/results.eta', templateData, locale);
+  } else {
+    html = render('views/index.eta', templateData, locale);
+  }
+
+  return new Response(html, {
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Vary': 'Accept-Language, Cookie',
+    },
+  });
+};
+
+/**
  * Handles QUERY requests.
  */
 export const query = async (req, db, config, isResindex = false) => {

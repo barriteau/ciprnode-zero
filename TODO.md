@@ -169,3 +169,13 @@ The legend at the bottom for this scene is:
 A final text appears in the center of the scene:
 
 «Now, instead of complaining, you can just move on ;)»
+
+---
+
+I want to fix all the discrepancies, create a plan for that where, at every step, you ask me to choose between implementing what the documentation states or keeping/improving what the code is actually doing. Write down this plan to /docs/consolidation_plan.md and keep updating it while the implementation goes on
+
+
+
+1: None of them have to win, they both need to be perfectly aligned, all discrepancies between them must be solved, so ask me at every step and I'll tell you what is going to stay for you to align them both.
+
+2:

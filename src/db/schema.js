@@ -69,21 +69,34 @@ export const initSchema = (db) => {
       za TEXT PRIMARY KEY CHECK (length(za) <= 255 AND za LIKE '%.%'),
 
       -- Title: The resource title.
-      -- Constraint: Max length 64 characters.
-      -- Constraint: Must NOT contain Newline (LF) or Carriage Return (CR) characters.
-      title TEXT CHECK (length(title) <= 64 AND instr(title, x'0A') = 0 AND instr(title, x'0D') = 0),
+      -- Constraint: Min 1, max 64 characters.
+      -- Constraint: Must NOT contain Newline (LF), Carriage Return (CR),
+      --              Line Separator (U+2028), or Paragraph Separator (U+2029).
+      title TEXT CHECK (length(title) >= 1 AND length(title) <= 64
+        AND instr(title, x'0A') = 0 AND instr(title, x'0D') = 0
+        AND instr(title, x'E280A8') = 0 AND instr(title, x'E280A9') = 0),
 
       -- Description: A brief explanation of the resource.
-      -- Constraint: Max length 256 characters.
-      -- Constraint: Must NOT contain Newline (LF) or Carriage Return (CR) characters.
-      description TEXT CHECK (length(description) <= 256 AND instr(description, x'0A') = 0 AND instr(description, x'0D') = 0),
+      -- Constraint: Min 1, max 256 characters.
+      -- Constraint: Must NOT contain Newline (LF), Carriage Return (CR),
+      --              Line Separator (U+2028), or Paragraph Separator (U+2029).
+      description TEXT CHECK (length(description) >= 1 AND length(description) <= 256
+        AND instr(description, x'0A') = 0 AND instr(description, x'0D') = 0
+        AND instr(description, x'E280A8') = 0 AND instr(description, x'E280A9') = 0),
 
       -- Keywords: Space-separated tags.
-      -- Constraint: Max length 512 characters.
-      -- Constraint: Must NOT contain Newline (LF) or Carriage Return (CR) characters.
-      keywords TEXT CHECK (length(keywords) <= 512 AND instr(keywords, x'0A') = 0 AND instr(keywords, x'0D') = 0),
-      offering TEXT CHECK (offering IS NULL OR (length(offering) <= 128 AND instr(offering, x'0A') = 0 AND instr(offering, x'0D') = 0)),
-      seeking TEXT CHECK (seeking IS NULL OR (length(seeking) <= 128 AND instr(seeking, x'0A') = 0 AND instr(seeking, x'0D') = 0)),
+      -- Constraint: Min 1, max 512 characters.
+      -- Constraint: Must NOT contain Newline (LF), Carriage Return (CR),
+      --              Line Separator (U+2028), or Paragraph Separator (U+2029).
+      keywords TEXT CHECK (length(keywords) >= 1 AND length(keywords) <= 512
+        AND instr(keywords, x'0A') = 0 AND instr(keywords, x'0D') = 0
+        AND instr(keywords, x'E280A8') = 0 AND instr(keywords, x'E280A9') = 0),
+      offering TEXT CHECK (offering IS NULL OR (length(offering) <= 128
+        AND instr(offering, x'0A') = 0 AND instr(offering, x'0D') = 0
+        AND instr(offering, x'E280A8') = 0 AND instr(offering, x'E280A9') = 0)),
+      seeking TEXT CHECK (seeking IS NULL OR (length(seeking) <= 128
+        AND instr(seeking, x'0A') = 0 AND instr(seeking, x'0D') = 0
+        AND instr(seeking, x'E280A8') = 0 AND instr(seeking, x'E280A9') = 0)),
 
       -- Primary Language: ISO 639-1 language code of the resource.
       -- Constraint: Must be exactly 2 characters (e.g., 'en', 'es') or NULL.
@@ -105,8 +118,8 @@ export const initSchema = (db) => {
       longitude INTEGER CHECK (ABS(longitude) <= 1800000000),
 
       -- Timestamp: Unix Epoch of last update.
-      -- Constraint: Must be a positive integer (greater than 0).
-      timestamp INTEGER CHECK (timestamp > 0)
+      -- Constraint: Must be a positive integer with 10 to 12 digits.
+      timestamp INTEGER CHECK (timestamp >= 1000000000 AND timestamp <= 999999999999)
     ) STRICT;
   `);
 

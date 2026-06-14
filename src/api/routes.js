@@ -26,10 +26,10 @@ export const handleRequest = (request, db, config) => {
 
   // 1. Root /
   if (path === '/') {
-    // Determine context: API or Browser?
-    // SearchController handles both via Content Negotiation (HTML vs JSON)
-    // and handles both Search (params) and Listing (no params).
-    if (method === 'GET' || method === 'QUERY') {
+    if (method === 'GET') {
+      return SearchController.list(request, db, config);
+    }
+    if (method === 'QUERY') {
       return SearchController.query(request, db, config, null);
     }
     if (method === 'HEAD') {

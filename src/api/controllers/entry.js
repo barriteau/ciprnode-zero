@@ -242,15 +242,49 @@ export const del = async (_req, db, config, za) => {
   const isValid = await verifyNode(config, za, calculatedHash);
 
   if (isValid) {
-    // 3a. Validation Passes -> Ignore DELETE
-    msg(`[DELETE] Request for ${za} IGNORED. Node is valid.`);
-    if (config.debug) {
-      msg(`[DBG] DELETE ${za}: Node verified successfully. Retaining entry.`);
+    // 3a. Validation Passes -> Run Reliability Validation before protecting
+    // Spec §DELETE: Deletion Validation Sequence step 3 — Reliability Validation
+    try {
+      const ftsExpression = generateRandomFTSExpression(config);
+      const paginationParams = { num: 1, size: 10 };
+      const baselineItems = searchEntries(db, {
+        query: ftsExpression,
+        ol: [],
+        geo: {},
+        timestamp: {},
+        filters: {},
+        pages: [{ offset: 0, limit: 10, pageNum: 1 }],
+        primary_lang: [],
+      });
+      const baselineRank = baselineItems.map((item) => item.za);
+
+      const isReliable = await verifyReliability(za, ftsExpression, paginationParams, baselineRank, config);
+      if (isReliable) {
+        // All 3 checks passed — protect the entry, ignore DELETE
+        msg(`[DELETE] Request for ${za} IGNORED. Node passed all validation steps.`);
+        if (config.debug) {
+          msg(`[DBG] DELETE ${za}: Node verified successfully (DNS + HTTP + Reliability). Retaining entry.`);
+        }
+        return new Response(null, { status: 202 });
+      }
+      // Reliability failed — proceed with deletion
+      if (config.debug) msg(`[DBG] DELETE ${za}: Reliability Validation failed.`);
+    } catch (e) {
+      // Non-fatal: if the reliability check network call fails, log and continue.
+      // Failing open here means we protect the entry (ignore DELETE) on transient errors.
+      if (config.debug) msg(`[DBG] DELETE ${za}: Reliability check error (non-fatal): ${e.message}`);
+      msg(`[DELETE] Request for ${za} IGNORED. Reliability check encountered network error.`);
+      return new Response(null, { status: 202 });
     }
+
+    // Reliability failed — execute DELETE
+    msg(`[DELETE] Request for ${za} ACCEPTED. Node failed Reliability Validation.`);
+    if (config.debug) msg(`[DBG] DELETE ${za}: Reliability check failed. Deleting entry.`);
+    deleteEntry(db, za);
     return new Response(null, { status: 202 });
   } else {
-    // 3b. Validation Fails -> Execute DELETE
-    msg(`[DELETE] Request for ${za} ACCEPTED. Node failed validation.`);
+    // 3b. DNS/HTTP Validation Fails -> Execute DELETE
+    msg(`[DELETE] Request for ${za} ACCEPTED. Node failed DNS/HTTP validation.`);
     if (config.debug) msg(`[DBG] DELETE ${za}: Node verification failed. Deleting entry.`);
     deleteEntry(db, za);
     return new Response(null, { status: 202 });

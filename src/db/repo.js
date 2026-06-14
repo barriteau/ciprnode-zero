@@ -210,26 +210,24 @@ const sanitizeFtsQuery = (raw) => {
 export const searchEntries = (db, options = {}) => {
   const { query: rawQuery, ol, geo, timestamp, pages, primary_lang, mode, sort_by } = options;
   const query = sanitizeFtsQuery(rawQuery);
-  // Construct Base SQL
 
-  const baseSql = `SELECT ciprdup.*, ciprdup.timestamp FROM ciprdup`;
   let ftsJoin = '';
   let orderBy = 'ORDER BY ciprdup.timestamp ASC'; // Default for no query
+  let scoreExpr = ''; // BM25 score expression, only when FTS query is active
 
   if (query && query.trim() !== '') {
     ftsJoin = `JOIN ciprdup_fts ON ciprdup.rowid = ciprdup_fts.rowid`;
-    // We need to inject the MATCH condition into WHERE, and update ORDER BY
-    // Spec: "Tie-breaking: ... older entries (earlier timestamps) must be ranked higher."
     let weights = '32.0, 16.0, 8.0, 1.0, 1.0, 1.0';
     if (mode === 'seeking') weights = '32.0, 16.0, 8.0, 1.0, 1.0, 32.0';
     if (mode === 'offering') weights = '32.0, 16.0, 8.0, 1.0, 32.0, 1.0';
     orderBy = `ORDER BY bm25(ciprdup_fts, ${weights}) ASC, ciprdup.timestamp ASC`;
+    scoreExpr = `, bm25(ciprdup_fts, ${weights}) AS score`;
   } else if (sort_by) {
-    // sort_by only applies when there's no FTS query (BM25 always wins for text search)
     if (sort_by === 'random') orderBy = 'ORDER BY RANDOM()';
     else if (sort_by === 'desc') orderBy = 'ORDER BY ciprdup.timestamp DESC';
-    // 'asc' is already the default
   }
+
+  const baseSql = `SELECT ciprdup.*, ciprdup.timestamp${scoreExpr} FROM ciprdup`;
 
   // Re-build params for the exact order: FTS match param first?
   // JOIN condition doesn't take params. MATCH takes param in WHERE.
