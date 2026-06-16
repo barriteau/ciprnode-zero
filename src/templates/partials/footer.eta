@@ -26,7 +26,7 @@
 
   <span>
     <a href="https://juan.barriteau.net/LPA/" rel="license" title="Licencia publica apodistintiva">
-      <b class="svg-icon lpa inline"></b>
+      <!-- <b class="svg-icon lpa inline"></b> -->
       2026
     </a>
     <a id="to-author-footer" href="https://juan.barriteau.net/" rel="author" title="Juan Barriteau">

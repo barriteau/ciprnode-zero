@@ -289,6 +289,7 @@ ol#annotations-list>li>figure>figcaption>span.actions {
 /* --- Search panel --- */
 
 aside#search-panel {
+    position: fixed;
    inset-inline-end: -100vw;
     transition: right 0.2s ease;
 }
@@ -305,6 +306,7 @@ label svg-icon.search {
 }
 
 aside#search-panel>button#search-overlay {
+    position: fixed;
    inset-inline-end: 0;
 }
 

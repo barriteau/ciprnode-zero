@@ -1,7 +1,7 @@
-  <aside id="search-panel" aria-label="<%= it.t('intra_search.heading') %>">
-    <button id="search-overlay" tabindex="-1" form="ri-search-form" type="reset" aria-label="<%= it.t('intra_search.close') %>"></button>
-    <div id="ri-search-body">
-      <button id="ri-search-close" tabindex="-1" form="ri-search-form" type="reset" aria-label="<%= it.t('intra_search.toggle') %>">
+  <aside id="search-panel" class="panel" aria-label="<%= it.t('intra_search.heading') %>">
+    <button id="search-overlay" class="panel-overlay" tabindex="-1" form="ri-search-form" type="reset" aria-label="<%= it.t('intra_search.close') %>"></button>
+    <div id="ri-search-body" class="panel-body">
+      <button id="search-close" class="panel-close" tabindex="-1" form="ri-search-form" type="reset" aria-label="<%= it.t('intra_search.toggle') %>">
         <svg-icon class="cross small" aria-hidden="true"></svg-icon>
       </button>
 

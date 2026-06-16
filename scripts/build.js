@@ -154,11 +154,10 @@ const build = async () => {
       try {
         const zipName = `${t.name}.zip`;
         console.log(`Creating ${zipName}...`);
-        const zipCmd = new Deno.Command('tar', {
-          // Archive the fixed directory 'ciprnode-zero'
-          args: ['-a', '-cf', zipName, internalDirName],
+        const zipCmd = new Deno.Command('zip', {
+          args: ['-r', zipName, internalDirName],
           cwd: distDir,
-          stdout: 'inherit', // tar might be noisy
+          stdout: 'inherit',
           stderr: 'inherit',
         });
         if ((await zipCmd.output()).success) archives.push(zipName);

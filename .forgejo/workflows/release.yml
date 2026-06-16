@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno and tools
+        run: |
+          apt-get update && apt-get install -y zip jq
+          curl -fsSL https://deno.land/install.sh | sh
+          echo "$HOME/.deno/bin" >> $GITHUB_PATH
+
+      - run: deno task build
+
+      - name: Create Release and Upload Assets
+        run: |
+          TAG=${GITHUB_REF##*/}
+          REPO=$GITHUB_REPOSITORY
+
+          RESPONSE=$(curl -s -X POST "$GITHUB_API_URL/repos/$REPO/releases" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"tag_name\": \"$TAG\", \"name\": \"$TAG\", \"body\": \"Release $TAG\"}")
+
+          RELEASE_ID=$(echo "$RESPONSE" | jq -r '.id')
+
+          for file in dist/*; do
+            curl -s -X POST "$GITHUB_API_URL/repos/$REPO/releases/$RELEASE_ID/assets?name=$(basename "$file")" \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@$file"
+          done

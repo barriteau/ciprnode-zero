@@ -52,8 +52,8 @@ ol = 0
 
 # Geographical coordinates in WGS 84 (EPSG:4326) format multiplied by 10000000 to obtain an
 # integer value. Any precision level allowed. Use 0 if geolocation is irrelevant for the resource.
-Latitude = 105055430
-Longitude = -668990110
+latitude = 105055430
+longitude = -668990110
 #latitude = 105444722
 #longitude = -667867138
 

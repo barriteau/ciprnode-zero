@@ -1,0 +1,20 @@
+when:
+  event: tag
+
+steps:
+  build:
+    image: denoland/deno:latest
+    commands:
+      - apt-get update && apt-get install -y zip
+      - deno task build
+
+  release:
+    image: woodpeckerci/plugin-release
+    settings:
+      api_key:
+        from_secret: codeberg_token
+      base_url: https://codeberg.org
+      files:
+        - dist/*
+      title: ${CI_COMMIT_TAG}
+      note: "Release ${CI_COMMIT_TAG}"

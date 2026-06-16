@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ciprface-20260614152031';
+const CACHE_NAME = 'ciprface-20260615030521';
 const STATIC_ASSETS = [
   '/css/htr.css',
   '/css/reset.css',
@@ -9,7 +9,7 @@ const STATIC_ASSETS = [
   '/css/icons.css',
   '/css/main.css',
   '/css/media-queries.css',
-  '/css/highlight.js/xcode.css',
+  '/css/highlight.js/xcode.min.css',
   '/js/ciprnode.js',
   '/js/htmx.js',
   '/favicon.ico',

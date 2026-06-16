@@ -2,13 +2,13 @@
 
 > **Disclaimer**: This is alpha software intended for testing in controlled environments. It is expected to be unstable.
 
-**Ciprnode zero** (`Cn0`) is a first and referencial *ciprnode* implementation, the fundamental building block of the **Cosmic Index of Public Resources (Cipr)**. It is a proof-of-concept designed to test the viability of a decentralized and distributed web index.
+**Ciprnode zero** (`Cn0`) is a first and referencial *ciprnode* implementation, the fundamental building block of the **[Cosmic Index of Public Resources](https://cipr.info/)**. This is a proof-of-concept designed to test the viability of the Cipr, a decentralized and distributed web index that some people would appreciate.
 
-This software allows any domain owner to host a copy of the Cipr and consequently be a part of it.
+This software enables domain owners to be indexed in the Cipr by publicly hosting a copy of the directory, thereby being indexed on it.
 
-A deployed ciprnode is also a search-engine-like front-end offering a two-level search: first level is in the index itself and second level is deep inside the content exposed by any cipred resource.
+A deployed ciprnode also offers a search-engine-like front-end with two-level search: first level is in the index itself and second level is deep inside the content of any *cipred* resource.
 
-## Key Features
+## Key Components
 
 ### 1. Ciprdup: the distributed index
 
@@ -49,19 +49,19 @@ A strict **Semantic RESTful** implementation with full **HATEOAS** via **HAL+JSO
 
 #### Endpoints
 
-|  Method   | Path             |                Status codes                | Description                                                                                           |
-|:---------:|:-----------------|:------------------------------------------:|:------------------------------------------------------------------------------------------------------|
-|  `HEAD`   | `/`              |                  `200 OK`                  | Verifies node presence. Returns `X-Cipr-Count` header with total entry count.                         |
-|   `GET`   | `/`              |                  `200 OK`                  | Lists all entries (paginated). Returns HAL+JSON or HTML depending on `Accept`.                        |
-|   `PUT`   | `/{za}/`         | `202 Accepted`, `400`, `403`, `409`, `413` | Upserts a cipred resource after passing the full Insertion Validation Sequence.                       |
-| `DELETE`  | `/{za}/`         |               `202 Accepted`               | Requests deletion, accepted or ignored depending on validation result.                                |
-|  `QUERY`  | `/`              |                  `200 OK`                  | Full-text search with filters and pagination over the ciprdup.                                        |
-|   `GET`   | `/{za}/`         |              `200 OK`, `404`               | Retrieves all fields for a specific entry in HAL+JSON or HTML.                                        |
-|   `GET`   | `/{za}/{field}/` |              `200 OK`, `404`               | Retrieves a single field. Supports `text/plain` and `hal+json`.                                       |
-|  `HEAD`   | `/ri/`           |         `200 OK`, `204 No Content`         | Checks if a resindex (ISE) is configured (`200`) or absent (`204`).                                   |
-|  `QUERY`  | `/ri/`           |                  `200 OK`                  | Queries all configured ISE providers; aggregates and returns results.                                 |
-|   `GET`   | `/languages/`    |                  `200 OK`                  | Returns a JSON array of language matches for autocomplete. Same-origin only (`Sec-Fetch-Site` guard). |
-| `OPTIONS` | `/ri/`           |                  `200 OK`                  | Returns CORS headers for cross-origin ISE availability checks.                                        |
+| Method    | Path             | Status codes                               | Description                                                                                           |
+|:----------|:-----------------|:-------------------------------------------|:------------------------------------------------------------------------------------------------------|
+| `HEAD`    | `/`              | `200 OK`                                   | Verifies node presence. Returns `X-Cipr-Count` header with total entry count.                         |
+| `GET`     | `/`              | `200 OK`                                   | Lists all entries (paginated). Returns HAL+JSON or HTML depending on `Accept`.                        |
+| `PUT`     | `/{za}/`         | `202 Accepted`, `400`, `403`, `409`, `413` | Upserts a cipred resource after passing the full Insertion Validation Sequence.                       |
+| `DELETE`  | `/{za}/`         | `202 Accepted`                             | Requests deletion, accepted or ignored depending on validation result.                                |
+| `QUERY`   | `/`              | `200 OK`                                   | Full-text search with filters and pagination over the ciprdup.                                        |
+| `GET`     | `/{za}/`         | `200 OK`, `404`                            | Retrieves all fields for a specific entry in HAL+JSON or HTML.                                        |
+| `GET`     | `/{za}/{field}/` | `200 OK`, `404`                            | Retrieves a single field. Supports `text/plain` and `hal+json`.                                       |
+| `HEAD`    | `/ri/`           | `200 OK`, `204 No Content`                 | Checks if a resindex (ISE) is configured (`200`) or absent (`204`).                                   |
+| `QUERY`   | `/ri/`           | `200 OK`                                   | Queries all configured ISE providers; aggregates and returns results.                                 |
+| `GET`     | `/languages/`    | `200 OK`                                   | Returns a JSON array of language matches for autocomplete. Same-origin only (`Sec-Fetch-Site` guard). |
+| `OPTIONS` | `/ri/`           | `200 OK`                                   | Returns CORS headers for cross-origin ISE availability checks.                                        |
 
 #### HATEOAS
 
@@ -489,15 +489,15 @@ Ciprnode zero/
 
 Built with minimalism in mind, using the Deno Standard Library plus two focused third-party modules.
 
-| Dependency          |                     Purpose                     |
-|:--------------------|:-----------------------------------------------:|
-| **`@std/http`**     |    Core HTTP server and static file serving.    |
-| **`@std/toml`**     |            Parsing `ciprnode.toml`.             |
-| **`@std/path`**     |     Cross-platform file path manipulation.      |
-| **`@std/fs`**       |  File system operations (copy, exists, mkdir).  |
-| **`@std/dotenv`**   |   Loading environment variables from `.env`.    |
-| **`@std/crypto`**   |                SHA-256 hashing.                 |
-| **`@std/encoding`** |     Base64url encoding for DNS wire format.     |
-| **`@std/assert`**   |          Assertion library for tests.           |
-| **`@db/sqlite`**    |         Zero-dependency SQLite driver.          |
+| Dependency          | Purpose                                         |
+|:--------------------|:------------------------------------------------|
+| **`@std/http`**     | Core HTTP server and static file serving.       |
+| **`@std/toml`**     | Parsing `ciprnode.toml`.                        |
+| **`@std/path`**     | Cross-platform file path manipulation.          |
+| **`@std/fs`**       | File system operations (copy, exists, mkdir).   |
+| **`@std/dotenv`**   | Loading environment variables from `.env`.      |
+| **`@std/crypto`**   | SHA-256 hashing.                                |
+| **`@std/encoding`** | Base64url encoding for DNS wire format.         |
+| **`@std/assert`**   | Assertion library for tests.                    |
+| **`@db/sqlite`**    | Zero-dependency SQLite driver.                  |
 | **`@eta-dev/eta`**  | Lightweight templating engine for the ciprface. |

@@ -81,14 +81,13 @@
 /* Force side-by-side 25% / 75% layout for Language and Offensiveness on > 640px */
 @media screen and (min-width: 641px) {
   #search-filters>fieldset#language-filter {
-    flex: 0 0 calc(40% - 0.25rem);
+    flex: 0 0 calc(40% - 0.4rem);
   }
 
   #search-filters>fieldset#ol-filter {
-    flex: 0 0 calc(60% - 0.25rem);
+    flex: 0 0 calc(60% - 0.4rem);
   }
 }
-
 
 /* --- 640px (Standard Mobile) --- */
 @media screen and (max-width: 640px) {

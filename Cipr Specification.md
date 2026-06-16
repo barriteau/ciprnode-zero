@@ -4,9 +4,11 @@
 
 The *Cosmic^[Because Martians and Belters are welcome.] Index of Public Resources*, or *Cipr^[I like to pronounce it 'kee-per', but I'm not good enough at English to know, so do as you please.]*, is a decentralized, distributed, independent, public, universal, dynamic and queryable directory of websites and other reachable-by-DNS-resolution resources in the Internet.
 
-The Cipr shares some features with conventional search engines, web directories and webrings. However, adding entries to the Cipr does not require crawling the web or the approval of curators or editors, this is because of its decentralized and user-controlled nature.
+The Cipr shares some features with conventional search engines, web directories, webrings, expert networks and service directories. However, to be present in the Cipr does not require crawling the web or the approval of curators, editors or admins, because of its decentralized and user-controlled nature.
 
 This idea is really simple. It's surprising that something like this hasn't been the standard resource indexing system for the World Wide Web since its inception.
+
+This document describes in detail what needs to be done for the Cipr to exists, if you are more of a practical person, maybe you would prefer to [grab a copy of the Ciprnode zero](https://github.com/barriteau/)
 
 With the Cipr, every content publisher *owns* their entries in the index, meaning, they can include, update or exclude them at will. It is the publisher ―the domain name owner― who decides when and how their resource is indexed or not.
 
