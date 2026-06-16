@@ -10,8 +10,8 @@ This idea is really simple. It's surprising that something like this hasn't been
 
 This document describes in detail what needs to be done for the Cipr to exists, if you are more of a practical person, grab a binary or clone the repo:
 
-[Ciprnode zero in GCodebergthub](https://codeberg.org/barriteau/Ciprnode-zero/)
-[Ciprnode zero in Github](https://github.com/barriteau/)
+[Ciprnode zero in Codeberg](https://codeberg.org/barriteau/ciprnode-zero)
+[Ciprnode zero in Github](https://github.com/barriteau/ciprnode-zero)
 
 With the Cipr, every content publisher *owns* their entries in the index, meaning, they can include, update or exclude them at will. It is the publisher ―the domain name owner― who decides when and how their resource is indexed or not.
 
