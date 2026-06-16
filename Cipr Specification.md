@@ -8,7 +8,7 @@ The Cipr shares some features with conventional search engines, web directories,
 
 This idea is really simple. It's surprising that something like this hasn't been the standard resource indexing system for the World Wide Web since its inception.
 
-This document describes in detail what needs to be done for the Cipr to exists, if you are more of a practical person, maybe you would prefer to [grab a copy of the Ciprnode zero](https://github.com/barriteau/) https://github.com/barriteau/ciprnode-zero.git
+This document describes in detail what needs to be done for the Cipr to exists, if you are more of a practical person, maybe you would prefer to [grab a copy of the Ciprnode zero](https://github.com/barriteau/)
 
 With the Cipr, every content publisher *owns* their entries in the index, meaning, they can include, update or exclude them at will. It is the publisher ―the domain name owner― who decides when and how their resource is indexed or not.
 
