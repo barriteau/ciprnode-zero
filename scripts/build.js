@@ -27,8 +27,6 @@ const build = async () => {
   console.log('Starting Multi-Target Build (ciprnode-zero)...');
 
   const distDir = join(Deno.cwd(), 'dist');
-
-  // 1. Clean dist
   try {
     await Deno.remove(distDir, { recursive: true });
   } catch (_e) {
@@ -49,8 +47,6 @@ const build = async () => {
       await Deno.remove(bundleDir, { recursive: true });
     } catch { /* ignore */ }
     await Deno.mkdir(bundleDir, { recursive: true });
-
-    // A. Compile
     // Binary name remains 'ciprnode' inside the bundle for consistency
     const binName = `ciprnode${t.ext}`;
     const args = [
@@ -80,21 +76,14 @@ const build = async () => {
       console.error(`Failed to build for ${t.target}`);
       continue;
     }
-
-    // A.1 Code Signing (TODO)
-    // Placeholder: Integration with signtool (Windows) or codesign (Mac) should happen here.
-    // e.g. if (t.target.includes('windows')) await signBinary(join(bundleDir, binName));
-
-    // B. Copy Assets
     console.log('Copying assets...');
     try {
       await copy(join(Deno.cwd(), 'public'), join(bundleDir, 'public'));
     } catch { /* ignore */ }
     try {
-      await Deno.copyFile(
-        join(Deno.cwd(), 'ciprnode.toml'),
-        join(bundleDir, 'ciprnode.example.toml'),
-      );
+      const tomlContent = await Deno.readTextFile(join(Deno.cwd(), 'ciprnode.toml'));
+      const sanitized = tomlContent.replace(/api_token\s*=\s*"[^"]+"/g, 'api_token = "YOUR_TOKEN_HERE"');
+      await Deno.writeTextFile(join(bundleDir, 'ciprnode.example.toml'), sanitized);
     } catch { /* ignore */ }
     try {
       await Deno.mkdir(join(bundleDir, 'data'), { recursive: true });
@@ -144,13 +133,10 @@ const build = async () => {
         join(bundleDir, 'Cipr Specification.md'),
       );
     } catch (_e) { /* ignore */ }
-
-    // C. Create Archives
     const archives = [];
     const isWindows = t.target.includes('windows');
 
     if (isWindows) {
-      // 1. ZIP (Windows only)
       try {
         const zipName = `${t.name}.zip`;
         console.log(`Creating ${zipName}...`);
@@ -165,7 +151,6 @@ const build = async () => {
         console.warn('ZIP creation failed');
       }
     } else {
-      // 2. TAR.GZ (Linux/Mac only)
       try {
         const tarName = `${t.name}.tar.gz`;
         console.log(`Creating ${tarName}...`);
@@ -184,8 +169,6 @@ const build = async () => {
         console.warn('TAR.GZ creation skipped');
       }
     }
-
-    // D. Generate Checksums
     console.log('Generating Checksums...');
     for (const archive of archives) {
       const archivePath = join(distDir, archive);
@@ -194,8 +177,6 @@ const build = async () => {
       await Deno.writeTextFile(join(distDir, sumFileName), `${sum}  ${archive}\n`);
       console.log(`Generated ${sumFileName}`);
     }
-
-    // E. Cleanup
     console.log(`Cleaning up ${internalDirName}...`);
     await Deno.remove(bundleDir, { recursive: true });
   }

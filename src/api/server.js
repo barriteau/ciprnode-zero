@@ -12,9 +12,7 @@ import { initRenderer, render } from './views/renderer.js';
  * @returns {Response}
  */
 const withCompression = (req, res) => {
-  // Only compress responses that have a body; skip regardless of status code.
-  // The previous check (status !== 200 && status !== 201) was overly restrictive
-  // and excluded valid compressible responses like 202, 4xx with bodies, etc. (Vector H fix)
+  // Only compress responses that have a body.
   if (!res.body) return res;
 
   const acceptEncoding = req.headers.get('accept-encoding') || '';
@@ -93,8 +91,7 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
     try {
       const url = new URL(request.url);
 
-      // 0. DoS Protection: Content-Length Limit (512KB)
-      const MAX_BODY_SIZE = 512 * 1024; // 524,288 bytes
+      const MAX_BODY_SIZE = 512 * 1024;
       const contentLengthHeader = request.headers.get('content-length');
       if (contentLengthHeader) {
         const contentLength = parseInt(contentLengthHeader, 10);
@@ -103,28 +100,13 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
             `[DoS Protection] Request rejected: Content-Length ${contentLength} exceeds limit of ${MAX_BODY_SIZE}`,
           );
 
-          // Consume and drain body to avoid connection issues, or just close?
-          // To be safe and fast, just return 413.
           return new Response('Payload Too Large', { status: 413 });
         }
       }
 
-      // 1. Static File Serving (Ciprface)
-      // Try to serve static files from public/ first if the path doesn't look like an API call.
-      // Or prefer explicit paths. Let's assume root / is mostly API or Index.
-      // Spec says: https://ciprnode.za/ -> Ciprface
-      // Spec says: GET / -> Ciprdup (API)
-      // We need Content Negotiation to decide, or strict path prefixes?
-      // Spec: "GET / - Retrieves the contents of the ciprdup."
-      // Spec: "Ciprface ... must be accesible from any browser as: https://ciprnode.za"
-      // Usually browser sends Accept: text/html. API client sends Accept: application/json or hal+json.
-
-      // Simple Content Negotiation Strategy
       const accept = request.headers.get('accept') || '';
       const isBrowser = accept.includes('text/html') || accept.includes('application/xhtml+xml');
 
-      // 1. Static File Serving (Assets)
-      // Serve known static paths regardless of Accept header
       if (
         url.pathname.startsWith('/css/') || url.pathname.startsWith('/js/') ||
         url.pathname.startsWith('/figures/') || url.pathname.startsWith('/profiles/') ||
@@ -133,27 +115,20 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
       ) {
         let res = await serveDir(request, { fsRoot: 'public', urlRoot: '' });
 
-        // ONLY bypass cache for sw.js to ensure updates propagate instantly.
-        // Other PWA assets must remain cacheable for offline speed.
-        if (url.pathname === '/sw.js') {
-          res = withNoCache(res);
-        }
+      if (url.pathname === '/sw.js') {
+        res = withNoCache(res);
+      }
 
         return withCompression(request, res);
       }
 
-      // Root path '/' is handled by API Router (SearchController) or Fallback below.
-
-      // 2. API Routing
       const apiResponse = await handleRequest(request, db, config);
       if (apiResponse) {
         return withCompression(request, apiResponse);
       }
 
-      // 3. Fallback to static for everything else if browser (SPA-like or just 404 static) or return 404 JSON
       if (isBrowser) {
         const fallbackRes = await serveDir(request, { fsRoot: 'public', urlRoot: '' });
-        // NOTE: We do not put withNoCache here to allow normal HTML caching behavior
         return withCompression(request, fallbackRes);
       }
 
@@ -249,9 +224,6 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
       headers: headers
     });
     
-    // We import LOG_LEVEL from utils to check level
-    // Wait, LOG_LEVEL is not explicitly imported yet let's check
-    // Actually, I'll import it at the top or just use config.log_level which is standard.
     if (config.log_level >= 2) {
       const parsedUrl = new URL(request.url);
       msg(`Incoming request:\n  Method: ${request.method}\n  Path: ${parsedUrl.pathname}\n  From: ${info.remoteAddr.hostname}`, 'REQ');
@@ -280,27 +252,9 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
 
         const ciprnodeHostname = `ciprnode.${config.za}`;
         try {
-          // New logic: Use verifyNodeHttp (HEAD check)
-          // We can't easily import it inside the callback without top-level import,
-          // allow mixing dynamic import or top-level.
-          // Let's use dynamic import to keep startup clean if needed, or better, add validation.js to imports.
           const { verifyNodeHttp } = await import('../core/verification.js');
 
           msg(`Verifying reachability for ${ciprnodeHostname}...`);
-          // We can't really verify HTTP reachability to "ourselves" if we haven't propatated in DNS yet?
-          // Or if we are behind NAT?
-          // The old logic checked for A/CNAME presence.
-          // The user requirement: "The second step must be modified to be instead: Verification ... with a HEAD request"
-          // This applies to "Verification of nodes" generally.
-          // For *Self* Verification at startup, A/CNAME check is still useful to warn user if DNS is missing.
-          // BUT if we want to standardize, we should check if we are resolvable.
-
-          // Let's check DNS resolution first (still useful for user feedback) THEN try HEAD if resolved?
-          // Or just replace entirely as requested?
-          // "2. Verification of the existence of an A or an CNAME record ... must be modified to be instead ... HEAD request"
-
-          // The issue with HEAD request at *startup* (onListen) is that if we just started, we are listening,
-          // but if DNS points to us, we should be reachable.
 
           const isReachable = await verifyNodeHttp(config.za, config);
 
@@ -308,10 +262,8 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
             msg(`[OK] Ciprnode is reachable via https://${ciprnodeHostname}/`, 'OK');
             msg(welcome);
 
-            // Start Ciprpulse Scheduler
             startScheduler(config, db, txtUpdated);
           } else {
-            // Fallback to detailed diagnostics if HEAD fails
             msg(`HEAD request to https://${ciprnodeHostname}/ failed.`, 'WA');
             msg(`Checking DNS records directly for diagnostics...`);
 

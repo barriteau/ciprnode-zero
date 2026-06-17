@@ -25,7 +25,6 @@ const getEnv = () => {
   if (typeof globalThis !== 'undefined' && globalThis.process && globalThis.process.versions && globalThis.process.versions.node) {
     return 'node';
   }
-  // Fallbacks for bash, zsh, powershell natively vs node/deno
   return 'unknown';
 };
 
@@ -108,7 +107,7 @@ export const line = (type) => {
     switch (type) {
       case 'END':
         console.groupEnd();
-        console.log(LI, OK); // Typically ends don't take color, but OK is standard
+        console.log(LI, OK);
         break;
       case 'IN':
         console.log(LI, OK);
@@ -120,7 +119,6 @@ export const line = (type) => {
         break;
     }
   } else {
-    // Fallback text only
     switch (type) {
       case 'END':
         console.groupEnd();
@@ -281,7 +279,6 @@ export const generateCiprHash = async (
 export const readBodyWithLimit = async (req, limitBytes) => {
   if (!req.body) return '';
 
-  // Fast-fail checking header, though headers can be spoofed
   const contentLength = req.headers.get('content-length');
   if (contentLength && parseInt(contentLength, 10) > limitBytes) {
     throw new Error('Payload Too Large');
@@ -302,11 +299,8 @@ export const readBodyWithLimit = async (req, limitBytes) => {
         reader.cancel('Payload Too Large');
         throw new Error('Payload Too Large');
       }
-
-      // decode stream buffer into string chunk
       text += decoder.decode(value, { stream: true });
     }
-    // flush final character decode boundary bytes
     text += decoder.decode();
     return text;
   } finally {
@@ -320,12 +314,18 @@ export const readBodyWithLimit = async (req, limitBytes) => {
  * @returns {boolean} True if the IP is internal/private.
  */
 export const isPrivateIP = (ip) => {
-  if (ip.startsWith('127.')) return true; // loopback
-  if (ip.startsWith('10.')) return true; // private A
-  if (ip.startsWith('192.168.')) return true; // private C
-  if (ip.startsWith('169.254.')) return true; // local-link
+  if (/^::ffff:/i.test(ip)) {
+    const v4Part = ip.split(':').pop();
+    if (v4Part && /^\d+\.\d+\.\d+\.\d+$/.test(v4Part)) {
+      return isPrivateIP(v4Part);
+    }
+  }
 
-  // 172.16.0.0 - 172.31.255.255 (private B)
+  if (ip.startsWith('127.')) return true;
+  if (ip.startsWith('10.')) return true;
+  if (ip.startsWith('192.168.')) return true;
+  if (ip.startsWith('169.254.')) return true;
+
   if (ip.startsWith('172.')) {
     const parts = ip.split('.');
     if (parts.length > 1) {
@@ -334,7 +334,6 @@ export const isPrivateIP = (ip) => {
     }
   }
 
-  // IPv6
   if (ip === '::1') return true;
   if (/^(fc|fd|fe80)/i.test(ip)) return true;
 

@@ -7,12 +7,8 @@ import { loadConfig } from './src/core/config.js';
 import { getDbConnection } from './src/db/client.js';
 import { initSchema } from './src/db/schema.js';
 import { startServer } from './src/api/server.js';
-// import { startBot } from './src/bot/agent.js'; // Removed
 import { logKeyValueTable } from './src/core/logger.js';
-// import { createSha256Hash } from './src/core/crypto.js'; // Replaced by generateCiprHash
 import { getEntry, insertEntry } from './src/db/repo.js';
-
-// :: File Persistence & Rotation is handled directly via `writeToLogFile`.
 import { verifyCiprHash } from './src/core/dns.js';
 import { initialSync } from './src/core/sync.js';
 import { generateCiprHash, setLoggingConfig } from './src/core/utils.js';
@@ -33,13 +29,9 @@ if (import.meta.main) {
       } catch { /* ignore */ }
       Deno.exit();
     };
-    // Deno.addSignalListener is not supported on Windows for SIGINT in older versions, but
-    // Deno.addSignalListener("SIGINT", ...) works in recent Deno. However, for broad compat,
-    // we rely on the fact that if we are killed, we might not clean up. Ideally we catch SIGINT.
     try {
       Deno.addSignalListener('SIGINT', cleanup);
-      // Deno.addSignalListener('SIGTERM', cleanup); // Windows often doesn't support SIGTERM listener
-    } catch { /* Fallback or ignore if not supported (e.g. Windows limitation) */ }
+    } catch { /* ignore */ }
 
     const sequenceStart = performance.now();
 
@@ -54,7 +46,6 @@ if (import.meta.main) {
 
           Startup Sequence`, 'H1');
 
-    //: 1. Configuration file validation...
     msg(`1. Configuration file validation...`, 'H1');
 
     const isFrontOnly = Deno.args.includes('--front-only');
@@ -78,7 +69,6 @@ if (import.meta.main) {
 
     msg(`The Configuration File is okay and loaded`, 'OK');
 
-    //: 2. Extracting ciprHash for the current configuration...
     msg(`2. Extracting ciprHash for the current configuration...`, 'H1');
 
     // Define keywordsStr for use in insertEntry later
@@ -102,14 +92,12 @@ if (import.meta.main) {
 
     msg(`Hash: ${ciprHash}`);
 
-    //: 3. Ciprdup (local database) connection...
     msg(`3. Ciprdup (local database) connection...`, 'H1');
     const db = await getDbConnection();
     initSchema(db); // Ensures tables exist
     msg(`Database connected & schema verified`, 'OK');
 
-    //: 4. Ciprnode Synchronization...
-    let txtUpdated = false; // Track if we updated the TXT record (moved up to be available globally in this scope)
+    let txtUpdated = false;
 
     if (isFrontOnly) {
       msg(`Front-end development mode, skipping Ciprnode synchronization.`, 'WA');
@@ -118,7 +106,6 @@ if (import.meta.main) {
       await initialSync(config, db);
     }
 
-    //: 5. Configured za Verification... (Check if row exists for config.za)
     if (isFrontOnly) {
       msg(`Front-end development mode, skipping DNS za verification.`, 'WA');
     } else {
@@ -143,16 +130,7 @@ if (import.meta.main) {
           seeking: config.seeking,
         });
         msg(`New entry created`, 'OK');
-        // New entry implies we might need to update DNS if it doesn't match,
-        // but logic below handles "Mismatch" if existing.
-        // If it's new locally, we assume we might be setting up.
-        // The logic below checking ciprHash vs validationHash only runs in 'else'.
-        // If validationHash is calculated from *config*, and ciprHash is from *config*, they match.
-        // But we need to know if we updated DNS.
-        // Use 'updated' variable results.
       } else {
-        // ... existing validation logic ...
-        // Found -> Generate Initial Validation Hash
         msg(`An entry for ${config.za} has been found, validating it...`);
         // From DB Row values
         const validationHash = await generateCiprHash(
@@ -214,8 +192,6 @@ if (import.meta.main) {
       }
     }
 
-    //: 6. DNS entry verification (Auto-Repair checks)
-    let isVerified = false;
     if (isFrontOnly) {
       msg(`Front-end development mode, skipping DNS entry verification and Auto-Repair.`, 'WA');
     } else {
@@ -288,25 +264,10 @@ if (import.meta.main) {
     msg(`The Startup Sequence has completed.`, 'OK');
     msg(`Duration: ${durationStr}`);
 
-    //: Start API Server (Scheduler starts inside after verification)
-    // We need to know if TXT was updated to trigger the broadcast in scheduler
-    // Let's assume the 'updated' variable from step 5 or 6 (auto-repair) captures this.
-    // Issue: 'updated' is local to blocks. We need a 'txtUpdated' flag available here.
-    // I will refactor the variable scope in a separate edit or assume I can track it.
-    // For now, let's change the startServer call.
-    // Wait, I need to make sure 'txtUpdated' is defined in the scope of main function.
-    // I will mistakenly rely on a variable I haven't defined if I just change this line.
-    // I need to use multi_replace for main.js to lift the variable scope.
-
-    // Actually, I can use a simpler approach: define `let txtUpdated = false;` at start of main logic
-    // and update it in the blocks.
-
-    // Since I can only do contiguous edits with this tool, I will just change the end here
-    // and make another edit to define and update the variable.
-
     await startServer(config, db, txtUpdated, isFrontOnly);
   } catch (error) {
-    console.error(`[FATAL ERROR]`, error);
+    console.error(`[FATAL ERROR] ${error.message}`);
+    if (error.stack) console.error(error.stack);
     Deno.exit(1);
   }
 }

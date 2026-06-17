@@ -18,7 +18,6 @@ export const verifyNode = async (config, za, expectedHash) => {
     return true;
   }
   
-  // 1. Triple DNS TXT Validation
   const isTxtValid = await verifyCiprHash(config, za, expectedHash);
   if (!isTxtValid) {
     if (config.debug) {
@@ -27,7 +26,6 @@ export const verifyNode = async (config, za, expectedHash) => {
     return false;
   }
 
-  // 2. HTTP HEAD Validation
   const isHttpValid = await verifyNodeHttp(za, config);
   if (!isHttpValid) {
     if (config.debug) msg(`[DBG] Verification failed: HTTP HEAD check failed for ${za}`);
@@ -65,14 +63,9 @@ export const verifyNodeHttp = async (za, config = {}) => {
       }
 
       if (response.ok) {
-        return true; // Success
-      } else {
-        // If status is 4xx/5xx, it's technically "reachable" but maybe not "healthy" or "valid" per app logic?
-        // Usually reachability just means we got a response.
-        // But invalid status might mean "not a ciprnode".
-        // Let's count non-200 as failure for "Validation".
-        throw new Error(`Status ${response.status}`);
+        return true;
       }
+      throw new Error(`Status ${response.status}`);
     } catch (error) {
       if (config.debug) {
         msg(`[DBG] HTTP HEAD failed for ${url} (Attempt ${attempt}): ${error.message}`);
@@ -91,11 +84,6 @@ export const verifyNodeHttp = async (za, config = {}) => {
 /**
  * Compares two arrays of Zone Apexes for reliability validation using
  * Jaccard set similarity. A threshold of 60% overlap is required to pass.
- *
- * The previous strict positional top-8 match was removed because BM25
- * floating-point scores are non-deterministic across SQLite versions and
- * hardware, causing legitimate nodes to fail audits due to tie-breaking
- * differences rather than actual data divergence.
  *
  * @param {string[]} baselineArray - The expected (local) ranking.
  * @param {string[]} targetArray - The received (remote) ranking.

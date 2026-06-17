@@ -13,22 +13,18 @@ const ALPS_PROFILE = '/profiles/cipr.json';
  * @returns {Response}
  */
 export const halResponse = (data, links = {}, embedded = {}) => {
-  // 1. Ensure Self Link exists
   if (!links.self) {
     throw new Error('HAL Resource must have a self link.');
   }
 
-  // 2. Add Profile Link
   links.profile = { href: ALPS_PROFILE };
 
-  // 3. Construct Payload
   const payload = {
     _links: links,
     ...data,
     _embedded: Object.keys(embedded).length > 0 ? embedded : undefined,
   };
 
-  // 4. Return Response
   return new Response(JSON.stringify(payload), {
     headers: {
       'Content-Type': 'application/hal+json; charset=utf-8',

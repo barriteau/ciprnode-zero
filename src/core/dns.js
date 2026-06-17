@@ -143,7 +143,6 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
   try {
     if (!bootstrapIp) throw new Error('No bootstrap IP provided');
 
-    // 1. Resolve DoH Hostname IP using Bootstrap DNS (Bypass OS DNS)
     const resolvedIps = await Deno.resolveDns(hostname, 'A', {
       nameServer: { ipAddr: bootstrapIp, port: 53 },
     });
@@ -151,27 +150,20 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
     if (resolvedIps && resolvedIps.length > 0) {
       const dohIp = resolvedIps[0];
 
-      // 2. Custom Secure TLS Connection (IP Connection + Hostname SNI)
-      // This is the "Secure Manual Resolution" pattern replaces previous "verifyCert: false" hack.
-
-      // A. TCP Connect to IP with Timeout
       const conn = await Promise.race([
         Deno.connect({ hostname: dohIp, port: 443 }),
         new Promise((_, reject) => setTimeout(() => reject(new Error('TCP Timeout')), TIMEOUT_MS)),
       ]);
 
-      // B. TLS Handshake with SNI (Implicitly verifies Cert against 'hostname')
       const tlsConn = await Deno.startTls(conn, { hostname: hostname });
 
       try {
-        // C. Send minimal HTTP/1.1 Request
         const path = `${originalUrl.pathname}?dns=${base64Query}`;
         const request =
           `GET ${path} HTTP/1.1\r\nHost: ${hostname}\r\nAccept: application/dns-message\r\nConnection: close\r\n\r\n`;
         const encoder = new TextEncoder();
         await tlsConn.write(encoder.encode(request));
 
-        // D. Read Response
         const reader = tlsConn.readable.getReader();
         const chunks = [];
         const decoder = new TextDecoder();
@@ -182,7 +174,6 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
           chunks.push(value);
         }
 
-        // E. Parse HTTP Response (Very basic parser)
         const combined = new Uint8Array(chunks.reduce((acc, c) => acc + c.length, 0));
         let offset = 0;
         for (const c of chunks) {
@@ -190,8 +181,6 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
           offset += c.length;
         }
 
-        // Find Double CRLF (Header End)
-        // \r\n\r\n = 13, 10, 13, 10
         let bodyStart = -1;
         for (let i = 0; i < combined.length - 3; i++) {
           if (
@@ -204,8 +193,6 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
         }
 
         if (bodyStart !== -1) {
-          // Extract body (Response should be binary DNS message)
-          // Check Status Code in Header
           const headerStr = decoder.decode(combined.slice(0, bodyStart));
           if (headerStr.startsWith('HTTP/1.1 200') || headerStr.startsWith('HTTP/1.0 200')) {
             resBody = combined.slice(bodyStart);
@@ -219,14 +206,12 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
       } finally {
         try {
           tlsConn.close();
-        } catch { /* connection already closed — ignore */ }
+        } catch { /* ignore */ }
       }
     } else {
       throw new Error('No IP resolved');
     }
   } catch (_e) {
-    // 3. Fallback: Standard Fetch (OS DNS)
-    // Add Timeout Signal
     const stdUrl = new URL(dohUrlStr);
     stdUrl.searchParams.set('dns', base64Query);
 

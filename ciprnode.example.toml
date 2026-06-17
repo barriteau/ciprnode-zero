@@ -1,0 +1,245 @@
+#: General system configuration
+
+# Environment
+# dev
+# test
+# prod
+env = "dev"
+
+# Log level
+# 0: silent
+# 1: operational
+# 2: verbose
+log_level = 2
+
+# A 'true' value here writes the the same output of 'log_level = 2' to
+# the logs files (ciprnode-*.log) in the /logs/ folder.
+debug = false
+
+#: The actual data of the resource in the Cipr, what goes to the Cipr, what identifies your resources
+[cipr_entry]
+
+# The Zone Apex for this resource:
+za = "example.com"
+
+# The title of the resource to index, max 64 characters
+title = "Your Resource Title"
+
+# A brief description of the resource, max 256 characters
+description = "A brief description of your resource"
+
+# Space separated list of keywords, max 512 characters, case insensitive. Alternatively, keywords
+# can be provided as an array of strings: keywords = ["project", "top", "network", "infrastructure"]
+keywords = "your keywords here"
+
+# What is offered or shared through your resource. This includes, but is not restricted to, tangible products, professional or casual
+# services, expertise, personal skills, attributes, qualities and traits that others might find valuable, interesting or attractive.
+offering = ""
+
+# What you are looking for or who you want to connect with. This could be specific items, a helping hand, someone
+# with a particular skill set or specific characteristics from collaborators, personal or professional connections.
+seeking = ""
+
+# Primary language of the resource, the main one, leave it empty if the resource is universally accesible.
+primary_lang = "en"
+
+# Offensiveness Level of the resource
+# 0: Non offensive content
+# 1: Individual offensive content
+# 2: Collectively offensive content
+# 3: Universally offensive content
+ol = 0
+
+# Geographical coordinates in WGS 84 (EPSG:4326) format multiplied by 10000000 to obtain an
+# integer value. Any precision level allowed. Use 0 if geolocation is irrelevant for the resource.
+latitude = 0
+longitude = 0
+
+#: Internal Search Engine (ISE) Providers (optional)
+# These represent external APIs used for executing `QUERY /ri/` equivalent searches.
+# You can define multiple `[[ise_provider]]` chunks for different search domains.
+# [[ise_provider]]
+# name = "pagefind"
+# url = "https://your-site.example.com/"
+
+#: Extra metadata for the ciprface. It is not part of the indexed data, this just makes the ciprnode easier to find on the web.
+[meta_data]
+
+# Full name of the author/owner of the site
+# author = "Your Name"
+
+# URL of an author page or profile (used in rel="author" link and DC.Creator)
+# author_url = "https://your-site.example.com/"
+
+# Topic / subject summary of the site (used in meta[name=topic] and DC.Subject)
+# subject = "Your site topic"
+
+# Publisher name (DC.Publisher)
+# publisher = "Your Name"
+
+# Contributor(s) (DC.Contributor, comma-separated if multiple)
+# contributor = ""
+
+# DC.Identifier: ISBN, DOI, or other formal identifier (optional)
+# isbn = ""
+
+# DC.Coverage: spatial/temporal coverage description (optional)
+# coverage = ""
+
+# License/rights short label (used in rel="license" link title)
+# rights = "CC BY 4.0"
+
+# URL to the rights / license document (used in meta[name=DC.Rights] and rel="license")
+# rights_url = "https://creativecommons.org/licenses/by/4.0/"
+
+# Date after which the page should be considered unavailable (RFC 7231 HTTP-date format)
+# unavailable_after = "31 Dec 2099 23:59:59 GMT"
+
+#: Front-end related configuration
+[ciprface]
+
+# Number of items per page
+page_size = 10
+
+#: Network related configuration
+[network]
+
+# A ciprnode listens only in the port 443, change this
+# value only for testing purposes or if you are behind a proxy
+port = 443
+
+# Trusted bootstrap ciprnodes to start syncing from
+bootstrap_nodes = [
+  "https://ciprnode.cipr.info",
+  "https://ciprnode.barriteau.net",
+  "https://ciprnode.guasa.art"
+]
+
+# Leech mode ***NOT IMPLEMENTED YET***: if not null, this ciprnode won't start and instead will
+# create a CNAME record in the DNS for the za pointing to the host of leech_from.
+# If the subdomain 'ciprnode' is omitted, it will be added automatically.
+# leech_from = "ciprnode.cipr.info"
+
+# Expected time in milliseconds for a new or updated entry to infect the whole Cipr
+# Recommended: 480000 if the Cipr is already well populated
+expected_propagation_time = 120000
+
+# A list of arbitrary words, not related with the keywords of your resource, used to
+# check the reliability of the ciprnodes in the Cipr. Use all languages you want, use
+# phrases or not, keep it shorter than 512 characters.
+test_words = "dog cat house tree book water fire earth wind"
+
+# DNS over UDP (Do53) used for bootstrapping DoH connections
+do53 = [
+  "1.1.1.1",
+  "9.9.9.9",
+  "94.140.14.14",
+  "76.76.2.11",
+  "149.112.112.112",
+  "185.228.168.168",
+  "8.8.8.8",
+  "208.67.220.220",
+  "208.67.222.222",
+  "1.0.0.1",
+  "8.8.4.4",
+  "94.140.15.15",
+  "8.26.56.26",
+  "76.76.10.0",
+  "185.228.168.96",
+  "4.2.2.1",
+  "4.2.2.2",
+  "64.6.64.6",
+  "1.1.1.2",
+  "45.90.28.167",
+  "84.200.69.80",
+  "1.1.1.3",
+  "9.9.9.10",
+  "149.112.112.10",
+  "156.154.71.1",
+  "156.154.70.1",
+  "8.20.247.20",
+  "77.88.8.1",
+  "77.88.8.8",
+  "216.146.35.35",
+  "216.146.36.36",
+]
+
+# DNS over HTTPS (DoH) endpoints for regular queries
+doh = [
+  "https://dns.quad9.net/dns-query",
+  "https://dns.controld.com/comss",
+  "https://dns.umbrella.com/dns-query",
+  "https://dns.adguard-dns.com/dns-query",
+  "https://doh.opendns.com/dns-query",
+  "https://dns.mullvad.net/dns-query",
+  "https://doh.dns.sb/dns-query",
+  "https://dns.google/dns-query",
+  "https://doh.cleanbrowsing.org/doh/family-filter/",
+  "https://cloudflare-dns.com/dns-query",
+  "https://doh.tiarap.org/dns-query",
+  "https://dns.circl.lu/dns-query",
+  "https://ordns.he.net/dns-query",
+  "https://dns.digitale-gesellschaft.ch/dns-query",
+  "https://dns.switch.ch/dns-query",
+  "https://dns.nextdns.io/dns-query",
+  "https://doh.libredns.gr/dns-query",
+  "https://dns10.quad9.net/dns-query",
+  "https://dns.aa.net.uk/dns-query",
+  "https://family.cloudflare-dns.com/dns-query",
+  "https://protected.canadianshield.cira.ca/dns-query",
+  "https://base.dns.mullvad.net/dns-query",
+  "https://doh.ffmuc.net/dns-query",
+  "https://private.canadianshield.cira.ca/dns-query",
+  "https://doh.applied-privacy.net/query",
+  "https://adblock.dns.mullvad.net/dns-query",
+  "https://extended.dns.mullvad.net/dns-query",
+  "https://dns.adguard.com/dns-query",
+  "https://dns.alidns.com/dns-query",
+  "https://doh.li/dns-query",
+  "https://doh.360.cn/dns-query",
+  "https://odvr.nic.cz/doh",
+  "https://public.dns.iij.jp/dns-query",
+  "https://freedns.controld.com/p0",
+  "https://freedns.controld.com/p2",
+  "https://freedns.controld.com/p1",
+  "https://doh.familyshield.opendns.com/dns-query",
+  "https://doh.cleanbrowsing.org/doh/security-filter/",
+  "https://jp.tiarap.org/dns-query",
+  "https://security.cloudflare-dns.com/dns-query",
+  "https://doh.mullvad.net/dns-query",
+  "https://dns-family.adguard.com/dns-query",
+  "https://unicast.uncensoreddns.org/dns-query",
+  "https://anycast.uncensoreddns.org/dns-query",
+  "https://doh.bortzmeyer.fr",
+  "https://adfree.usableprivacy.net/dns-query",
+  "https://sky.rethinkdns.com/dns-query",
+  "https://basic.rethinkdns.com/dns-query",
+  "https://doh.crypto.SX/dns-query",
+  "https://dns.hostux.net/dns-query",
+  "https://mozilla.cloudflare-dns.com/dns-query",
+  "https://max.rethinkdns.com/dns-query",
+]
+
+
+#: Automated DNS Record Management (optional)
+[dns_provider]
+# If a new configuration for this Cipr entry is detected, the
+# ciprnode can automatically update your DNS records for certain providers.
+# Supported values: "cloudflare", "desec"
+
+#! SECURITY NOTE: It is recommended to use the CIPR_DNS_API_TOKEN environment variable
+#! instead of hardcoding your token here, especially if committing to Git.
+
+# Environment Variables will have precedence over the values in this file.
+# CIPR_DNS_PROVIDER="desec"
+# CIPR_DNS_API_TOKEN="your_token"
+# CIPR_DNS_ZONE_ID="yourdomain.com"
+
+#: Cloudflare Provider
+# name = "cloudflare"
+# api_token = "YOUR_TOKEN_HERE"
+
+#: deSEC.io Provider
+# name = "desec"
+# api_token = "YOUR_DESEC_TOKEN"
+# zone_id = "yourdomain.com" (The domain name registered in deSEC)

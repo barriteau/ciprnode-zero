@@ -19,6 +19,7 @@ Thumbs.db
 
 # Environment
 .env
+ciprnode.toml
 
 # Project specific
 # Data directory: keep dir, ignore contents
@@ -36,6 +37,9 @@ logs/
 
 # Agents
 AGENTS.md
+
+# Internal security documentation (not for public repos)
+docs/SECURITY_ISSUES.md
 
 # Local maintenance scripts
 scripts/maintenance/

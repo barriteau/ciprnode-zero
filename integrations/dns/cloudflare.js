@@ -3,7 +3,7 @@
  * @description Cloudflare DNS Provider integration for automated updates.
  */
 
-
+import { msg } from '../../src/core/utils.js';
 import { logKeyValueTable } from '../../src/core/logger.js';
 
 const CF_API_URL = 'https://api.cloudflare.com/client/v4';
@@ -20,22 +20,14 @@ const CF_API_URL = 'https://api.cloudflare.com/client/v4';
  */
 export const updateRecord = async (config, expectedHash) => {
   const { api_token, zone_id } = config.dns_provider;
-  // Cloudflare usually expects the record name to be relative or absolute.
-  // Generally using the FQDN is safest.
 
   if (!api_token) {
-    console.error(`[ERROR] Cloudflare API Token missing.`);
+    msg('[CLOUDFLARE] API Token missing.', 'KO');
     return false;
   }
 
   const cleanToken = api_token.trim();
-  console.log(
-    `[CLOUDFLARE] Token: ${cleanToken.substring(0, 4)}... (Length: ${cleanToken.length})`,
-  );
 
-  /**
-   * Helper for fetch
-   */
   const cfRequest = async (endpoint, method = 'GET', body = null) => {
     const url = `${CF_API_URL}${endpoint}`;
     const headers = {
@@ -59,32 +51,21 @@ export const updateRecord = async (config, expectedHash) => {
     return json.result;
   };
 
-  console.log(`[CLOUDFLARE] Integration`);
+  msg('[CLOUDFLARE] Integration');
   try {
-    console.log('Connecting to API...');
+    msg('Connecting to API...');
 
-    // 1. Resolve Zone ID
     let targetZoneId = zone_id;
 
     if (!targetZoneId) {
-      console.log('Auto-detecting Zone ID...');
-      // Need to find the zone matching the za.
-      // If za is sub.domain.com, the zone might be domain.com.
-      // Cloudflare "List Zones" endpoint filters by name. exact match?
-      // Try searching for the za first.
+      msg('Auto-detecting Zone ID...');
 
-      // Strategy: Search for za. If empty, try stripping subdomains?
-      // Better: Cloudflare API allows finding the zone containing a hostname? No.
-      // We assume za is the zone or the domain is the zone.
-
-      // Heuristic 1: Exact Match (for Apex domains)
       let zones = await cfRequest(`/zones?name=${config.za}`);
 
       if (!zones || zones.length === 0) {
-        // Heuristic 2: Try parent domain (e.g. if za is cipr.barriteau.net, zone is barriteau.net)
         const parts = config.za.split('.');
         if (parts.length > 2) {
-          const storedDomain = parts.slice(-2).join('.'); // barriteau.net
+          const storedDomain = parts.slice(-2).join('.');
           zones = await cfRequest(`/zones?name=${storedDomain}`);
         }
       }
@@ -96,32 +77,29 @@ export const updateRecord = async (config, expectedHash) => {
       }
 
       targetZoneId = zones[0].id;
-      console.log(`[OK] Found Zone ID: ${targetZoneId} (${zones[0].name})`);
+      if (config.debug) {
+        msg(`[OK] Found Zone ID: ${targetZoneId.substring(0, 8)}... (${zones[0].name})`);
+      }
     } else {
-      console.log(`Using configured Zone ID: ${targetZoneId}`);
+      if (config.debug) msg(`Using configured Zone ID: ${targetZoneId.substring(0, 8)}...`);
     }
 
-    // 2. Search for existing Record
-    // Name must be exact match query
-    // API filters by 'name' which is the FQDN.
     const searchName = `_cipr.${config.za}`;
     const quotedHash = `"${expectedHash}"`;
 
-    console.log(`Searching for: ${searchName}`);
+    msg(`Searching for: ${searchName}`);
     const records = await cfRequest(
       `/zones/${targetZoneId}/dns_records?type=TXT&name=${searchName}`,
     );
 
     if (records && records.length > 0) {
-      // Update Existing
       const record = records[0];
       if (record.content === quotedHash) {
-        console.log(`[OK] Record is already up to date.`);
-        // console.groupEnd();
+        msg(`[OK] Record is already up to date.`);
         return true;
       }
 
-      console.log(`Updating existing record (ID: ${record.id})...`);
+      msg(`Updating existing record (ID: ${record.id})...`);
 
       const oldValue = record.content;
 
@@ -129,33 +107,29 @@ export const updateRecord = async (config, expectedHash) => {
         type: 'TXT',
         name: searchName,
         content: quotedHash,
-        ttl: 60, // Short TTL for fast propagation
+        ttl: 60,
       });
-      console.log(`[OK] Record Updated Successfully`);
+      msg(`[OK] Record Updated Successfully`);
 
-      // Console Table for Change
       logKeyValueTable({
         'Action': 'Update',
         'Old Value': oldValue.substring(0, 15) + '...',
         'New Value': quotedHash.substring(0, 15) + '...',
       });
     } else {
-      // Create New
-      console.log('Creating new TXT record...');
+      msg('Creating new TXT record...');
       await cfRequest(`/zones/${targetZoneId}/dns_records`, 'POST', {
         type: 'TXT',
         name: searchName,
         content: quotedHash,
         ttl: 60,
       });
-      console.log(`[OK] Record Created Successfully`);
+      msg(`[OK] Record Created Successfully`);
     }
 
-    // console.groupEnd();
     return true;
   } catch (error) {
-    console.error(`[ERROR] Cloudflare Update Failed: ${error.message}`);
-    // console.groupEnd();
+    msg(`[CLOUDFLARE] Update Failed: ${error.message}`, 'KO');
     return false;
   }
 };

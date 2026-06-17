@@ -127,7 +127,7 @@ const performSync = async (config, db, bootstrapNodes) => {
         continue;
       }
 
-      // Phase 1: Identity verification
+      // Identity verification
       let bootstrapZa = hostname;
       if (hostname.startsWith('ciprnode.')) {
         bootstrapZa = hostname.substring(9);
@@ -145,7 +145,7 @@ const performSync = async (config, db, bootstrapNodes) => {
       }
       msg(`[Sync] Bootstrap node identity verified and stored.`);
 
-      // Phase 2: Bulk fetch
+      // Bulk fetch
       msg(`[Sync] Populating ciprdup from ${bootstrapUrl}...`);
       const bootstrapResult = await fetchAndProcess(bootstrapUrl);
 
@@ -163,7 +163,7 @@ const performSync = async (config, db, bootstrapNodes) => {
     }
   }
 
-  // Phase 3: Single viral burst — only after all successful bootstrap fetches
+  // Single viral burst — only after all successful bootstrap fetches
   if (anySuccess && totalEntriesEstimate > 0) {
     const nodesPerPulse = calculateNodesPerPulse(
       totalEntriesEstimate,

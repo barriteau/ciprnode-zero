@@ -67,10 +67,6 @@ export const getEntry = (db, za) => {
   const stmt = db.prepare(`SELECT * FROM ciprdup WHERE za = ?`);
   const row = stmt.get(za);
   if (row) {
-    // Normalize keywords back to array if needed suitable for API response?
-    // Usually DB stores string, API expects string or array?
-    // Spec says keywords is a string in table, but maybe array in JSON.
-    // Let's keep it consistent with storage for now, let handler transform.
     return row;
   }
   return undefined;

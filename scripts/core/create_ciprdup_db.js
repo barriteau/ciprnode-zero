@@ -12,7 +12,7 @@ const db = new Database(DB_PATH);
 
 try {
   // ---------------------------------------------------------
-  // 1. Performance Configuration (Pragmas)
+  // Performance Configuration (Pragmas)
   // ---------------------------------------------------------
   console.log('Applying High-Performance PRAGMAs...');
 
@@ -33,7 +33,7 @@ try {
   db.exec('PRAGMA mmap_size = 2147483648;');
 
   // ---------------------------------------------------------
-  // 2. Main Table Creation with Constraints
+  // Main Table Creation with Constraints
   // ---------------------------------------------------------
   console.log("Creating Main Table 'ciprdup'...");
   db.exec(`
@@ -116,7 +116,7 @@ try {
   db.exec('COMMIT TRANSACTION;');
 
   // ---------------------------------------------------------
-  // 3. FTS5 Virtual Table (External Content)
+  // FTS5 Virtual Table (External Content)
   // ---------------------------------------------------------
   console.log("Creating FTS5 Virtual Table 'ciprdup_fts' (External Content)...");
 
@@ -141,7 +141,7 @@ try {
   }
 
   // ---------------------------------------------------------
-  // 4. Triggers to Keep FTS Sync (External Content Requirement)
+  // Triggers to Keep FTS Sync (External Content Requirement)
   // ---------------------------------------------------------
   console.log('Setting up Triggers for FTS Synchronization...');
 
@@ -173,9 +173,6 @@ try {
 
   console.log('Database initialized successfully!');
 
-  // ---------------------------------------------------------
-  // 5. Validation (Optional/Verify)
-  // ---------------------------------------------------------
   // Uncomment to run a quick self-test
   /*
   console.log("Running basic validation...");

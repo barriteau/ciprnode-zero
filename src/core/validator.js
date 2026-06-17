@@ -14,12 +14,8 @@ import { msg } from './utils.js';
 export const validateCiprConfig = (config, exitOnFail = true) => {
   let isValid = true;
   const errors = [];
-  // Store validation results for a summary table
   const validations = {};
 
-  // console.log(`Entries Validation...`);
-
-  // Helper to log result
   const check = (label, _value, condition, errorMessage) => {
     validations[label] = condition ? '[OK] Valid' : '[ERR] Invalid';
 
@@ -31,7 +27,6 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     }
   };
 
-  // 0. Validate Port
   check(
     'Port',
     config.port,
@@ -39,7 +34,6 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be a valid port number (1-65535). Current Value: ${config.port}`,
   );
 
-  // 0b. Validate Environment
   check(
     'Environment (env)',
     config.env,
@@ -47,7 +41,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be a non-empty string. Current Value: "${config.env}"`,
   );
 
-  // 1. Validate za (Zone Apex)
+  // Validate za (Zone Apex)
   // Regex: Simple hostname validation (Spec allows unicode, but basic structure is dot separated)
   // Spec: /^[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?$/u
   const zaRegex =
@@ -59,7 +53,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be a valid zone apex (SLD.TLD). Current Value: "${config.za}"`,
   );
 
-  // 2. Validate Title
+  // Validate Title
   // Max 64, No Newlines
   const titleRegex = /^[^\r\n\u2028\u2029]{1,64}$/u;
   check(
@@ -69,7 +63,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be 1-64 chars, no newlines. Current Length: ${config.title?.length}`,
   );
 
-  // 3. Validate Description
+  // Validate Description
   // Max 256, No Newlines
   const descRegex = /^[^\r\n\u2028\u2029]{1,256}$/u;
   check(
@@ -79,7 +73,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be 1-256 chars, no newlines. Current Length: ${config.description?.length}`,
   );
 
-  // 4. Validate Keywords
+  // Validate Keywords
   // Max 512, No Newlines
   const kwRegex = /^[^\r\n\u2028\u2029]{1,512}$/u;
   const kwStr = Array.isArray(config.keywords) ? config.keywords.join(' ') : '';
@@ -90,7 +84,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be 1-512 chars, no newlines. Current Length: ${kwStr.length}`,
   );
 
-  // 4b. Validate Offering
+  // Validate Offering
   const offSeekRegex = /^[^\r\n\u2028\u2029]{1,128}$/u;
   if (config.offering) {
     check(
@@ -103,7 +97,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     validations['Offering'] = 'Skipped (None provided)';
   }
 
-  // 4c. Validate Seeking
+  // Validate Seeking
   if (config.seeking) {
     check(
       'Seeking',
@@ -115,7 +109,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     validations['Seeking'] = 'Skipped (None provided)';
   }
 
-  // 4d. Validate Primary Language
+  // Validate Primary Language
   if (config.primary_lang) {
     check(
       'Primary Language',
@@ -127,7 +121,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     validations['Primary Language'] = 'Skipped (None provided)';
   }
 
-  // 5. Validate OL
+  // Validate OL
   // 1, 2, 3 or explicitly null (representing 0 or safe)
   const validOl = [1, 2, 3, null];
   check(
@@ -137,7 +131,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be 1, 2, 3 or empty. Current Value: ${config.ol}`,
   );
 
-  // 6. Coordinate Consistency (Latitude & Longitude)
+  // Coordinate Consistency (Latitude & Longitude)
   // Must be both present (and valid) or both null/absent.
   const hasLat = config.latitude !== null && config.latitude !== undefined;
   const hasLon = config.longitude !== null && config.longitude !== undefined;
@@ -151,7 +145,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Both Latitude and Longitude must be provided, or both must be empty.`,
   );
 
-  // 7. Validate Coordinate Values (if present)
+  // Validate Coordinate Values (if present)
   if (hasLat && hasLon) {
     // Latitude: Integer, +/- 900,000,000
     const isIntLat = Number.isInteger(config.latitude);
@@ -179,7 +173,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     }
   }
 
-  // 8. Validate Propagation Time (Must be >= 1000ms)
+  // Validate Propagation Time (Must be >= 1000ms)
   check(
     'Expected Propagation Time',
     config.expected_propagation_time,
@@ -187,7 +181,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be an integer >= 1000ms. Current Value: ${config.expected_propagation_time}`,
   );
 
-  // 9. Validate Page Size
+  // Validate Page Size
   check(
     'Page Size',
     config.page_size,
@@ -195,7 +189,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be an integer between 1 and 100. Current Value: ${config.page_size}`,
   );
 
-  // 9b. Validate Test Words (Non-fatal warning)
+  // Validate Test Words (Non-fatal warning)
   const testWordsStr = Array.isArray(config.test_words) ? config.test_words.join(' ') : '';
   const validTestWords = testWordsStr.length > 0 && testWordsStr.length <= 512;
 
@@ -209,7 +203,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     validations['Test Words'] = '[OK] Valid';
   }
 
-  // 11. Validate ISE Providers
+  // Validate ISE Providers
   if (config.ise_provider && config.ise_provider.length > 0) {
     config.ise_provider.forEach((ise, index) => {
       const hasName = typeof ise.name === 'string' && ise.name.trim().length > 0;
@@ -232,7 +226,18 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     validations['ISE Providers'] = 'Skipped (None provided)';
   }
 
-  // 12. Validate Log Level
+  // Validate Log Level
+  if (config.dns_provider?.name) {
+    check(
+      'DNS Provider Token',
+      config.dns_provider.api_token,
+      typeof config.dns_provider.api_token === 'string' && config.dns_provider.api_token.trim().length > 0,
+      `A DNS provider is configured but api_token is missing or empty. Set CIPR_DNS_API_TOKEN in your environment or .env file.`,
+    );
+  } else {
+    validations['DNS Provider'] = 'Skipped (None provided)';
+  }
+
   const validLogLevels = [0, 1, 2];
   check(
     'Log Level',

@@ -28,18 +28,8 @@ import { exists } from '@std/fs';
  * @property {Object[]} [ise_provider]
  */
 
-/**
- * Loads configuration from the toml file.
- * @param {string} configPath - Path to the config file.
- * @returns {Promise<CiprNodeConfig>} The parsed configuration.
- */
 import { load } from '@std/dotenv';
 
-/**
- * Loads configuration from the toml file.
- * @param {string} configPath - Path to the config file.
- * @returns {Promise<CiprNodeConfig>} The parsed configuration.
- */
 export const loadConfig = async (configPath = 'ciprnode.toml') => {
   // Load .env file if present (doesn't throw if missing)
   await load({ export: true });
@@ -49,17 +39,11 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
 
   // If not found, check relative to executable (for services/binaries)
   if (!(await exists(absolutePath))) {
-    // execPath is likely /path/to/ciprnode.exe
-    const _bindir = new URL('.', import.meta.url).pathname; // fallback for current module
-    // But since this runs in Deno, Deno.execPath() is the runtime.
-    // Deno.mainModule gives the script entry.
-    // For Deno Compile: Deno.execPath() is the binary itself.
     const execDir = dirname(Deno.execPath());
     const execConfigPath = join(execDir, configPath);
 
     if (await exists(execConfigPath)) {
       absolutePath = execConfigPath;
-      // Also update CWD to be here? Maybe not side-effecty.
     }
   }
 
@@ -72,8 +56,6 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
     const text = await Deno.readTextFile(absolutePath);
     const data = parse(text);
 
-    // Flatten structure for internal use if needed, or keep it strict.
-    // Mapping TOML structure to flat config object for simplicity
     const ciprEntry = data.cipr_entry || {};
     const network = data.network || {};
 
@@ -147,7 +129,7 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
     validateCiprConfig(config);
     return config;
   } catch (error) {
-    msg('Error parsing config file: ' + error, 'KO');
+    msg('Error parsing config file: ' + error.message, 'KO');
     throw error;
   }
 };

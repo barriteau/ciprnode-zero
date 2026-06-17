@@ -6,7 +6,6 @@
 import { countEntries, getEntry, searchEntries } from '../db/repo.js';
 import { calculateNodesPerPulse, msg, safeFetch } from '../core/utils.js';
 import { validateCiprConfig } from '../core/validator.js';
-// import { verifyNode } from '../core/verification.js'; // reused? No, broadcast is PUT.
 
 /**
  * Starts the internal scheduler.
@@ -17,13 +16,11 @@ import { validateCiprConfig } from '../core/validator.js';
 export const startScheduler = async (config, db, txtUpdated) => {
   msg('Starting Ciprpulse scheduler...');
 
-  // 1. Check for Initial Broadcast requirement
   if (txtUpdated) {
     msg('Local TXT record updated. Broadcasting update...');
     await broadcastUpdate(config, db);
   }
 
-  // 2. Periodic Tasks (Ciprpulse)
   const PULSE_INTERVAL = Math.max(1000, config.expected_propagation_time || 8000);
   msg(`Scheduler interval set to ${PULSE_INTERVAL}ms`);
 
@@ -32,8 +29,6 @@ export const startScheduler = async (config, db, txtUpdated) => {
     runReliabilityChecks(db, config);
   }, PULSE_INTERVAL);
 
-  // 3. Self Validation Task
-  // "every 3 expected_propagation_time"
   const SELF_VALIDATION_INTERVAL = 3 * config.expected_propagation_time;
   msg(`Self-validation interval set to ${SELF_VALIDATION_INTERVAL}ms`);
 
@@ -109,20 +104,8 @@ import { verifyNode, verifyReliability } from '../core/verification.js';
 import { generateRandomFTSExpression } from '../core/fts_generator.js';
 import { deleteEntry } from '../db/repo.js';
 
-/**
- * Runs a cycle of random audits and viral propagation.
- * @param {import('@db/sqlite').Database} db
- * @param {import('../core/config.js').CiprNodeConfig} config
- */
-/** Maximum number of concurrent audit/reliability verifications per pulse to avoid network flooding. */
 const PULSE_CONCURRENCY_LIMIT = 5;
 
-/**
- * Runs a batch of async tasks with a concurrency cap.
- * @param {Array<() => Promise<any>>} tasks - Array of zero-argument async functions.
- * @param {number} limit - Max concurrent executions.
- * @returns {Promise<void>}
- */
 const runConcurrent = async (tasks, limit) => {
   const queue = [...tasks];
   const running = new Set();
@@ -140,7 +123,6 @@ const runConcurrent = async (tasks, limit) => {
   const initial = Math.min(limit, queue.length);
   await Promise.allSettled(Array.from({ length: initial }, runNext));
 
-  // Drain any remaining
   if (running.size > 0) await Promise.allSettled([...running]);
 };
 
@@ -268,41 +250,16 @@ const sendPulseRequest = (config, targetZa, method, body, resourceZa) => {
  * @param {import('@db/sqlite').Database} db
  */
 const runSelfValidation = async (config, db) => {
-  // console.log('Running self-validation...');
-  const isValid = validateCiprConfig(config, false); // exitOnFail = false
-
-  // If we are alone, we can't really broadcast, but we can check integrity.
-  // calculateNodesPerPulse requires > 0 usually? Utils says max(1, ...).
+  const isValid = validateCiprConfig(config, false);
 
   if (isValid) {
     if (config.debug) msg('Self-validation passed.');
-    // "if the validation is successful, a PUT for its own za must be sent to ... randomly selected nodes"
-    // We can reuse broadcastUpdate logic but tailored to random selection instead of "all" if broadcastUpdate was "all"?
-    // broadcastUpdate actually did random selection of N nodes. So we can just call it?
-    // Wait, broadcastUpdate uses `calculateNodesPerPulse(totalNodes, config.expected_propagation_time)` internally.
-    // And it sends PUT.
-    // So we can just call `broadcastUpdate(config, db)`.
     await broadcastUpdate(config, db);
   } else {
-    // Retry Logic (3 retries)
-    // We already failed once.
-    // Spec: "If the self validation fails after 3 retries"
-    // So we should retry 3 MORE times? Or 3 times total? Usually "retries" means extra attempts.
-    // Since this is a scheduled task, blocking here for retries might be okay if delay is short?
-    // Or just count failures?
-    // Simplest interpretation: Try... Catch/Fail -> Retry 1..2..3 -> explode.
-
     msg('Self-validation failed! Retrying...', 'WA');
     let retrySuccess = false;
     for (let i = 1; i <= 3; i++) {
-      await new Promise((r) => setTimeout(r, 1000)); // Wait 1s between retries? Validating config is fast though.
-      // If config is invalid, it's likely static invalid unless file changed?
-      // Validator checks config struct. If loaded config is bad, it stays bad until reload.
-      // But maybe some external check? Validator.js checks regexes on config object.
-      // If config object is bad, it's bad. Retrying won't change it unless we reload config?
-      // "the ciprnode must self validate it's own sanity"
-      // Maybe we should reload config?
-      // For now, simple re-check (maybe ephemeral state changed?).
+      await new Promise((r) => setTimeout(r, 1000));
       if (validateCiprConfig(config, false)) {
         retrySuccess = true;
         msg(`Self-validation passed on retry ${i}.`);

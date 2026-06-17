@@ -59,7 +59,6 @@ export const initSchema = (db) => {
 
   msg('Initializing Database Schema...');
 
-  // 1. Main Table Creation with Constraints
   db.exec(`
     CREATE TABLE IF NOT EXISTS ciprdup (
       -- Zone Apex: The unique identifier for the resource.
@@ -126,7 +125,6 @@ export const initSchema = (db) => {
   // Index on primary_lang for extremely fast global filtering without FTS overhead
   db.exec(`CREATE INDEX IF NOT EXISTS idx_ciprdup_primary_lang ON ciprdup(primary_lang);`);
 
-  // 2. Lookup table for Languages
   db.exec(`
     CREATE TABLE IF NOT EXISTS languages (
       lang_code TEXT PRIMARY KEY,
@@ -137,8 +135,6 @@ export const initSchema = (db) => {
 
   seedLanguages(db);
 
-  // 2. FTS5 Virtual Table (External Content)
-  // We check if the FTS table exists to avoid errors on re-run
   const ftsExists = db.prepare(
     "SELECT name FROM sqlite_master WHERE type='table' AND name='ciprdup_fts'",
   ).get();
@@ -152,14 +148,12 @@ export const initSchema = (db) => {
           keywords,
           offering,
           seeking,
-          content='ciprdup',  -- External content source is the main table
-          content_rowid='rowid' -- Link via standard internal rowid
+          content='ciprdup',
+          content_rowid='rowid'
       );
     `);
   }
 
-  // 3. Triggers to Keep FTS Sync (External Content Requirement)
-  // Trigger: After Insert
   db.exec(`
       CREATE TRIGGER IF NOT EXISTS ciprdup_ai AFTER INSERT ON ciprdup BEGIN
         INSERT INTO ciprdup_fts(rowid, za, title, description, keywords, offering, seeking)
@@ -167,7 +161,6 @@ export const initSchema = (db) => {
       END;
   `);
 
-  // Trigger: After Delete
   db.exec(`
       CREATE TRIGGER IF NOT EXISTS ciprdup_ad AFTER DELETE ON ciprdup BEGIN
         INSERT INTO ciprdup_fts(ciprdup_fts, rowid, za, title, description, keywords, offering, seeking)
@@ -175,7 +168,6 @@ export const initSchema = (db) => {
       END;
   `);
 
-  // Trigger: After Update
   db.exec(`
       CREATE TRIGGER IF NOT EXISTS ciprdup_au AFTER UPDATE ON ciprdup BEGIN
         INSERT INTO ciprdup_fts(ciprdup_fts, rowid, za, title, description, keywords, offering, seeking)

@@ -35,9 +35,6 @@ const handleGetResource = (db, za) => {
     return new Response('Not Found', { status: 404 });
   }
 
-  // TODO: Handle field filtering (e.g. /za/title/) if needed by spec in future iteration.
-  // For now return full entry.
-
   return new Response(JSON.stringify(entry), {
     headers: { 'Content-Type': 'application/hal+json; charset=utf-8' },
   });
@@ -47,26 +44,15 @@ const handleGetResource = (db, za) => {
  * PUT /za/
  */
 const handlePutResource = async (request, db, za) => {
-  // TODO: Validation logic (DNS TXT record check, timestamp check) per spec.
-  // For this iteration, we assume basic validation passes or is done by caller.
-
   try {
     const bodyText = await request.text();
     let data;
 
-    // Handle JSON or Plain Text Body (Spec allows both but JSON is easier to parse here)
-    // If Content-Type is application/json...
     const contentType = request.headers.get('content-type') || '';
 
     if (contentType.includes('application/json')) {
       data = JSON.parse(bodyText);
     } else {
-      // Basic fallback for key=value plain text if needed, or error.
-      // Spec example:
-      // za=example.com
-      // title=...
-
-      // Let's implement a simple key-value parser for text/plain
       const lines = bodyText.split('\n');
       data = {};
       for (const line of lines) {
@@ -90,7 +76,7 @@ const handlePutResource = async (request, db, za) => {
       ol: Number(data.ol) || 0,
       latitude: data.latitude ? Number(data.latitude) : null,
       longitude: data.longitude ? Number(data.longitude) : null,
-      timestamp: Number(data.timestamp) || Date.now() / 1000, // Default to now if missing? Spec says "validate timestamp > 24h"
+      timestamp: Number(data.timestamp) || Date.now() / 1000,
     };
 
     insertEntry(db, entry);
@@ -106,8 +92,6 @@ const handlePutResource = async (request, db, za) => {
  * DELETE /za/
  */
 const handleDeleteResource = (db, za) => {
-  // TODO: Validation logic (DNS TXT record check) per spec.
-
   deleteEntry(db, za);
   return new Response(null, { status: 204 });
 };

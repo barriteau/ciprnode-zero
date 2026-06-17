@@ -6,7 +6,7 @@
 
 This software enables domain owners to be indexed in the Cipr by publicly hosting a copy of the directory, thereby being indexed on it.
 
-A deployed ciprnode also offers a search-engine-like front-end with two-level search: first level is in the index itself and second level is deep inside the content of any *cipred* resource.
+A deployed ciprnode also offers a search-engine-like front-end ―its ciprface― with two-level search: first level is in the index itself and second level is deep inside the content of any *cipred* resource.
 
 ## Key Components
 
@@ -317,40 +317,6 @@ A configurable logging system with two independent output channels:
 
 All responses with a body are transparently gzip-compressed when the client sends `Accept-Encoding: gzip`. Compression is applied to `text/*`, `application/javascript`, `application/json`, `application/xml`, and `image/svg+xml` content types. The `Content-Length` header is removed and `Content-Encoding: gzip` is added; a `Vary: Accept-Encoding` header is included for correct CDN handling.
 
-## Known Limitations
-
-The following issues are known, structurally understood, and have no immediate fix. They represent open design problems in the Cipr protocol itself, not bugs in this implementation.
-
-### No Defense Against Spam or Sybil Attacks
-
-**This is the most serious structural vulnerability in the Cipr.**
-
-The protocol is fully permissionless: anyone with a registered domain can join the index. Domain registration costs are low (free TLDs exist), deployment is trivially scriptable, and there is no concept of reputation, trust score, or PageRank anywhere in the protocol.
-
-A motivated attacker can:
-
-- Register thousands of cheap domains and deploy ciprnodes with keyword-stuffed `title`, `description`, and `keywords` fields.
-- BM25 ranking treats all entries equally: keyword density determines ranking, not credibility or quality.
-- Spam entries that continuously refresh their `timestamp` remain permanently "current" while legitimate nodes with intermittent connectivity may be evicted.
-
-The spec's argument that "the abundance of nodes makes any single bad actor irrelevant" fails at scale because automated spam deployment grows faster than honest human participation. This has been the outcome for every open, permissionless index in history.
-
-**No code change in this implementation can solve this.** It requires a protocol-level design decision: potential mitigations include per-domain trust scoring, domain age signals, proof-of-work, or moderation layers: all of which involve trade-offs with the permissionless, decentralized model.
-
-### DNS as the Sole Authorization Mechanism
-
-The `_cipr.{za} TXT` record is the only credential that proves a ciprnode's identity to the network. DNS is controlled by registrars, registries, and ICANN: all subject to legal pressure, terms-of-service enforcement, and political interference.
-
-- A single court order to a registrar can silently remove a node's TXT record, causing all peers to evict it automatically within one or two pulse cycles.
-- Nodes in jurisdictions that block major DoH providers (China, Iran, Russia block Cloudflare, Google, Quad9) cannot complete Triple Validation on incoming PUTs. They become isolated from the rest of the network.
-- The Zone Apex (`sldl.tldl`) format requirement structurally excludes all path-based resources, shared subdomains, and most 2nd-level ccTLDs (`.co.uk`, `.edu.br`, etc.).
-
-### No Economic or Reputational Incentive to Run a Node
-
-Operating a ciprnode could cost money (VPS, domain registration, bandwidth) and time (setup, maintenance, security). The benefit is one entry in the Cipr and participation in maintaining the index. There is no monetary return, no reputation mechanism outside the Cipr, and no network effect until adoption is meaningful.
-
-Is expected the network will remain confined to personal, community and niche deployments.
-
 ### Reliability Validation Fails Open
 
 When an incoming `PUT /{za}/` triggers the Reliability Validation step and the QUERY to the sender's node fails with a network error (timeout, refused connection, firewall drop), the validation is silently bypassed and the entry is accepted. This is intentional: hard-failing on network errors would break legitimate propagation under transient conditions: but it means a bad-faith node that simply does not respond to QUERY requests can always skip this check.
@@ -370,7 +336,7 @@ Download the latest `ciprnode-zero-*.zip` for your platform (Windows, Linux, mac
 Requires [Deno](https://deno.land/) v2.7+ installed.
 
 ```bash
-git clone https://github.com/your-repo/ciprnode-zero.git
+git clone https://github.com/barriteau/ciprnode-zero.git
 cd ciprnode-zero
 deno task start
 ```
@@ -407,13 +373,48 @@ doh = ["https://dns.google/dns-query", ...]  # DNS-over-HTTPS endpoints (min 3 r
 
 ### Secrets Management
 
-Sensitive values should be set as environment variables (or in a `.env` file), which take **precedence** over `ciprnode.toml`:
+Sensitive values must **never** be committed to version control. The following measures protect credentials at every layer:
+
+#### Environment Variables (Primary)
+
+API tokens and provider credentials are loaded from environment variables, which take **precedence** over any values in `ciprnode.toml`:
 
 |     Env Variable     | Overrides                |
 |:--------------------:|:-------------------------|
 | `CIPR_DNS_PROVIDER`  | `dns_provider.name`      |
 | `CIPR_DNS_API_TOKEN` | `dns_provider.api_token` |
 |  `CIPR_DNS_ZONE_ID`  | `dns_provider.zone_id`   |
+
+Environment variables can be set directly in the shell or via a `.env` file in the project root. The `.env` file is excluded from git by `.gitignore`.
+
+#### Git Protection
+
+- **`ciprnode.toml`** is excluded from version control (`.gitignore`). A tracked template file `ciprnode.example.toml` is provided with all placeholder values for new deployments.
+- **`.env`** is excluded from version control.
+- **`logs/`** and **`data/`** directories are excluded — log files and the SQLite database never enter git history.
+
+#### Console Output Safety
+
+- **No credential data is ever printed to stdout/stderr.** The Cloudflare and deSEC DNS provider integrations use the project's `msg()` function, which respects the `log_level` configuration. Even in verbose mode (`log_level = 2`), only operational status messages are shown — never tokens, keys, or secrets.
+- **Zone IDs are truncated** to their first 8 characters in debug output, preventing full identifier exposure.
+
+#### Log File Redaction
+
+When `debug = true`, all console output is also written to timestamped log files in `logs/`. The log formatter (`formatForFile`) automatically **redacts** any object keys matching `api_token`, `api_key`, `token`, `secret`, `password`, or `authorization` — replacing their values with `[REDACTED]` before writing to disk. This ensures that even if a credential-bearing object is accidentally passed to a logging function, the secret never reaches persistent storage.
+
+#### Build Artifact Sanitization
+
+The build script (`deno task build`) reads `ciprnode.toml` and **replaces any `api_token` value** with the placeholder `"YOUR_TOKEN_HERE"` before bundling it as `ciprnode.example.toml` in the distribution archive. Real credentials can never ship in a public release.
+
+#### Error Message Safety
+
+- Config parsing errors log only `error.message`, not the full error object (which could contain raw file content).
+- Fatal startup errors log `error.message` and `error.stack` separately, never the full error object.
+- API error responses from DNS providers are truncated to 200 characters in debug output.
+
+#### Validation at Startup
+
+The configuration validator checks that if a `dns_provider.name` is set, `api_token` must be a non-empty string. Missing tokens are caught at startup with a clear error message, preventing silent failures that might lead to credential debugging in production.
 
 ## Architecture Overview
 

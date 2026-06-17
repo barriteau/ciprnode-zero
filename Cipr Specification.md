@@ -983,6 +983,28 @@ No matter what, STs are the ideal implementations because they guarantee distrib
 
 With this type of implementation increases the risk of centralization and the risks to the security of the Cipr, but their existence is justified: they facilitate more publishers having a presence in the Cipr.
 
+## Known Limitations
+
+The following issues are known and structurally understood. They represent open design problems in the Cipr protocol itself, not bugs in this implementation.
+
+### No Defense Against Spam or Sybil Attacks
+
+The protocol is fully permissionless: anyone with a registered domain can join the index. Domain registration costs are low (free TLDs exist), deployment is trivially scriptable.
+
+**No code change in this implementation can solve this**. It requires a protocol-level design decision: potential mitigations include per-domain trust scoring, domain age signals, proof-of-work, or moderation layers: all of which involve trade-offs with the permissionless, decentralized model.
+
+### DNS as the Sole Authorization Mechanism
+
+The `_cipr.{za} TXT` record is the only credential that proves a ciprnode's identity to the network. DNS is controlled by registrars, registries, and ICANN: all subject to legal pressure, terms-of-service enforcement, and political interference.
+
+- A single court order to a registrar can silently remove a node's TXT record, causing all peers to evict it automatically within one or two pulse cycles.
+- Nodes in jurisdictions that block major DoH providers (China, Iran, Russia block Cloudflare, Google, Quad9) cannot complete Triple Validation on incoming PUTs. They become isolated from the rest of the network.
+- The Zone Apex (`sldl.tldl`) format requirement structurally excludes all path-based resources, shared subdomains, and most 2nd-level ccTLDs (`.co.uk`, `.edu.br`, etc.).
+
+### No Economic or Reputational Incentive to Run a Node
+
+Operating a ciprnode could cost money (VPS, domain registration, bandwidth) and time (setup, maintenance, security). The benefit is one entry in the Cipr and participation in maintaining the index. There is no monetary return, no reputation mechanism outside the Cipr, and no network effect until adoption is meaningful.
+
 ## Epilogue
 
 The Cipr is an addition to the existing searching and indexing ecosystem: crawlers, spiders, meta search engines, indexers, aggregators, web directories, link directories, RSS directories, webrings and similar tools can interact with the Cipr, depending on the use case and the level of adoption, the Cipr could be an alternative, a companion, a competitor or a replacement to any of those tools, time will tell.

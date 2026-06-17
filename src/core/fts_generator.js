@@ -42,22 +42,18 @@ export const captureSearchTerms = (queryStr) => {
  * @returns {string} The generated FTS expression.
  */
 export const generateRandomFTSExpression = (config) => {
-  // 1. Create Pool (config.test_words + recentTerms)
   const pool = [...(config.test_words || [])];
 
-  // Mix in up to 50 terms from the cache to keep it varied but bounded
   if (recentTermsQueue.length > 0) {
     const cacheSampleCount = Math.min(recentTermsQueue.length, 50);
     const shuffledCache = [...recentTermsQueue].sort(() => 0.5 - Math.random());
     pool.push(...shuffledCache.slice(0, cacheSampleCount));
   }
 
-  // Fallback if pool is completely empty (rare, but possible if test_words is completely empty)
   if (pool.length === 0) {
     pool.push('node', 'data', 'test');
   }
 
-  // 2. Select 1 to 5 random words
   const termCount = Math.floor(Math.random() * 5) + 1;
   const selectedTerms = [];
   for (let i = 0; i < termCount; i++) {
@@ -65,26 +61,21 @@ export const generateRandomFTSExpression = (config) => {
     selectedTerms.push(pool[randomIndex]);
   }
 
-  // Remove duplicates in the selected terms
   const uniqueTerms = [...new Set(selectedTerms)];
 
-  // 3. Operator Injection (5%-15% chance of complex expression, let's say 10%)
   const isComplex = Math.random() < 0.10;
 
   if (!isComplex || uniqueTerms.length < 2) {
-    // 85-95% probability: flat string without operators
     return uniqueTerms.join(' ');
   }
 
-  // Complex expression builder
-  // We have 2 or more terms
   const operators = ['AND', 'OR', 'NOT', 'NEAR', 'PREFIX'];
   const op = operators[Math.floor(Math.random() * operators.length)];
 
   if (op === 'NOT') {
     return `${uniqueTerms[0]} NOT ${uniqueTerms[1]}`;
   } else if (op === 'NEAR') {
-    const distance = Math.floor(Math.random() * 5) + 1; // NEAR/1 to NEAR/5
+    const distance = Math.floor(Math.random() * 5) + 1;
     return `NEAR(${uniqueTerms[0]} ${uniqueTerms[1]}, ${distance})`;
   } else if (op === 'PREFIX') {
     return `${uniqueTerms[0]}* ${uniqueTerms[1]}`;

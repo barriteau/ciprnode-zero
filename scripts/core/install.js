@@ -9,11 +9,6 @@ const install = async () => {
   console.log('Ciprnode Service Installer');
   const os = Deno.build.os;
 
-  // Determine the executable path
-  // If run from source (deno run), we assume we want to install the 'dist' binary or the source?
-  // Usually a service runs the compiled binary.
-  // Let's assume this script is run FROM the location where the binary is (e.g. inside dist/).
-
   let execPath = '';
   const cwd = Deno.cwd();
 

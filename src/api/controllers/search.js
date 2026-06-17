@@ -258,7 +258,6 @@ export const list = async (req, db, config) => {
  * Handles QUERY requests.
  */
 export const query = async (req, db, config, isResindex = false) => {
-  // 1. Parse Request Body & Query Params
   const params = new URLSearchParams();
   const contentType = req.headers.get('content-type') || '';
   const url = new URL(req.url);
@@ -458,8 +457,6 @@ export const query = async (req, db, config, isResindex = false) => {
   // Copy raw OL/Lang to filters for template check
   options.filters.ol = options.ol;
   options.filters.primary_lang = options.primary_lang;
-
-  // Pagination
   // Parse `pages[num]` and fallback to `pages_num`
   const pNums = parseArray(params.get('pages[num]') || params.get('pages_num') || '');
   const pSizes = parseArray(params.get('pages[size]') || params.get('pages_size') || '');
@@ -507,10 +504,8 @@ export const query = async (req, db, config, isResindex = false) => {
     currentPageUI = allPageNums[0];
   }
 
-  // Deduplicate and resolve actual pages
   options.pages = pages;
 
-  // 2. Search Execution
   let items = [];
   let statsCount = 0;
 
@@ -559,12 +554,9 @@ export const query = async (req, db, config, isResindex = false) => {
     });
   }
 
-  // 3. Render Response
   const accept = req.headers.get('accept') || '';
   const isFragment = req.headers.get('HX-Request') === 'true';
 
-  // Locale Detection
-  // Priority: 1. Cookie 'cipr_lang', 2. Header 'Accept-Language', 3. Default 'en'
   let locale = 'en';
   const cookieHeader = req.headers.get('cookie') || '';
   const match = cookieHeader.match(/cipr_lang=([a-z]{2})/);
@@ -573,13 +565,10 @@ export const query = async (req, db, config, isResindex = false) => {
   } else {
     const acceptLang = req.headers.get('accept-language');
     if (acceptLang) {
-      // simple check for first 2 chars
-      // "es-ES,es;q=0.9" -> "es"
       locale = acceptLang.substring(0, 2).toLowerCase();
     }
   }
 
-  // A. JSON / HAL
   if (accept.includes('application/json') || accept.includes('application/hal+json')) {
     const enrichedItems = items.map((item) => ({
       ...item,
@@ -628,14 +617,12 @@ export const query = async (req, db, config, isResindex = false) => {
     return new Response(JSON.stringify(response), { headers });
   }
 
-  // B. HTML (Template)
   const templateData = {
     configZa: config.za,
-    stats: { // potentially expensive to get real count every time?
+    stats: {
       count: statsCount,
       last_insert: (() => {
         const latestTs = getLatestTimestamp(db);
-        // The DB stores timestamp in seconds, so multiply by 1000 for JS Date
         const d = latestTs ? new Date(latestTs * 1000) : new Date();
         return new Intl.DateTimeFormat(locale, {
           year: 'numeric',
@@ -645,7 +632,7 @@ export const query = async (req, db, config, isResindex = false) => {
           minute: '2-digit',
           hour12: false,
         }).format(d);
-      })(), // Real metadata
+      })(),
     },
     query: options.query,
     filters: options.filters,
@@ -656,7 +643,7 @@ export const query = async (req, db, config, isResindex = false) => {
       currentPage: currentPageUI,
       pageSize: defaultSize,
       hasPrevPage: currentPageUI > 1,
-      hasNextPage: items.length >= defaultSize && currentPageUI < 100, // naive peek
+      hasNextPage: items.length >= defaultSize && currentPageUI < 100,
     },
     // Optional metadata from [meta_data] section in ciprnode.toml.
     // Also includes derived values from [cipr_entry] for convenience in base.eta.

@@ -21,10 +21,6 @@ export const handleRequest = (request, db, config) => {
 
   const parts = path.split('/').filter((p) => p.length > 0);
 
-  // 0. Profile (ALPS) - Served statically usually, but let's ensure it's handled if requested via API path logic?
-  // Actually server.js handles static files first.
-
-  // 1. Root /
   if (path === '/') {
     if (method === 'GET') {
       return SearchController.list(request, db, config);
@@ -37,14 +33,12 @@ export const handleRequest = (request, db, config) => {
     }
   }
 
-  // 1.5 Languages autocomplete endpoint
   if (path === '/languages' || path === '/languages/') {
     if (method === 'GET') {
       return SearchController.getLanguages(request, db, config);
     }
   }
 
-  // 1.8 Resindex querying /ri/
   if (path === '/ri' || path === '/ri/') {
     if (method === 'OPTIONS') {
       return SearchController.optionsRi(request, db, config);
@@ -57,14 +51,11 @@ export const handleRequest = (request, db, config) => {
     }
   }
 
-  // 2. Resource Operations /za/...
   if (parts.length >= 1) {
     const za = parts[0];
 
-    // Basic Domain Validation (weak check)
-    // Avoid routing static files if they slipped through server.js checking
     if (za.includes('.') && !za.startsWith('css') && !za.startsWith('js')) {
-      if (parts.length === 1) { // /za/
+      if (parts.length === 1) {
         if (method === 'GET') {
           return EntryController.get(request, db, config, za);
         }
@@ -76,7 +67,6 @@ export const handleRequest = (request, db, config) => {
         }
       }
 
-      // 3. Resource Field Operations /za/field/
       if (parts.length === 2 && method === 'GET') {
         const field = parts[1];
         const allowedFields = [

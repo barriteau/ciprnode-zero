@@ -2,12 +2,25 @@
  * @file integrations/ise/pagefind.js
  * @description Pagefind integration for the CiprNode Zero Internal Search Engine (ISE).
  *
- * Strategy: Instead of `import(url)` (requires `--allow-import` in Deno 2),
- * we fetch the Pagefind JS source as text, execute it via `new Function()` in
- * a synthetic minimal browser environment, then call the resulting `pagefind`
- * module's API directly. This avoids the `--allow-import` permission entirely
- * and works in compiled Deno executables.
+ * Fetches the Pagefind JS bundle as text and executes it via `new Function()` in
+ * a synthetic minimal browser environment. Subresource Integrity (SRI) validation
+ * is enforced when the provider config includes an `integrity` field with the
+ * expected SHA-256 hash of the pagefind.js bundle.
  */
+
+import { crypto } from '@std/crypto';
+
+/**
+ * Computes the SHA-256 hash of a string and returns it as a hex string.
+ * @param {string} input
+ * @returns {Promise<string>}
+ */
+const sha256 = async (input) => {
+  const data = new TextEncoder().encode(input);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+};
 
 /**
  * Creates a minimal browser-like global scope sufficient for Pagefind to initialize.
@@ -43,11 +56,21 @@ const buildPagefindContext = (_baseUrl, absoluteFetch) => ({
  * @param {Function} absoluteFetch - Patched fetch for absolute URL resolution.
  * @returns {Promise<Record<string, Function>>}
  */
-const loadPagefindModule = async (pagefindUrl, baseUrl, absoluteFetch) => {
+const loadPagefindModule = async (pagefindUrl, baseUrl, absoluteFetch, integrity = null) => {
   const response = await absoluteFetch(pagefindUrl);
   if (!response.ok) throw new Error(`Failed to fetch Pagefind JS: ${response.status} ${pagefindUrl}`);
 
   let source = await response.text();
+
+  if (integrity) {
+    const actualHash = await sha256(source);
+    if (actualHash !== integrity) {
+      throw new Error(
+        `SRI validation failed for ${pagefindUrl}. Expected ${integrity}, got ${actualHash}. ` +
+        'The remote Pagefind bundle may have been tampered with. Update the integrity hash in your ISE provider config.'
+      );
+    }
+  }
 
   // Pagefind checks `import.meta.url` to derive its own `basePath`.
   // `import.meta` is illegal inside `new Function()` (it's only valid in ES module scope).
@@ -130,7 +153,7 @@ export const queryResindex = async (provider, options) => {
     // Cache the loaded module across requests (same provider URL = same module)
     if (!_cachedPagefind || _cachedBaseUrl !== baseUrl) {
       console.log('[PAGEFIND] Loading Pagefind module via fetch (no --allow-import needed)...');
-      _cachedPagefind = await loadPagefindModule(pagefindUrl, baseUrl, absoluteFetch);
+      _cachedPagefind = await loadPagefindModule(pagefindUrl, baseUrl, absoluteFetch, provider.integrity);
       _cachedBaseUrl = baseUrl;
 
       if (!hasPagefindAPI(_cachedPagefind)) {

@@ -36,11 +36,9 @@ export const get = (req, db, _config, za) => {
     return new Response('Not Found', { status: 404 });
   }
 
-  // Format Data
   const data = { ...entry };
-  delete data.rowid; // internal
+  delete data.rowid;
 
-  // HAL
   if (accept.includes('application/hal+json') || accept.includes('application/json')) {
     return halResponse(data, {
       self: { href: `/${za}/` },
@@ -68,10 +66,9 @@ import { generateRandomFTSExpression } from '../../core/fts_generator.js';
  * Handles PUT /za/ requests (Upsert).
  */
 export const put = async (req, db, config, za) => {
-  // 1. Parse Body
   let body;
   try {
-    const bodyText = await readBodyWithLimit(req, 8192); // 8KB Max strict limit
+    const bodyText = await readBodyWithLimit(req, 8192);
     body = JSON.parse(bodyText);
   } catch (err) {
     if (err.message === 'Payload Too Large') {
@@ -80,23 +77,18 @@ export const put = async (req, db, config, za) => {
     return new Response('Invalid JSON', { status: 400 });
   }
 
-  // 2. Validate Consistency (za in URL matches Body)
   if (body.za !== za) {
     return new Response('za Mismatch', { status: 400 });
   }
 
-  // 2.5 Ignore Self-Update (Per Spec)
   if (za === config.za) {
     if (config.debug) msg(`[DBG] PUT ${za}: Self-update ignored (Protected).`);
-    // Return 202 Accepted as if successful, but do nothing.
     return new Response(null, { status: 202, headers: { Location: `/${za}/` } });
   }
 
-  // 2.6 Currentness Validation: timestamp must not be older than 24 hours (spec §PUT §0)
-  // Also reject timestamps more than 5 minutes in the future to tolerate minor clock skew.
   const nowSec = Math.floor(Date.now() / 1000);
   const TWENTY_FOUR_HOURS = 86400;
-  const CLOCK_SKEW_TOLERANCE = 300; // 5 minutes
+  const CLOCK_SKEW_TOLERANCE = 300;
   if (!body.timestamp) {
     return new Response('Missing timestamp', { status: 400 });
   }
@@ -107,7 +99,6 @@ export const put = async (req, db, config, za) => {
     return new Response('Timestamp is older than 24 hours', { status: 400 });
   }
 
-  // 2.7 Field-level Request Size Limits (Defense in Depth against Hash-Complexity DoS)
   const keywordsStr = Array.isArray(body.keywords) ? body.keywords.join(' ') : body.keywords;
   if (
     (body.za && body.za.length > 255) ||
@@ -121,7 +112,6 @@ export const put = async (req, db, config, za) => {
     return new Response('Field exceeds maximum allowed limit', { status: 413 });
   }
 
-  // 3. Verify Sender (Critical Step per Spec)
   if (config.debug) msg(`[DBG] PUT ${za}: Verifying Sender...`);
   const calculatedHash = await generateCiprHash(
     body.za,
@@ -137,22 +127,16 @@ export const put = async (req, db, config, za) => {
   );
   if (config.debug) msg(`[DBG] PUT ${za}: Hash calculated: ${calculatedHash}`);
 
-  // Use verifyNode to check both DNS TXT and HTTP HEAD (Reachability)
-  // This ensures we only accept updates from reachable nodes.
   const isValid = await verifyNode(config, za, calculatedHash);
   if (config.debug) msg(`[DBG] PUT ${za}: Node Verification Result: ${isValid}`);
 
   if (!isValid) {
     return new Response(
       'Verification Failed. Sender reachable and TXT record must match data hash.',
-      {
-        status: 403,
-      },
+      { status: 403 },
     );
   }
 
-  // 3.5 Reliability Validation (spec §PUT §3): QUERY the sender and compare results
-  // with the local baseline to detect data-poisoned or diverged nodes.
   try {
     const ftsExpression = generateRandomFTSExpression(config);
     const paginationParams = { num: 1, size: 10 };
@@ -177,13 +161,8 @@ export const put = async (req, db, config, za) => {
     }
     if (config.debug) msg(`[DBG] PUT ${za}: Reliability Validation passed.`);
   } catch (e) {
-    // Non-fatal: if the reliability check network call fails, log and continue.
-    // Failing open here is intentional — a transient network error should not
-    // permanently block a legitimate propagation.
     if (config.debug) msg(`[DBG] PUT ${za}: Reliability check error (non-fatal): ${e.message}`);
   }
-
-  // 4. Insert/Update
 
   const inserted = insertEntry(db, {
     ...body,
@@ -193,39 +172,27 @@ export const put = async (req, db, config, za) => {
 
   if (inserted) {
     return new Response(null, { status: 202, headers: { Location: `/${za}/` } });
-  } else {
-    // If inserted is false, it means the entry existed and was identical (no changes made).
-    // This is an idempotent success.
-    return new Response(null, { status: 202, headers: { Location: `/${za}/` } });
   }
+  return new Response(null, { status: 202, headers: { Location: `/${za}/` } });
 };
 
 /**
  * Handles DELETE /za/ requests.
  */
 export const del = async (_req, db, config, za) => {
-  // 1. Check if resource exists locally
   const entry = getEntry(db, za);
   if (!entry) {
     if (config.debug) msg(`[DBG] DELETE ${za}: Ignored (Not found locally).`);
-    return new Response(null, { status: 202 }); // "Ignored but status 200" per spec? Or 404? Spec says "response must be status 200 anyway"
+    return new Response(null, { status: 202 });
   }
 
-  // 1.5 Ignore Self-Delete (Per Spec)
   if (za === config.za) {
     if (config.debug) msg(`[DBG] DELETE ${za}: Self-deletion ignored (Protected).`);
     return new Response(null, { status: 202 });
   }
 
-  // 2. Verify the resource (Viral Deletion Logic)
-  // "check the za with the validator.js functions"
-  // We need to verify if the node is VALID.
-  // If VALID -> IGNORE DELETE (Protect the node).
-  // If INVALID -> DELETE (Propagate cleanup).
-
   if (config.debug) msg(`[DBG] DELETE ${za}: Verifying node validity...`);
 
-  // We need the hash to verify. We have the entry in DB, so we can calculate it.
   const calculatedHash = await generateCiprHash(
     entry.za,
     entry.title,
@@ -242,8 +209,6 @@ export const del = async (_req, db, config, za) => {
   const isValid = await verifyNode(config, za, calculatedHash);
 
   if (isValid) {
-    // 3a. Validation Passes -> Run Reliability Validation before protecting
-    // Spec §DELETE: Deletion Validation Sequence step 3 — Reliability Validation
     try {
       const ftsExpression = generateRandomFTSExpression(config);
       const paginationParams = { num: 1, size: 10 };
@@ -260,35 +225,29 @@ export const del = async (_req, db, config, za) => {
 
       const isReliable = await verifyReliability(za, ftsExpression, paginationParams, baselineRank, config);
       if (isReliable) {
-        // All 3 checks passed — protect the entry, ignore DELETE
         msg(`[DELETE] Request for ${za} IGNORED. Node passed all validation steps.`);
         if (config.debug) {
           msg(`[DBG] DELETE ${za}: Node verified successfully (DNS + HTTP + Reliability). Retaining entry.`);
         }
         return new Response(null, { status: 202 });
       }
-      // Reliability failed — proceed with deletion
       if (config.debug) msg(`[DBG] DELETE ${za}: Reliability Validation failed.`);
     } catch (e) {
-      // Non-fatal: if the reliability check network call fails, log and continue.
-      // Failing open here means we protect the entry (ignore DELETE) on transient errors.
       if (config.debug) msg(`[DBG] DELETE ${za}: Reliability check error (non-fatal): ${e.message}`);
       msg(`[DELETE] Request for ${za} IGNORED. Reliability check encountered network error.`);
       return new Response(null, { status: 202 });
     }
 
-    // Reliability failed — execute DELETE
     msg(`[DELETE] Request for ${za} ACCEPTED. Node failed Reliability Validation.`);
     if (config.debug) msg(`[DBG] DELETE ${za}: Reliability check failed. Deleting entry.`);
     deleteEntry(db, za);
     return new Response(null, { status: 202 });
-  } else {
-    // 3b. DNS/HTTP Validation Fails -> Execute DELETE
-    msg(`[DELETE] Request for ${za} ACCEPTED. Node failed DNS/HTTP validation.`);
-    if (config.debug) msg(`[DBG] DELETE ${za}: Node verification failed. Deleting entry.`);
-    deleteEntry(db, za);
-    return new Response(null, { status: 202 });
   }
+
+  msg(`[DELETE] Request for ${za} ACCEPTED. Node failed DNS/HTTP validation.`);
+  if (config.debug) msg(`[DBG] DELETE ${za}: Node verification failed. Deleting entry.`);
+  deleteEntry(db, za);
+  return new Response(null, { status: 202 });
 };
 
 /**

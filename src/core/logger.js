@@ -23,7 +23,6 @@ try {
   const OLD_LOG_FILE = join(Deno.cwd(), 'data', 'ciprnode.log');
   Deno.removeSync(OLD_LOG_FILE);
 } catch {
-  // Ignore if not present
 }
 
 let lastCleanup = Date.now();
@@ -40,7 +39,6 @@ const cleanupOldLogs = () => {
             Deno.removeSync(filePath);
           }
         } catch {
-          // Ignore individual file stat/remove errors
         }
       }
     }
@@ -59,9 +57,26 @@ const rotateLogFile = () => {
     }
   } catch (e) {
     if (!(e instanceof Deno.errors.NotFound)) {
-      // Ignore other errors
     }
   }
+};
+
+const SENSITIVE_KEYS = ['api_token', 'api_key', 'token', 'secret', 'password', 'authorization'];
+
+const redactSensitive = (obj) => {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(redactSensitive);
+  const result = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (SENSITIVE_KEYS.some((k) => key.toLowerCase().includes(k))) {
+      result[key] = '[REDACTED]';
+    } else if (typeof value === 'object' && value !== null) {
+      result[key] = redactSensitive(value);
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
 };
 
 const formatForFile = (level, args) => {
@@ -69,7 +84,7 @@ const formatForFile = (level, args) => {
   const message = args.map((arg) => {
     if (typeof arg === 'object') {
       try {
-        return JSON.stringify(arg);
+        return JSON.stringify(redactSensitive(arg));
       } catch {
         return String(arg);
       }
@@ -95,7 +110,6 @@ export const writeToLogFile = (text) => {
       lastCleanup = now;
     }
   } catch {
-    // Ignore file write errors to prevent crash
   }
 };
 

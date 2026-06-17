@@ -898,7 +898,7 @@ const initIntraSearch = () => {
 
             const excerpt = document.createElement('div');
             excerpt.className = 'excerpt';
-            excerpt.innerHTML = item.description || '';
+            excerpt.textContent = item.description || '';
 
             li.appendChild(h3);
             li.appendChild(excerpt);
