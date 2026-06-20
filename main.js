@@ -192,6 +192,7 @@ if (import.meta.main) {
       }
     }
 
+    let isVerified = false;
     if (isFrontOnly) {
       msg(`Front-end development mode, skipping DNS entry verification and Auto-Repair.`, 'WA');
     } else {

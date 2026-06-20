@@ -140,13 +140,32 @@ const build = async () => {
       try {
         const zipName = `${t.name}.zip`;
         console.log(`Creating ${zipName}...`);
-        const zipCmd = new Deno.Command('zip', {
-          args: ['-r', zipName, internalDirName],
-          cwd: distDir,
-          stdout: 'inherit',
-          stderr: 'inherit',
-        });
-        if ((await zipCmd.output()).success) archives.push(zipName);
+
+        let zipSuccess = false;
+
+        try {
+          const zipCmd = new Deno.Command('zip', {
+            args: ['-r', zipName, internalDirName],
+            cwd: distDir,
+            stdout: 'inherit',
+            stderr: 'inherit',
+          });
+          zipSuccess = (await zipCmd.output()).success;
+        } catch {
+          // zip not available, fall back to tar -a (Windows bsdtar)
+        }
+
+        if (!zipSuccess) {
+          const tarCmd = new Deno.Command('tar', {
+            args: ['-a', '-cf', zipName, internalDirName],
+            cwd: distDir,
+            stdout: 'inherit',
+            stderr: 'inherit',
+          });
+          zipSuccess = (await tarCmd.output()).success;
+        }
+
+        if (zipSuccess) archives.push(zipName);
       } catch (_err) {
         console.warn('ZIP creation failed');
       }
