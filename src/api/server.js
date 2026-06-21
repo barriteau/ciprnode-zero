@@ -4,6 +4,7 @@ import { startScheduler } from '../bot/scheduler.js';
 import { isWithinRadius } from '../db/geo.js';
 import { msg } from '../core/utils.js';
 import { initRenderer, render } from './views/renderer.js';
+import { notify } from '../core/notify.js';
 
 /**
  * Wraps a Response with a CompressionStream if compressible and accepted by client.
@@ -202,6 +203,7 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
     if (method === 'PUT' || method === 'DELETE') {
       const rlKey = method === 'PUT' ? 'put' : 'del';
       if (!checkRateLimit(clientIp, rlKey)) {
+        notify('rate_limit_hit', { ip: clientIp, method });
         return new Response('Too Many Requests', {
           status: 429,
           headers: { 'Retry-After': '60' },

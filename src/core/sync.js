@@ -6,6 +6,7 @@
 import { countEntries, getEntry, insertEntry } from '../db/repo.js';
 import { verifyNode } from './verification.js';
 import { calculateNodesPerPulse, generateCiprHash, msg, safeFetch } from './utils.js';
+import { notify } from './notify.js';
 
 /**
  * Non-blocking bootstrap entry point.
@@ -32,7 +33,10 @@ export const initialSync = async (config, db) => {
 
   const succeeded = await performSync(config, db, bootstrapNodes);
 
-  if (!succeeded) {
+  if (succeeded) {
+    const entryCount = countEntries(db);
+    notify('bootstrap_completed', { entries: entryCount, duration: 'initial' });
+  } else {
     msg(
       `[WARNING] All bootstrap nodes failed or were unreachable. This ciprnode will operate isolated unless another ciprnode contacts it, or one of the bootstrap nodes starts responding.`,
       'WA',
@@ -62,6 +66,9 @@ const startBootstrapRetryLoop = (config, db) => {
 
     if (succeeded) {
       msg(`[OK] Bootstrap sync succeeded during retry loop.`);
+      const elapsedSec = Math.round((Date.now() - startTimestamp) / 1000);
+      const entryCount = countEntries(db);
+      notify('bootstrap_completed', { entries: entryCount, duration: `${elapsedSec}s` });
       return;
     }
 
@@ -69,6 +76,8 @@ const startBootstrapRetryLoop = (config, db) => {
       msg(
         `[INFO] Bootstrap retry window (1 h) expired. The ciprnode remains in isolated mode.`,
       );
+      const elapsedMin = Math.round(elapsed / 60000);
+      notify('bootstrap_failed', { elapsed: `${elapsedMin}m` });
       return;
     }
 

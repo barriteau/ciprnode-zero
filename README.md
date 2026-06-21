@@ -317,6 +317,75 @@ A configurable logging system with two independent output channels:
 
 All responses with a body are transparently gzip-compressed when the client sends `Accept-Encoding: gzip`. Compression is applied to `text/*`, `application/javascript`, `application/json`, `application/xml`, and `image/svg+xml` content types. The `Content-Length` header is removed and `Content-Encoding: gzip` is added; a `Vary: Accept-Encoding` header is included for correct CDN handling.
 
+### 11. Notifications
+
+Ciprnode can send notifications for key operational events. The system supports multiple simultaneous providers (currently email, with push notifications planned) and per-event routing so different events can go to different channels.
+
+#### Events
+
+| Event                    | Trigger                                  | Data                                                                        |
+|--------------------------|------------------------------------------|-----------------------------------------------------------------------------|
+| `startup_completed`      | Startup sequence finishes successfully   | Duration, entry count, timestamp                                            |
+| `startup_failed`         | Startup sequence fails with an error     | Error reason, timestamp                                                     |
+| `self_validation_failed` | Self-validation fails after 3 retries    | Node za, timestamp                                                          |
+| `node_added`             | A new entry is inserted into the ciprdup | Entry za, title, timestamp                                                  |
+| `node_removed`           | An entry is deleted from the ciprdup     | Entry za, reason (verification_failed, reliability_failed, external_delete) |
+| `bootstrap_completed`    | Initial bootstrap sync succeeds          | Entry count, duration                                                       |
+| `bootstrap_failed`       | Bootstrap retry window (1h) expires      | Elapsed time                                                                |
+| `dns_updated`            | DNS TXT record is auto-updated           | New ciprHash                                                                |
+| `rate_limit_hit`         | Per-IP rate limit is exceeded            | Client IP, HTTP method                                                      |
+| `periodic_digest`        | Configurable interval status report      | Entry count, uptime, DB size, memory, last pulse                            |
+
+#### Configuration
+
+```toml
+[notifications]
+enabled = true                          # Global switch
+providers = ["email"]                   # Active providers (multiple allowed)
+digest_interval = 3600000               # Periodic digest interval in ms (0 = disabled)
+
+[notifications.events]                  # Per-event provider routing (optional)
+startup_completed      = ["email"]      # Default: all events → all providers
+startup_failed         = ["email"]
+self_validation_failed = ["email"]
+node_added             = ["email"]
+node_removed           = ["email"]
+bootstrap_completed    = ["email"]
+bootstrap_failed       = ["email"]
+dns_updated            = ["email"]
+rate_limit_hit         = ["email"]
+periodic_digest        = ["email"]
+
+[notifications.email]                   # Email provider settings
+smtp_host = "mail.example.com"
+smtp_port = 587
+smtp_user = "user@example.com"
+# smtp_pass = "your_password"           # Use CIPR_SMTP_PASS env var
+smtp_from = "ciprnode@example.com"
+smtp_to   = "admin@example.com"
+```
+
+#### Secrets
+
+The SMTP password is treated as a secret with the same precedence chain as DNS credentials:
+
+1. `CIPR_SMTP_PASS` OS environment variable (highest)
+2. `.env.${env}` file
+3. `.env` file
+4. `smtp_pass` in `ciprnode.toml` (lowest, placeholder only)
+
+#### Rate Limit Throttling
+
+`rate_limit_hit` notifications are throttled per IP with a 5-minute cooldown to prevent notification storms during attacks.
+
+#### Email Provider
+
+The email provider uses raw SMTP with STARTTLS via Deno's built-in `Deno.connectTls()` — zero external dependencies. It connects to the configured SMTP host, negotiates STARTTLS, authenticates with `AUTH LOGIN`, and sends plain text emails with `X-CiprNode` headers.
+
+#### Extensibility
+
+New notification providers (e.g., push notifications, webhooks) can be added by creating a module in `integrations/notifications/` that exports a `send(subject, body, providerConfig)` function returning `Promise<boolean>`. Multiple providers can be active simultaneously, and each event can be routed to specific providers via `[notifications.events]`.
+
 ### Reliability Validation Fails Open
 
 When an incoming `PUT /{za}/` triggers the Reliability Validation step and the QUERY to the sender's node fails with a network error (timeout, refused connection, firewall drop), the validation is silently bypassed and the entry is accepted. This is intentional: hard-failing on network errors would break legitimate propagation under transient conditions: but it means a bad-faith node that simply does not respond to QUERY requests can always skip this check.

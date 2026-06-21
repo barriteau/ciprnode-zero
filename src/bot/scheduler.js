@@ -6,6 +6,7 @@
 import { countEntries, getEntry, searchEntries } from '../db/repo.js';
 import { calculateNodesPerPulse, msg, safeFetch } from '../core/utils.js';
 import { validateCiprConfig } from '../core/validator.js';
+import { notify, runDigest } from '../core/notify.js';
 
 /**
  * Starts the internal scheduler.
@@ -24,8 +25,10 @@ export const startScheduler = async (config, db, txtUpdated) => {
   const PULSE_INTERVAL = Math.max(1000, config.expected_propagation_time || 8000);
   msg(`Scheduler interval set to ${PULSE_INTERVAL}ms`);
 
+  let peersAudited = 0;
+
   setInterval(() => {
-    runPulseChecks(db, config);
+    runPulseChecks(db, config).then((count) => { peersAudited = count; });
     runReliabilityChecks(db, config);
   }, PULSE_INTERVAL);
 
@@ -35,6 +38,15 @@ export const startScheduler = async (config, db, txtUpdated) => {
   setInterval(() => {
     runSelfValidation(config, db);
   }, SELF_VALIDATION_INTERVAL);
+
+  // Periodic digest
+  const digestInterval = config.notifications?.digest_interval;
+  if (digestInterval && digestInterval > 0 && config.notifications?.enabled) {
+    msg(`Notification digest interval set to ${digestInterval}ms`);
+    setInterval(() => {
+      runDigest(config, db, peersAudited);
+    }, digestInterval);
+  }
 };
 
 /**
@@ -169,7 +181,7 @@ const runPulseChecks = async (db, config) => {
         }
       } else {
         msg(`${entry.za} is INVALID/UNREACHABLE. Deleting locally and propagating DELETE.`, 'WA');
-        deleteEntry(db, entry.za);
+        deleteEntry(db, entry.za, 'verification_failed');
         for (const target of peerEntries) {
           sendPulseRequest(config, target.za, 'DELETE', null, entry.za);
         }
@@ -177,6 +189,7 @@ const runPulseChecks = async (db, config) => {
     });
 
   await runConcurrent(tasks, PULSE_CONCURRENCY_LIMIT);
+  return auditEntries.length;
 };
 
 /**
@@ -285,6 +298,8 @@ const runSelfValidation = async (config, db) => {
       ################################################################
       `);
 
+      notify('self_validation_failed');
+
       // Broadcast DELETE
       const totalNodes = countEntries(db);
       if (totalNodes > 0) {
@@ -356,7 +371,7 @@ const runReliabilityChecks = async (db, config) => {
 
     if (!isReliable) {
       msg(`${target.za} FAILED Reliability Check. Evicting and propagating DELETE...`);
-      deleteEntry(db, target.za);
+      deleteEntry(db, target.za, 'reliability_failed');
 
       const peerEntries = db.prepare(
         `SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`,

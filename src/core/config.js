@@ -26,6 +26,7 @@ import { exists } from '@std/fs';
  * @property {string[]} test_words
  * @property {Object} [dns_provider]
  * @property {Object[]} [ise_provider]
+ * @property {Object} [notifications]
  */
 
 import { load } from '@std/dotenv';
@@ -46,7 +47,7 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
 
   if (!(await exists(absolutePath))) {
     msg(`[FATAL] Config file not found at ${absolutePath}`, 'KO');
-    Deno.exit(1);
+    throw new Error(`Config file not found at ${absolutePath}`);
   }
 
   try {
@@ -129,6 +130,32 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
       ise_provider: Array.isArray(data.ise_provider)
         ? data.ise_provider
         : (data.ise_provider ? [data.ise_provider] : undefined),
+      notifications: data.notifications && typeof data.notifications === 'object'
+        ? {
+            enabled: data.notifications.enabled === true,
+            providers: Array.isArray(data.notifications.providers)
+              ? data.notifications.providers
+              : (data.notifications.provider ? [data.notifications.provider] : undefined),
+            digest_interval: typeof data.notifications.digest_interval === 'number'
+              ? data.notifications.digest_interval
+              : undefined,
+            events: data.notifications.events && typeof data.notifications.events === 'object'
+              ? data.notifications.events
+              : undefined,
+            email: data.notifications.email && typeof data.notifications.email === 'object'
+              ? {
+                  smtp_host: data.notifications.email.smtp_host,
+                  smtp_port: typeof data.notifications.email.smtp_port === 'number'
+                    ? data.notifications.email.smtp_port
+                    : undefined,
+                  smtp_user: data.notifications.email.smtp_user,
+                  smtp_pass: Deno.env.get('CIPR_SMTP_PASS') || data.notifications.email.smtp_pass,
+                  smtp_from: data.notifications.email.smtp_from,
+                  smtp_to: data.notifications.email.smtp_to,
+                }
+              : undefined,
+          }
+        : undefined,
     };
 
     validateCiprConfig(config);

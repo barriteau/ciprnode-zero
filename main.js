@@ -8,11 +8,13 @@ import { getDbConnection } from './src/db/client.js';
 import { initSchema } from './src/db/schema.js';
 import { startServer } from './src/api/server.js';
 import { logKeyValueTable } from './src/core/logger.js';
-import { getEntry, insertEntry } from './src/db/repo.js';
+import { getEntry, insertEntry, countEntries } from './src/db/repo.js';
 import { verifyCiprHash } from './src/core/dns.js';
 import { initialSync } from './src/core/sync.js';
 import { generateCiprHash, setLoggingConfig } from './src/core/utils.js';
 import { msg } from './src/core/utils.js';
+import { initNotifications } from './src/core/notify.js';
+import { notify } from './src/core/notify.js';
 
 if (import.meta.main) {
   try {
@@ -52,6 +54,9 @@ if (import.meta.main) {
     const config = await loadConfig();
 
     setLoggingConfig(config.log_level, config.debug);
+
+    // Initialize notifications (must happen before any events fire)
+    await initNotifications(config);
 
     // Config Summary Table (Sanitized)
     msg(`Configuration summary:`);
@@ -179,6 +184,7 @@ if (import.meta.main) {
           if (updated) {
             txtUpdated = true;
             msg(`TXT DNS record updated. Waiting 60s for propagation...`, 'OK');
+            notify('dns_updated', { ciprHash });
             // We can lower this or keep it, but standard says wait.
             await new Promise((r) => setTimeout(r, 60000));
           } else if (!config.dns_provider?.name) {
@@ -220,6 +226,7 @@ if (import.meta.main) {
         }
         if (updated) {
           txtUpdated = true;
+          notify('dns_updated', { ciprHash });
           // DNS Propagation Retry Loop
           const maxAttempts = 3;
           const delayMs = 60000; // 60 seconds
@@ -247,7 +254,7 @@ if (import.meta.main) {
 
         if (!config.debug) {
           msg(`Exiting.`, 'KO');
-          Deno.exit(1);
+          throw new Error('DNS entry verification failed: node not reachable');
         } else {
           msg(`Continuing in Debug Mode.`, 'WA');
         }
@@ -265,10 +272,16 @@ if (import.meta.main) {
     msg(`The Startup Sequence has completed.`, 'OK');
     msg(`Duration: ${durationStr}`);
 
+    notify('startup_completed', {
+      duration: durationStr,
+      entryCount: countEntries(db),
+    });
+
     await startServer(config, db, txtUpdated, isFrontOnly);
   } catch (error) {
     console.error(`[FATAL ERROR] ${error.message}`);
     if (error.stack) console.error(error.stack);
+    notify('startup_failed', { reason: error.message });
     Deno.exit(1);
   }
 }

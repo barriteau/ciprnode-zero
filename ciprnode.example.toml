@@ -16,6 +16,44 @@ log_level = 0
 # the logs files (ciprnode-*.log) in the /logs/ folder.
 debug = false
 
+#: Notifications configuration (optional)
+[notifications]
+# Global switch: set to false to disable all notifications
+enabled = false
+
+# Notification providers. Multiple can be active simultaneously.
+# Supported values: "email"
+providers = ["email"]
+
+# Interval in milliseconds for periodic status digest (0 = disabled)
+digest_interval = 3600000
+
+# Per-event provider routing. Each event can go to one or more providers.
+# Default if omitted: all events go to all configured providers.
+[notifications.events]
+startup_completed     = ["email"]
+startup_failed        = ["email"]
+self_validation_failed = ["email"]
+node_added            = ["email"]
+node_removed          = ["email"]
+bootstrap_completed   = ["email"]
+bootstrap_failed      = ["email"]
+dns_updated           = ["email"]
+rate_limit_hit        = ["email"]
+periodic_digest       = ["email"]
+
+# Email (SMTP) settings
+[notifications.email]
+smtp_host = "mail.example.com"
+smtp_port = 587
+smtp_user = "user@example.com"
+# smtp_pass = "your_password"   # Use CIPR_SMTP_PASS env var
+smtp_from = "ciprnode@example.com"
+smtp_to   = "admin@example.com"
+
+#! SECURITY NOTE: Use environment variables for secrets:
+#! CIPR_SMTP_PASS="your_password"
+
 #: The actual data of the resource in the Cipr, what goes to the Cipr, what identifies your resources
 [cipr_entry]
 

@@ -240,13 +240,13 @@ export const del = async (_req, db, config, za) => {
 
     msg(`[DELETE] Request for ${za} ACCEPTED. Node failed Reliability Validation.`);
     if (config.debug) msg(`[DBG] DELETE ${za}: Reliability check failed. Deleting entry.`);
-    deleteEntry(db, za);
+    deleteEntry(db, za, 'external_delete');
     return new Response(null, { status: 202 });
   }
 
   msg(`[DELETE] Request for ${za} ACCEPTED. Node failed DNS/HTTP validation.`);
   if (config.debug) msg(`[DBG] DELETE ${za}: Node verification failed. Deleting entry.`);
-  deleteEntry(db, za);
+  deleteEntry(db, za, 'external_delete');
   return new Response(null, { status: 202 });
 };
 

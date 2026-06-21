@@ -16,6 +16,23 @@
  * @property {string} [primary_lang]
  */
 
+/** @type {Function|null} Callback fired when a new entry is inserted (not updated). */
+let onInsertCallback = null;
+
+/** @type {Function|null} Callback fired when an entry is deleted. */
+let onDeleteCallback = null;
+
+/**
+ * Registers callbacks for insert and delete events.
+ * Used by the notifications system to detect node_added / node_removed.
+ * @param {Function} onInsert - Called with the entry object when a new za is inserted.
+ * @param {Function} onDelete - Called with (za, reason) when an entry is deleted.
+ */
+export const setRepoCallbacks = (onInsert, onDelete) => {
+  onInsertCallback = onInsert;
+  onDeleteCallback = onDelete;
+};
+
 /**
  * Inserts or updates an entry in the Ciprdup index.
  * @param {import('@db/sqlite').Database} db
@@ -23,6 +40,8 @@
  */
 export const insertEntry = (db, entry) => {
   const keywords = Array.isArray(entry.keywords) ? entry.keywords.join(' ') : entry.keywords;
+
+  const existed = getEntry(db, entry.za) !== undefined;
 
   const stmt = db.prepare(`
     INSERT INTO ciprdup (za, title, description, keywords, offering, seeking, ol, latitude, longitude, timestamp, primary_lang)
@@ -54,6 +73,11 @@ export const insertEntry = (db, entry) => {
     entry.primary_lang === undefined ? null : entry.primary_lang,
   );
 
+  const isNew = !existed && result.changes > 0;
+  if (onInsertCallback && isNew) {
+    try { onInsertCallback(entry); } catch { /* never let callback crash the caller */ }
+  }
+
   return result.changes > 0;
 };
 
@@ -76,10 +100,14 @@ export const getEntry = (db, za) => {
  * Deletes an entry by its Zone Apex (za).
  * @param {import('@db/sqlite').Database} db
  * @param {string} za
+ * @param {string} [reason='unknown'] - Reason for deletion (for notifications).
  */
-export const deleteEntry = (db, za) => {
+export const deleteEntry = (db, za, reason = 'unknown') => {
   const stmt = db.prepare(`DELETE FROM ciprdup WHERE za = ?`);
   stmt.run(za);
+  if (onDeleteCallback) {
+    try { onDeleteCallback(za, reason); } catch { /* never let callback crash the caller */ }
+  }
 };
 
 /**

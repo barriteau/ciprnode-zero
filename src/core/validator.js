@@ -246,6 +246,109 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     `Must be 0 (silent), 1 (operational), or 2 (verbose). Current Value: ${config.log_level}`,
   );
 
+  // Validate Notifications
+  if (config.notifications) {
+    check(
+      'Notifications Enabled',
+      config.notifications.enabled,
+      typeof config.notifications.enabled === 'boolean',
+      `Must be true or false. Current Value: ${config.notifications.enabled}`,
+    );
+
+    if (config.notifications.enabled) {
+      const knownProviders = ['email'];
+      const providers = config.notifications.providers;
+      if (Array.isArray(providers) && providers.length > 0) {
+        const unknown = providers.filter((p) => !knownProviders.includes(p));
+        check(
+          'Notifications Providers',
+          providers,
+          unknown.length === 0,
+          `Unknown provider(s): ${unknown.join(', ')}. Supported: ${knownProviders.join(', ')}`,
+        );
+
+        if (providers.includes('email') && config.notifications.email) {
+          const e = config.notifications.email;
+          check(
+            'SMTP Host',
+            e.smtp_host,
+            typeof e.smtp_host === 'string' && e.smtp_host.trim().length > 0,
+            `Must be a non-empty string. Current Value: "${e.smtp_host}"`,
+          );
+          check(
+            'SMTP Port',
+            e.smtp_port,
+            Number.isInteger(e.smtp_port) && e.smtp_port >= 1 && e.smtp_port <= 65535,
+            `Must be a valid port number (1-65535). Current Value: ${e.smtp_port}`,
+          );
+          check(
+            'SMTP User',
+            e.smtp_user,
+            typeof e.smtp_user === 'string' && e.smtp_user.trim().length > 0,
+            `Must be a non-empty string. Current Value: "${e.smtp_user}"`,
+          );
+          check(
+            'SMTP Password',
+            e.smtp_pass,
+            typeof e.smtp_pass === 'string' && e.smtp_pass.trim().length > 0 && e.smtp_pass !== 'YOUR_PASSWORD_HERE',
+            `Must be a non-empty string. Set CIPR_SMTP_PASS in your environment or .env file.`,
+          );
+          check(
+            'SMTP From',
+            e.smtp_from,
+            typeof e.smtp_from === 'string' && e.smtp_from.trim().length > 0,
+            `Must be a non-empty string. Current Value: "${e.smtp_from}"`,
+          );
+          check(
+            'SMTP To',
+            e.smtp_to,
+            typeof e.smtp_to === 'string' && e.smtp_to.trim().length > 0,
+            `Must be a non-empty string. Current Value: "${e.smtp_to}"`,
+          );
+        }
+      } else {
+        check(
+          'Notifications Providers',
+          providers,
+          false,
+          `At least one provider must be configured when notifications are enabled.`,
+        );
+      }
+
+      if (config.notifications.digest_interval !== undefined) {
+        check(
+          'Digest Interval',
+          config.notifications.digest_interval,
+          Number.isInteger(config.notifications.digest_interval) && config.notifications.digest_interval >= 0,
+          `Must be an integer >= 0 (0 = disabled). Current Value: ${config.notifications.digest_interval}`,
+        );
+      }
+
+      if (config.notifications.events) {
+        const validEvents = [
+          'startup_completed', 'startup_failed',
+          'self_validation_failed', 'node_added', 'node_removed',
+          'bootstrap_completed', 'bootstrap_failed', 'dns_updated',
+          'rate_limit_hit', 'periodic_digest',
+        ];
+        for (const [eventName, targets] of Object.entries(config.notifications.events)) {
+          check(
+            `Notifications Event: ${eventName}`,
+            targets,
+            validEvents.includes(eventName) && Array.isArray(targets) && targets.length > 0,
+            validEvents.includes(eventName)
+              ? `Must be a non-empty array of provider names.`
+              : `Unknown event "${eventName}". Valid events: ${validEvents.join(', ')}`,
+          );
+        }
+      }
+    } else {
+      validations['Notifications'] = 'Disabled';
+    }
+  } else {
+    validations['Notifications'] = 'Skipped (None provided)';
+  }
+
   if (isValid) {
     logKeyValueTable(validations);
     msg(`[OK] All checks passed\n`);
@@ -255,7 +358,7 @@ export const validateCiprConfig = (config, exitOnFail = true) => {
     if (exitOnFail) {
       msg('Please fix the errors in ciprnode.toml and start again.');
       errors.forEach((e) => msg(`  - ${e}`));
-      Deno.exit(1);
+      throw new Error('Configuration validation failed:\n' + errors.join('\n'));
     } else {
       return false;
     }
