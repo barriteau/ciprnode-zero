@@ -380,7 +380,7 @@ The SMTP password is treated as a secret with the same precedence chain as DNS c
 
 #### Email Provider
 
-The email provider uses raw SMTP with STARTTLS via Deno's built-in `Deno.connectTls()` — zero external dependencies. It connects to the configured SMTP host, negotiates STARTTLS, authenticates with `AUTH LOGIN`, and sends plain text emails with `X-Ciprnode` headers.
+The email provider uses raw SMTP with STARTTLS via Deno's built-in `Deno.connectTls()` - zero external dependencies. It connects to the configured SMTP host, negotiates STARTTLS, authenticates with `AUTH LOGIN`, and sends plain text emails with `X-Ciprnode` headers.
 
 #### Extensibility
 
@@ -458,19 +458,19 @@ The `env` field in `ciprnode.toml` (`"dev"`, `"test"`, `"prod"`) drives which se
 **Setup example:**
 
 ```bash
-# .env.dev — test tokens for local development
+# .env.dev - test tokens for local development
 CIPR_DNS_API_TOKEN=test_token_123
 
-# .env.prod — real tokens for production
+# .env.prod - real tokens for production
 CIPR_DNS_API_TOKEN=real_production_token_456
 
-# .env — shared non-sensitive defaults (optional)
+# .env - shared non-sensitive defaults (optional)
 CIPR_DNS_PROVIDER=cloudflare
 ```
 
 With `env = "dev"` in `ciprnode.toml`, the node loads `.env.dev` first, then `.env` as fallback. With `env = "prod"`, it loads `.env.prod` first. OS environment variables override both files.
 
-If the env-specific file (e.g., `.env.dev`) does not exist, it is silently skipped and `.env` provides all values. This means a deployment with only `.env` works regardless of the `env` setting — the env-specific files are optional.
+If the env-specific file (e.g., `.env.dev`) does not exist, it is silently skipped and `.env` provides all values. This means a deployment with only `.env` works regardless of the `env` setting - the env-specific files are optional.
 
 #### Environment Variables (Primary)
 
@@ -486,16 +486,16 @@ API tokens and provider credentials are loaded from environment variables, which
 
 - **`ciprnode.toml`** is excluded from version control (`.gitignore`). A tracked template file `ciprnode.example.toml` is provided with all placeholder values for new deployments.
 - **`.env`** and **`.env.*`** are excluded from version control.
-- **`logs/`** and **`data/`** directories are excluded — log files and the SQLite database never enter git history.
+- **`logs/`** and **`data/`** directories are excluded - log files and the SQLite database never enter git history.
 
 #### Console Output Safety
 
-- **No credential data is ever printed to stdout/stderr.** The Cloudflare and deSEC DNS provider integrations use the project's `msg()` function, which respects the `log_level` configuration. Even in verbose mode (`log_level = 2`), only operational status messages are shown — never tokens, keys, or secrets.
+- **No credential data is ever printed to stdout/stderr.** The Cloudflare and deSEC DNS provider integrations use the project's `msg()` function, which respects the `log_level` configuration. Even in verbose mode (`log_level = 2`), only operational status messages are shown - never tokens, keys, or secrets.
 - **Zone IDs are truncated** to their first 8 characters in debug output, preventing full identifier exposure.
 
 #### Log File Redaction
 
-When `debug = true`, all console output is also written to timestamped log files in `logs/`. The log formatter (`formatForFile`) automatically **redacts** any object keys matching `api_token`, `api_key`, `token`, `secret`, `password`, or `authorization` — replacing their values with `[REDACTED]` before writing to disk. This ensures that even if a credential-bearing object is accidentally passed to a logging function, the secret never reaches persistent storage.
+When `debug = true`, all console output is also written to timestamped log files in `logs/`. The log formatter (`formatForFile`) automatically **redacts** any object keys matching `api_token`, `api_key`, `token`, `secret`, `password`, or `authorization` - replacing their values with `[REDACTED]` before writing to disk. This ensures that even if a credential-bearing object is accidentally passed to a logging function, the secret never reaches persistent storage.
 
 #### Build Artifact Sanitization
 
