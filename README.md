@@ -401,6 +401,8 @@ CIPR_DNS_PROVIDER=cloudflare
 
 With `env = "dev"` in `ciprnode.toml`, the node loads `.env.dev` first, then `.env` as fallback. With `env = "prod"`, it loads `.env.prod` first. OS environment variables override both files.
 
+If the env-specific file (e.g., `.env.dev`) does not exist, it is silently skipped and `.env` provides all values. This means a deployment with only `.env` works regardless of the `env` setting — the env-specific files are optional.
+
 #### Environment Variables (Primary)
 
 API tokens and provider credentials are loaded from environment variables, which take **precedence** over any values in `ciprnode.toml`:
