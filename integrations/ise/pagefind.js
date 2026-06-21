@@ -1,6 +1,6 @@
 /**
  * @file integrations/ise/pagefind.js
- * @description Pagefind integration for the CiprNode Zero Internal Search Engine (ISE).
+ * @description Pagefind integration for the Ciprnode zero Internal Search Engine (ISE).
  *
  * Fetches the Pagefind JS bundle as text and executes it via `new Function()` in
  * a synthetic minimal browser environment. Subresource Integrity (SRI) validation

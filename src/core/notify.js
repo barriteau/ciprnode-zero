@@ -74,7 +74,7 @@ const htmlEmail = (za, title, rows, footerUrl, ts, critical = false) => {
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="background:${cardBg};border-radius:8px;overflow:hidden;border:1px solid ${borderColor};max-width:600px">
 <tr><td style="background:${headerBg};padding:20px 24px;color:${headerColor};font-size:18px;font-weight:600">
-CiprNode &mdash; ${za}
+Ciprnode at ${za}
 </td></tr>
 <tr><td style="padding:16px 24px 4px;color:${labelColor};font-size:14px;font-weight:500">
 ${title}

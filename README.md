@@ -380,7 +380,7 @@ The SMTP password is treated as a secret with the same precedence chain as DNS c
 
 #### Email Provider
 
-The email provider uses raw SMTP with STARTTLS via Deno's built-in `Deno.connectTls()` — zero external dependencies. It connects to the configured SMTP host, negotiates STARTTLS, authenticates with `AUTH LOGIN`, and sends plain text emails with `X-CiprNode` headers.
+The email provider uses raw SMTP with STARTTLS via Deno's built-in `Deno.connectTls()` — zero external dependencies. It connects to the configured SMTP host, negotiates STARTTLS, authenticates with `AUTH LOGIN`, and sends plain text emails with `X-Ciprnode` headers.
 
 #### Extensibility
 

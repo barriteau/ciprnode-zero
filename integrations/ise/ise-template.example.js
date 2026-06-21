@@ -1,6 +1,6 @@
 /**
  * @file integrations/ise/ise-template.example.js
- * @description Example template for creating new CiprNode Zero Internal Search Engine (ISE) Integrations.
+ * @description Example template for creating new Ciprnode zero Internal Search Engine (ISE) Integrations.
  *
  * To use this integration, rename the file to something like `mysearchengine.js`
  * and update `ciprnode.toml` to use `name = "mysearchengine"`.
@@ -14,7 +14,7 @@ import { log } from '../../src/core/logger.js';
 
 /**
  * Queries the resindex of this resource using a specific ISE provider.
- * This is the ONLY function that CiprNode Zero will look for and execute.
+ * This is the ONLY function that Ciprnode zero will look for and execute.
  *
  * @param {Object} provider - The specific `[[ise_provider]]` configuration object parsed from ciprnode.toml.
  * @param {string} provider.name - The provider name used to map to this file (e.g. "mysearchengine").

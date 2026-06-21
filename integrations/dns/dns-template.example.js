@@ -1,6 +1,6 @@
 /**
  * @file integrations/dns/template.example.js
- * @description Example template for creating new CiprNode Zero DNS Provider Integrations.
+ * @description Example template for creating new Ciprnode zero DNS Provider Integrations.
  *
  * To use this integration, rename the file to something like `myprovider.js`
  * and update `ciprnode.toml` to use `name = "myprovider"`.
@@ -14,7 +14,7 @@ import { log } from '../../src/core/logger.js';
 
 /**
  * Updates the _cipr TXT record for the DNS Provider.
- * This is the ONLY function that CiprNode Zero will look for and execute.
+ * This is the ONLY function that Ciprnode zero will look for and execute.
  *
  * @param {CiprNodeConfig} config - The full configuration object parsed from ciprnode.toml
  * @param {string} ciprHash - The fully calculated SHA-256 ciprHash that needs to be in the TXT record.
