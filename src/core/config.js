@@ -31,9 +31,6 @@ import { exists } from '@std/fs';
 import { load } from '@std/dotenv';
 
 export const loadConfig = async (configPath = 'ciprnode.toml') => {
-  // Load .env file if present (doesn't throw if missing)
-  await load({ export: true });
-
   // Check CWD first
   let absolutePath = join(Deno.cwd(), configPath);
 
@@ -56,6 +53,14 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
     const text = await Deno.readTextFile(absolutePath);
     const data = parse(text);
 
+    // Load env-specific .env file first so its values take priority over base .env.
+    // `export: true` skips keys already in Deno.env, so OS env vars still win over both files.
+    const env = data.env || 'dev';
+    await load({ envPath: `.env.${env}`, export: true });
+
+    // Load base .env as fallback — fills keys not present in the env-specific file.
+    await load({ export: true });
+
     const ciprEntry = data.cipr_entry || {};
     const network = data.network || {};
 
@@ -68,7 +73,7 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
     const config = {
       za: ciprEntry.za,
       port: network.port !== undefined ? Number(network.port) : undefined,
-      env: data.env,
+      env,
       title: ciprEntry.title,
       description: ciprEntry.description,
       keywords: typeof ciprEntry.keywords === 'string'

@@ -373,7 +373,33 @@ doh = ["https://dns.google/dns-query", ...]  # DNS-over-HTTPS endpoints (min 3 r
 
 ### Secrets Management
 
-Sensitive values must **never** be committed to version control. The following measures protect credentials at every layer:
+Sensitive values must **never** be committed to version control. The following measures protect credentials at every layer.
+
+#### Environment-Specific Secrets
+
+The `env` field in `ciprnode.toml` (`"dev"`, `"test"`, `"prod"`) drives which secrets are loaded at runtime. This lets use test tokens in development and real tokens in production without changing configuration files between environments.
+
+**Loading precedence** (highest to lowest):
+
+1. **OS environment variables**: set before the process starts (e.g., `export CIPR_DNS_API_TOKEN=...` or systemd `Environment=`). These always win.
+2. **`.env.${env}`**: environment-specific file (e.g., `.env.prod`, `.env.dev`). Loaded first so its values take priority over the base file.
+3. **`.env`**: base fallback file. Only fills keys not already set by the env-specific file or OS env vars.
+4. **`ciprnode.toml` `[dns_provider]` section**: lowest priority, used only when no other source provides the value.
+
+**Setup example:**
+
+```bash
+# .env.dev — test tokens for local development
+CIPR_DNS_API_TOKEN=test_token_123
+
+# .env.prod — real tokens for production
+CIPR_DNS_API_TOKEN=real_production_token_456
+
+# .env — shared non-sensitive defaults (optional)
+CIPR_DNS_PROVIDER=cloudflare
+```
+
+With `env = "dev"` in `ciprnode.toml`, the node loads `.env.dev` first, then `.env` as fallback. With `env = "prod"`, it loads `.env.prod` first. OS environment variables override both files.
 
 #### Environment Variables (Primary)
 
@@ -385,12 +411,10 @@ API tokens and provider credentials are loaded from environment variables, which
 | `CIPR_DNS_API_TOKEN` | `dns_provider.api_token` |
 |  `CIPR_DNS_ZONE_ID`  | `dns_provider.zone_id`   |
 
-Environment variables can be set directly in the shell or via a `.env` file in the project root. The `.env` file is excluded from git by `.gitignore`.
-
 #### Git Protection
 
 - **`ciprnode.toml`** is excluded from version control (`.gitignore`). A tracked template file `ciprnode.example.toml` is provided with all placeholder values for new deployments.
-- **`.env`** is excluded from version control.
+- **`.env`** and **`.env.*`** are excluded from version control.
 - **`logs/`** and **`data/`** directories are excluded — log files and the SQLite database never enter git history.
 
 #### Console Output Safety
