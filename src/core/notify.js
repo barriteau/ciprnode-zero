@@ -42,7 +42,60 @@ const VALID_EVENTS = [
 ];
 
 /**
- * Formats an event into a subject line and plain text body.
+ * Wraps event data in a minimal responsive HTML email template.
+ * Inline CSS only — email clients strip <style> blocks.
+ * @param {string} za - Node zone apex.
+ * @param {string} title - Event title (e.g. "Startup completed").
+ * @param {Array<{label: string, value: string}>} rows - Key-value data rows.
+ * @param {string} footerUrl - URL for the footer link.
+ * @param {string} ts - ISO timestamp.
+ * @param {boolean} [critical=false] - Red-tinted header for critical events.
+ * @returns {string} Full HTML document.
+ */
+const htmlEmail = (za, title, rows, footerUrl, ts, critical = false) => {
+  const headerBg = critical ? '#b71c1c' : '#1a1a2e';
+  const headerColor = '#ffffff';
+  const bodyBg = '#f5f5f5';
+  const cardBg = '#ffffff';
+  const labelColor = '#555555';
+  const valueColor = '#111111';
+  const footerColor = '#999999';
+  const borderColor = '#e0e0e0';
+
+  const rowHtml = rows.map(({ label, value }) =>
+    `<tr><td style="padding:6px 16px;color:${labelColor};font-size:13px;white-space:nowrap;vertical-align:top">${label}</td><td style="padding:6px 16px 6px 0;color:${valueColor};font-size:13px">${value}</td></tr>`
+  ).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:${bodyBg};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${bodyBg};padding:24px 0">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:${cardBg};border-radius:8px;overflow:hidden;border:1px solid ${borderColor};max-width:600px">
+<tr><td style="background:${headerBg};padding:20px 24px;color:${headerColor};font-size:18px;font-weight:600">
+CiprNode &mdash; ${za}
+</td></tr>
+<tr><td style="padding:16px 24px 4px;color:${labelColor};font-size:14px;font-weight:500">
+${title}
+</td></tr>
+<tr><td>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 16px">
+${rowHtml}
+</table>
+</td></tr>
+<tr><td style="padding:12px 24px;border-top:1px solid ${borderColor};color:${footerColor};font-size:12px">
+<a href="${footerUrl}" style="color:${footerColor}">${footerUrl}</a> &middot; ${ts}
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+};
+
+/**
+ * Formats an event into a subject line and HTML body.
  * @param {string} event
  * @param {Object} data
  * @returns {{subject: string, body: string}}
@@ -50,149 +103,117 @@ const VALID_EVENTS = [
 const formatEvent = (event, data) => {
   const za = nodeConfig?.za || 'unknown';
   const ts = new Date().toISOString();
+  const url = `https://ciprnode.${za}/`;
 
   switch (event) {
     case 'startup_completed':
       return {
         subject: `[INFO] ${za}: Startup completed`,
-        body: [
-          `Node:     ${za}`,
-          `Event:    Startup sequence completed`,
-          `Duration: ${data.duration ?? 'N/A'}`,
-          `Entries:  ${data.entryCount ?? 'N/A'}`,
-          `Time:     ${ts}`,
-          `URL:      https://ciprnode.${za}/`,
-        ].join('\n'),
+        body: htmlEmail(za, 'Startup sequence completed', [
+          { label: 'Duration', value: data.duration ?? 'N/A' },
+          { label: 'Entries', value: String(data.entryCount ?? 'N/A') },
+          { label: 'Time', value: ts },
+        ], url, ts),
       };
 
     case 'startup_failed':
       return {
         subject: `[CRITICAL] ${za}: Startup failed`,
-        body: [
-          `Node:     ${za}`,
-          `Event:    Startup sequence failed`,
-          `Reason:   ${data.reason ?? 'unknown error'}`,
-          `Time:     ${ts}`,
-          `URL:      https://ciprnode.${za}/`,
-        ].join('\n'),
+        body: htmlEmail(za, 'Startup sequence failed', [
+          { label: 'Reason', value: data.reason ?? 'unknown error' },
+          { label: 'Time', value: ts },
+        ], url, ts, true),
       };
 
     case 'self_validation_failed':
       return {
         subject: `[CRITICAL] ${za}: Self-validation failed`,
-        body: [
-          `Node:     ${za}`,
-          `Event:    Self-validation failed after 3 retries`,
-          `Time:     ${ts}`,
-          `Action:   Self-destruct DELETE signals sent to peers`,
-          `URL:      https://ciprnode.${za}/`,
-        ].join('\n'),
+        body: htmlEmail(za, 'Self-validation failed after 3 retries', [
+          { label: 'Action', value: 'Self-destruct DELETE signals sent to peers' },
+          { label: 'Time', value: ts },
+        ], url, ts, true),
       };
 
     case 'node_added':
       return {
         subject: `[INFO] ${za}: New node added — ${data.za}`,
-        body: [
-          `Node:     ${za}`,
-          `Event:    New entry added to ciprdup`,
-          `Entry:    ${data.za}`,
-          `Title:    ${data.title || 'N/A'}`,
-          `Time:     ${ts}`,
-          `URL:      https://ciprnode.${za}/`,
-        ].join('\n'),
+        body: htmlEmail(za, 'New entry added to ciprdup', [
+          { label: 'Entry', value: data.za ?? 'N/A' },
+          { label: 'Title', value: data.title || 'N/A' },
+          { label: 'Time', value: ts },
+        ], url, ts),
       };
 
     case 'node_removed':
       return {
         subject: `[INFO] ${za}: Node removed — ${data.za}`,
-        body: [
-          `Node:     ${za}`,
-          `Event:    Entry removed from ciprdup`,
-          `Entry:    ${data.za}`,
-          `Reason:   ${data.reason || 'unknown'}`,
-          `Time:     ${ts}`,
-          `URL:      https://ciprnode.${za}/`,
-        ].join('\n'),
+        body: htmlEmail(za, 'Entry removed from ciprdup', [
+          { label: 'Entry', value: data.za ?? 'N/A' },
+          { label: 'Reason', value: data.reason || 'unknown' },
+          { label: 'Time', value: ts },
+        ], url, ts),
       };
 
     case 'bootstrap_completed':
       return {
         subject: `[INFO] ${za}: Bootstrap sync completed`,
-        body: [
-          `Node:     ${za}`,
-          `Event:    Initial bootstrap sync succeeded`,
-          `Entries:  ${data.entries ?? 'N/A'}`,
-          `Duration: ${data.duration ?? 'N/A'}`,
-          `Time:     ${ts}`,
-          `URL:      https://ciprnode.${za}/`,
-        ].join('\n'),
+        body: htmlEmail(za, 'Initial bootstrap sync succeeded', [
+          { label: 'Entries', value: String(data.entries ?? 'N/A') },
+          { label: 'Duration', value: data.duration ?? 'N/A' },
+          { label: 'Time', value: ts },
+        ], url, ts),
       };
 
     case 'bootstrap_failed':
       return {
         subject: `[WARNING] ${za}: Bootstrap sync failed`,
-        body: [
-          `Node:     ${za}`,
-          `Event:    Bootstrap sync failed after retry window`,
-          `Elapsed:  ${data.elapsed ?? 'N/A'}`,
-          `Time:     ${ts}`,
-          `Status:   Node operating in isolated mode`,
-          `URL:      https://ciprnode.${za}/`,
-        ].join('\n'),
+        body: htmlEmail(za, 'Bootstrap sync failed after retry window', [
+          { label: 'Elapsed', value: data.elapsed ?? 'N/A' },
+          { label: 'Status', value: 'Node operating in isolated mode' },
+          { label: 'Time', value: ts },
+        ], url, ts),
       };
 
     case 'dns_updated':
       return {
         subject: `[INFO] ${za}: DNS TXT record updated`,
-        body: [
-          `Node:     ${za}`,
-          `Event:    DNS TXT record auto-updated`,
-          `New Hash: ${data.ciprHash ?? 'N/A'}`,
-          `Time:     ${ts}`,
-          `URL:      https://ciprnode.${za}/`,
-        ].join('\n'),
+        body: htmlEmail(za, 'DNS TXT record auto-updated', [
+          { label: 'New Hash', value: data.ciprHash ?? 'N/A' },
+          { label: 'Time', value: ts },
+        ], url, ts),
       };
 
     case 'rate_limit_hit':
       return {
         subject: `[WARNING] ${za}: Rate limit exceeded`,
-        body: [
-          `Node:     ${za}`,
-          `Event:    Rate limit exceeded`,
-          `IP:       ${data.ip ?? 'unknown'}`,
-          `Method:   ${data.method ?? 'unknown'}`,
-          `Time:     ${ts}`,
-          `URL:      https://ciprnode.${za}/`,
-        ].join('\n'),
+        body: htmlEmail(za, 'Rate limit exceeded', [
+          { label: 'IP', value: data.ip ?? 'unknown' },
+          { label: 'Method', value: data.method ?? 'unknown' },
+          { label: 'Time', value: ts },
+        ], url, ts),
       };
 
     case 'periodic_digest':
       return {
         subject: `[DIGEST] ${za}: Status report`,
-        body: [
-          `CiprNode Status Digest — ${za}`,
-          `${'─'.repeat(40)}`,
-          `Uptime:        ${data.uptime ?? 'N/A'}`,
-          `Entries:       ${data.entryCount ?? 'N/A'}`,
-          `DB size:       ${data.dbSize ?? 'N/A'}`,
-          `Last pulse:    ${data.lastPulse ?? 'N/A'}`,
-          `Peers audited: ${data.peersAudited ?? 'N/A'} (last cycle)`,
-          `Memory (RSS):  ${data.memory ?? 'N/A'}`,
-          `${'─'.repeat(40)}`,
-          `Node: https://ciprnode.${za}/`,
-          `Time: ${ts}`,
-        ].join('\n'),
+        body: htmlEmail(za, 'Status report', [
+          { label: 'Uptime', value: data.uptime ?? 'N/A' },
+          { label: 'Entries', value: String(data.entryCount ?? 'N/A') },
+          { label: 'DB size', value: data.dbSize ?? 'N/A' },
+          { label: 'Last pulse', value: data.lastPulse ?? 'N/A' },
+          { label: 'Peers audited', value: `${data.peersAudited ?? 'N/A'} (last cycle)` },
+          { label: 'Memory (RSS)', value: data.memory ?? 'N/A' },
+          { label: 'Time', value: ts },
+        ], url, ts),
       };
 
     default:
       return {
         subject: `[INFO] ${za}: ${event}`,
-        body: [
-          `Node:  ${za}`,
-          `Event: ${event}`,
-          `Time:  ${ts}`,
-          `Data:  ${JSON.stringify(data)}`,
-        ].join('\n'),
+        body: htmlEmail(za, event, [
+          { label: 'Data', value: JSON.stringify(data) },
+          { label: 'Time', value: ts },
+        ], url, ts),
       };
   }
 };
