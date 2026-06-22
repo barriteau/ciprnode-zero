@@ -26,7 +26,7 @@ enabled = false
 providers = ["email"]
 
 # Interval in milliseconds for periodic status digest (0 = disabled)
-digest_interval = 3600000
+digest_interval = 10800000
 
 # Per-event provider routing. Each event can go to one or more providers.
 # Default if omitted: all events go to all configured providers.

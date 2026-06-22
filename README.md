@@ -342,7 +342,7 @@ Ciprnode can send notifications for key operational events. The system supports 
 [notifications]
 enabled = true                          # Global switch
 providers = ["email"]                   # Active providers (multiple allowed)
-digest_interval = 3600000               # Periodic digest interval in ms (0 = disabled)
+digest_interval = 10800000               # Periodic digest interval in ms (0 = disabled)
 
 [notifications.events]                  # Per-event provider routing (optional)
 startup_completed      = ["email"]      # Default: all events → all providers
