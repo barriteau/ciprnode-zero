@@ -39,6 +39,9 @@ logs/
 # Agents
 AGENTS.md
 
+# TODO
+TODO.md
+
 # Internal security documentation (not for public repos)
 docs/SECURITY_ISSUES.md
 
