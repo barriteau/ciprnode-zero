@@ -194,7 +194,7 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
   const handler = async (request, info) => {
     const method = request.method.toUpperCase();
     // Vector B: when behind Cloudflare, remoteAddr is always a CF edge IP.
-    // CF-Connecting-IP carries the real client IP — use it for rate limiting.
+    // CF-Connecting-IP carries the real client IP - use it for rate limiting.
     const clientIp = request.headers.get('CF-Connecting-IP') ??
       info?.remoteAddr?.hostname ??
       'unknown';

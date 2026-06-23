@@ -329,7 +329,7 @@ Ciprnode can send notifications for key operational events. The system supports 
 | `startup_failed`         | Startup sequence fails with an error     | Error reason, timestamp                                                     |
 | `self_validation_failed` | Self-validation fails after 3 retries    | Node za, timestamp                                                          |
 | `node_added`             | A new entry is inserted into the ciprdup | Entry za, title, timestamp                                                  |
-| `node_removed`           | An entry is deleted from the ciprdup     | Entry za, reason (verification_failed, reliability_failed, external_delete) |
+| `node_removed`           | An entry is deleted from the ciprdup     | Entry za, reason (dns_txt_mismatch, http_unreachable, reliability_mismatch, external_delete: <sub-reason>) |
 | `bootstrap_completed`    | Initial bootstrap sync succeeds          | Entry count, duration                                                       |
 | `bootstrap_failed`       | Bootstrap retry window (1h) expires      | Elapsed time                                                                |
 | `dns_updated`            | DNS TXT record is auto-updated           | New ciprHash                                                                |

@@ -112,7 +112,7 @@ const broadcastUpdate = async (config, db) => {
 };
 
 import { generateCiprHash } from '../core/utils.js';
-import { verifyNode, verifyReliability } from '../core/verification.js';
+import { verifyNode, verifyReliability, VERIFY_REASONS } from '../core/verification.js';
 import { generateRandomFTSExpression } from '../core/fts_generator.js';
 import { deleteEntry } from '../db/repo.js';
 
@@ -169,19 +169,19 @@ const runPulseChecks = async (db, config) => {
         entry.ol, entry.latitude, entry.longitude,
       );
 
-      const isValid = await verifyNode(config, entry.za, calculatedHash);
+      const verifyResult = await verifyNode(config, entry.za, calculatedHash);
 
       const peerEntries = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`)
         .all(config.za, nodesPerPulse);
 
-      if (isValid) {
+      if (verifyResult.valid) {
         if (config.debug) msg(`${entry.za} is VALID. Propagating PUT to ${peerEntries.length} peers.`);
         for (const target of peerEntries) {
           if (target.za !== entry.za) sendPulseRequest(config, target.za, 'PUT', entry);
         }
       } else {
-        msg(`${entry.za} is INVALID/UNREACHABLE. Deleting locally and propagating DELETE.`, 'WA');
-        deleteEntry(db, entry.za, 'verification_failed');
+        msg(`${entry.za} is INVALID/UNREACHABLE (${verifyResult.reason}). Deleting locally and propagating DELETE.`, 'WA');
+        deleteEntry(db, entry.za, verifyResult.reason);
         for (const target of peerEntries) {
           sendPulseRequest(config, target.za, 'DELETE', null, entry.za);
         }
@@ -195,7 +195,7 @@ const runPulseChecks = async (db, config) => {
 /**
  * Sends a fire-and-forget PUT or DELETE request to a peer.
  * PUT payloads always have their timestamp freshened to `Date.now()` before
- * sending — without this, entries older than 24h are rejected by the receiver's
+ * sending - without this, entries older than 24h are rejected by the receiver's
  * Currentness Validation check (Vector A fix).
  * @param {import('../core/config.js').CiprNodeConfig} config
  * @param {string} targetZa - Target peer zone apex.
@@ -371,7 +371,7 @@ const runReliabilityChecks = async (db, config) => {
 
     if (!isReliable) {
       msg(`${target.za} FAILED Reliability Check. Evicting and propagating DELETE...`);
-      deleteEntry(db, target.za, 'reliability_failed');
+      deleteEntry(db, target.za, 'reliability_mismatch');
 
       const peerEntries = db.prepare(
         `SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`,

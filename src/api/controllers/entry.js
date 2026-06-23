@@ -58,7 +58,7 @@ export const get = (req, db, _config, za) => {
   return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
 };
 
-import { verifyNode, verifyReliability } from '../../core/verification.js';
+import { verifyNode, verifyReliability, VERIFY_REASONS } from '../../core/verification.js';
 import { generateCiprHash, readBodyWithLimit } from '../../core/utils.js';
 import { generateRandomFTSExpression } from '../../core/fts_generator.js';
 
@@ -127,12 +127,12 @@ export const put = async (req, db, config, za) => {
   );
   if (config.debug) msg(`[DBG] PUT ${za}: Hash calculated: ${calculatedHash}`);
 
-  const isValid = await verifyNode(config, za, calculatedHash);
-  if (config.debug) msg(`[DBG] PUT ${za}: Node Verification Result: ${isValid}`);
+  const verifyResult = await verifyNode(config, za, calculatedHash);
+  if (config.debug) msg(`[DBG] PUT ${za}: Node Verification Result: ${verifyResult.valid} (${verifyResult.reason})`);
 
-  if (!isValid) {
+  if (!verifyResult.valid) {
     return new Response(
-      'Verification Failed. Sender reachable and TXT record must match data hash.',
+      `Verification Failed (${verifyResult.reason}). Sender reachable and TXT record must match data hash.`,
       { status: 403 },
     );
   }
@@ -206,9 +206,9 @@ export const del = async (_req, db, config, za) => {
     entry.longitude,
   );
 
-  const isValid = await verifyNode(config, za, calculatedHash);
+  const verifyResult = await verifyNode(config, za, calculatedHash);
 
-  if (isValid) {
+  if (verifyResult.valid) {
     try {
       const ftsExpression = generateRandomFTSExpression(config);
       const paginationParams = { num: 1, size: 10 };
@@ -240,13 +240,13 @@ export const del = async (_req, db, config, za) => {
 
     msg(`[DELETE] Request for ${za} ACCEPTED. Node failed Reliability Validation.`);
     if (config.debug) msg(`[DBG] DELETE ${za}: Reliability check failed. Deleting entry.`);
-    deleteEntry(db, za, 'external_delete');
+    deleteEntry(db, za, 'external_delete: reliability_mismatch');
     return new Response(null, { status: 202 });
   }
 
-  msg(`[DELETE] Request for ${za} ACCEPTED. Node failed DNS/HTTP validation.`);
-  if (config.debug) msg(`[DBG] DELETE ${za}: Node verification failed. Deleting entry.`);
-  deleteEntry(db, za, 'external_delete');
+  msg(`[DELETE] Request for ${za} ACCEPTED. Node failed DNS/HTTP validation (${verifyResult.reason}).`);
+  if (config.debug) msg(`[DBG] DELETE ${za}: Node verification failed (${verifyResult.reason}). Deleting entry.`);
+  deleteEntry(db, za, `external_delete: ${verifyResult.reason}`);
   return new Response(null, { status: 202 });
 };
 

@@ -9,7 +9,7 @@ const jsonPath = resolve(Deno.cwd(), 'src', 'db', 'languages.json');
 let existingLangs = [];
 try {
   existingLangs = JSON.parse(Deno.readTextFileSync(jsonPath));
-} catch { /* file doesn't exist yet — start fresh */ }
+} catch { /* file doesn't exist yet - start fresh */ }
 
 const existingDict = {};
 existingLangs.forEach((l) => existingDict[l.lang_code] = l.lang_name);

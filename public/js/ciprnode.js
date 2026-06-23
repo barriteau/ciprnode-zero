@@ -563,7 +563,7 @@ const initFtsValidation = () => {
       // Must have at least 2 whitespace-separated terms optionally followed by ", number"
       if (!/^\w[\w\s]*\w(\s*,\s*\d+)?$/.test(inner)) return false;
     }
-    // Unterminated NEAR( — opening paren with no matching close
+    // Unterminated NEAR( - opening paren with no matching close
     if (/NEAR\s*\([^)]*$/i.test(stripped)) return false;
     // Strip valid NEAR() for downstream checks
     stripped = stripped.replace(/NEAR\s*\([^)]*\)/gi, 'NEAR_OK');

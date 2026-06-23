@@ -133,11 +133,11 @@ export const deleteEntry = (db, za, reason = 'unknown') => {
  *
  * Rules applied (in order):
  *  1. Empty / whitespace-only → return null  (skip FTS entirely)
- *  2. Balance double-quote pairs — an unterminated " is closed.
+ *  2. Balance double-quote pairs - an unterminated " is closed.
  *  3. Strip invalid '*' placements  ('*word', 'wo*rd' but keep 'word*')
  *  4. Strip invalid '^' placements  ('word^', 'wo^rd' but keep '^word')
  *  5. Remove leading/trailing binary operators (AND, OR, NOT)
- *  6. Balance parentheses — remove unmatched closing ')' and open '('
+ *  6. Balance parentheses - remove unmatched closing ')' and open '('
  *  7. Strip malformed NEAR() expressions (empty, unterminated, bad args)
  *  8. Strip malformed column filters (bare ':', empty '{}', missing term)
  *
@@ -156,11 +156,11 @@ const sanitizeFtsQuery = (raw) => {
     q = q + '"';
   }
 
-  // 2. Fix invalid '*' — only valid at the END of a word token (e.g. word*)
+  // 2. Fix invalid '*' - only valid at the END of a word token (e.g. word*)
   q = q.replace(/\*(?=\S)/g, ''); // *word → word (star before non-space)
   q = q.replace(/(\w)\*(\w)/g, '$1$2'); // wo*rd → word (star mid-word)
 
-  // 3. Fix invalid '^' — only valid at the START of a token (e.g. ^word)
+  // 3. Fix invalid '^' - only valid at the START of a token (e.g. ^word)
   q = q.replace(/(\w)\^/g, '$1'); // word^ or wo^rd → word
   q = q.replace(/\^\s*$/g, ''); // trailing lone ^ → remove
 

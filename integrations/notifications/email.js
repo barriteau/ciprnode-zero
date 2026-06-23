@@ -1,7 +1,7 @@
 /**
  * @file integrations/notifications/email.js
  * @description Email notification provider using raw SMTP with STARTTLS.
- * Zero external dependencies — uses Deno.connectTls() and Deno.startTls().
+ * Zero external dependencies - uses Deno.connectTls() and Deno.startTls().
  *
  * Exports:
  *   send(subject, body, smtpConfig) → Promise<boolean>

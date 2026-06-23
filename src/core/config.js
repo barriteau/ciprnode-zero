@@ -59,7 +59,7 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
     const env = data.env || 'dev';
     await load({ envPath: `.env.${env}`, export: true });
 
-    // Load base .env as fallback — fills keys not present in the env-specific file.
+    // Load base .env as fallback - fills keys not present in the env-specific file.
     await load({ export: true });
 
     const ciprEntry = data.cipr_entry || {};
@@ -114,7 +114,7 @@ export const loadConfig = async (configPath = 'ciprnode.toml') => {
         return typeof data.log_level === 'number' ? data.log_level : undefined;
       })(),
       debug: Deno.args.includes('--debug') || data.debug === true || false,
-      // Optional [meta_data] section — passed through as-is; individual keys may be absent.
+      // Optional [meta_data] section - passed through as-is; individual keys may be absent.
       meta_data: data.meta_data && typeof data.meta_data === 'object' ? data.meta_data : undefined,
       dns: {
         do53: Array.isArray(network.do53)

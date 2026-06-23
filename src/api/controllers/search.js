@@ -40,7 +40,7 @@ export const optionsRi = (_req, _db, _config) => {
 };
 
 /**
- * Handles GET / requests — simple paginated listing of ciprdup entries.
+ * Handles GET / requests - simple paginated listing of ciprdup entries.
  * Per spec, returns randomly selected entries by default.
  */
 export const list = async (req, db, config) => {
@@ -665,7 +665,7 @@ export const query = async (req, db, config, isResindex = false) => {
         geoPosition,
         // Current date in ISO 8601 format (YYYY-MM-DD), for meta[name=revised] and DC.Date
         currentDate: new Date().toISOString().substring(0, 10),
-        // From [meta_data] — all optional
+        // From [meta_data] - all optional
         author: md.author || null,
         authorUrl: md.author_url || null,
         subject: md.subject || null,

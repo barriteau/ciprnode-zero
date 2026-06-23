@@ -42,8 +42,28 @@ const VALID_EVENTS = [
 ];
 
 /**
+ * Maps machine-readable reason codes to human-readable descriptions for emails.
+ * @param {string} reason - The raw reason string from deleteEntry.
+ * @returns {string} Human-readable description.
+ */
+const describeReason = (reason) => {
+  if (!reason || reason === 'unknown') return 'Unknown reason';
+  if (reason === 'dns_txt_mismatch') return 'DNS TXT record does not match the expected ciprHash. The node may have changed its configuration without updating its DNS record, or the DNS record was removed.';
+  if (reason === 'http_unreachable') return 'The node was unreachable via HTTP HEAD (6 retries, 2s apart). The node may be offline, behind a firewall, or experiencing network issues.';
+  if (reason === 'reliability_mismatch') return 'The node failed Reliability Validation. Its search results diverge significantly from the local baseline (Jaccard similarity below 60%). The node may be serving stale, corrupted, or manipulated data.';
+  if (reason.startsWith('external_delete: ')) {
+    const sub = reason.substring('external_delete: '.length);
+    if (sub === 'dns_txt_mismatch') return 'An external DELETE request was received and accepted. The node failed DNS/HTTP validation - its TXT record does not match or it was unreachable.';
+    if (sub === 'http_unreachable') return 'An external DELETE request was received and accepted. The node was unreachable via HTTP HEAD.';
+    if (sub === 'reliability_mismatch') return 'An external DELETE request was received and accepted. The node failed Reliability Validation - its search results diverge from the consensus.';
+    return `An external DELETE request was received and accepted (${sub}).`;
+  }
+  return reason;
+};
+
+/**
  * Wraps event data in a minimal responsive HTML email template.
- * Inline CSS only — email clients strip <style> blocks.
+ * Inline CSS only • email clients strip <style> blocks.
  * @param {string} za - Node zone apex.
  * @param {string} title - Event title (e.g. "Startup completed").
  * @param {Array<{label: string, value: string}>} rows - Key-value data rows.
@@ -136,20 +156,23 @@ const formatEvent = (event, data) => {
 
     case 'node_added':
       return {
-        subject: `[INFO] ${za}: New node added — ${data.za}`,
+        subject: `[INFO] ${za}: New node added - ${data.za}`,
         body: htmlEmail(za, 'New entry added to ciprdup', [
           { label: 'Entry', value: data.za ?? 'N/A' },
           { label: 'Title', value: data.title || 'N/A' },
+          { label: 'Note', value: 'If this entry was recently removed, it has been restored by a peer propagation PUT or a sync operation.' },
           { label: 'Time', value: ts },
         ], url, ts),
       };
 
     case 'node_removed':
       return {
-        subject: `[INFO] ${za}: Node removed — ${data.za}`,
+        subject: `[INFO] ${za}: Node removed - ${data.za}`,
         body: htmlEmail(za, 'Entry removed from ciprdup', [
           { label: 'Entry', value: data.za ?? 'N/A' },
-          { label: 'Reason', value: data.reason || 'unknown' },
+          { label: 'Reason code', value: data.reason || 'unknown' },
+          { label: 'Details', value: describeReason(data.reason) },
+          { label: 'Note', value: 'If the node was temporarily unreachable, it may be re-added automatically when a peer propagates a valid PUT for it.' },
           { label: 'Time', value: ts },
         ], url, ts),
       };
@@ -221,7 +244,7 @@ const formatEvent = (event, data) => {
 /**
  * Initializes the notification system. Must be called once after config is loaded.
  * @param {import('./config.js').CiprNodeConfig} config
- * @param {Function} [setRepoCallbacks] — function to wire insert/delete callbacks into repo.js
+ * @param {Function} [setRepoCallbacks] • function to wire insert/delete callbacks into repo.js
  */
 export const initNotifications = async (config) => {
   nodeConfig = config;
@@ -297,7 +320,7 @@ export const initNotifications = async (config) => {
  */
 export const notify = (event, data = {}) => {
   if (!enabled || !providers || providers.size === 0) {
-    console.log(`[notify] Skipped "${event}" — notifications disabled or no providers.`);
+    console.log(`[notify] Skipped "${event}" • notifications disabled or no providers.`);
     return;
   }
 
@@ -339,7 +362,7 @@ export const notify = (event, data = {}) => {
  */
 export const runDigest = async (config, db, peersAudited = 0) => {
   if (!enabled) {
-    console.log('[notify] Digest skipped — notifications disabled.');
+    console.log('[notify] Digest skipped • notifications disabled.');
     return;
   }
 

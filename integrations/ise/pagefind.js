@@ -41,7 +41,7 @@ const buildPagefindContext = (_baseUrl, absoluteFetch) => ({
   clearTimeout: globalThis.clearTimeout,
   performance: globalThis.performance,
   Promise: globalThis.Promise,
-  // Trick Pagefind into thinking it's NOT in a browser — prevents it from
+  // Trick Pagefind into thinking it's NOT in a browser - prevents it from
   // reading window.location or document.currentScript for path inference.
   window: undefined,
   document: undefined,

@@ -1,10 +1,16 @@
-<!-- This document follows the Pandoc Markdown standard -->
-
 # Cipr: Cosmic Index of Public Resources {.root-cover-title}
 
 The *Cosmic^[Because Martians and Belters are welcome.] Index of Public Resources* ―Cipr― is a decentralized, distributed, independent, public, and universal directory of DNS-resolvable web presences, services, and resources.
 
 The Cipr is a potential alternative to the well-established web search engines that modestly-realistically aims to facilitate interaction among bloggers, writers, artists, homelabbers, freelancers, researchers, privacy advocates, decentralization proponents, and members of other expert or focused communities.
+
+Take a look at any of the three instances that are already running a  for this to get a general idea of how it works, don't expect a populated index, this is new:
+
+Take a look at any of the three instances that are currently running in the [proof of concept](https://codeberg.org/barriteau/Ciprnode-zero/) to get a general idea of how it works. Don't expect a populated index, this is a new thing:
+
+[ciprnode.cipr.info](ciprnone.cipr.info)
+[ciprnode.guasa.art](ciprnone.guasa.art)
+[ciprnode.barriteau.net](ciprnone.barriteau.net)
 
 This idea is really simple and it's surprising that something like this hasn't been the standard resource indexing system for the World Wide Web since its inception.
 
@@ -29,14 +35,12 @@ Having a website or any other Internet resource effectively indexed in the Cipr 
 If you know what comes next in this document and you already own a domain name, grab a binary of **Ciprnode zero**, a ciprnode PoC, and get listed in the Cosmic Index.
 
 ― [Binaries on Codeberg](https://codeberg.org/barriteau/Ciprnode-zero/tags/)
-― [Binaries on Github](https://github.com/barriteau/ciprnode-zero/releases/latest/)
 
 Please be careful, try it in a safe environment, it's just a PoC.
 
 Ciprnode zero source code:
 
 ― [Codeberg](https://codeberg.org/barriteau/Ciprnode-zero/)
-― [Github](https://github.com/barriteau/ciprnode-zero/)
 
 ## Technical overview
 

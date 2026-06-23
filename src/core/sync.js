@@ -172,7 +172,7 @@ const performSync = async (config, db, bootstrapNodes) => {
     }
   }
 
-  // Single viral burst — only after all successful bootstrap fetches
+  // Single viral burst - only after all successful bootstrap fetches
   if (anySuccess && totalEntriesEstimate > 0) {
     const nodesPerPulse = calculateNodesPerPulse(
       totalEntriesEstimate,
@@ -310,9 +310,9 @@ const createFetchAndProcess = (config, db) =>
 
         if (config.debug) msg(`[DBG] Sync &gt; Verifying ${entry.za}...`);
 
-        const isValid = await verifyNode(config, entry.za, calculatedHash);
+        const verifyResult = await verifyNode(config, entry.za, calculatedHash);
 
-        if (isValid) {
+        if (verifyResult.valid) {
           const inserted = insertEntry(db, {
             ...entry,
             keywords: keywordsStr,
@@ -328,7 +328,7 @@ const createFetchAndProcess = (config, db) =>
         } else {
           if (config.debug) {
             msg(
-              `[DBG] Sync &gt; Verification Failed for ${entry.za}. Either TXT record mismatch or Node unreachable (HEAD).`,
+              `[DBG] Sync &gt; Verification Failed for ${entry.za} (${verifyResult.reason}). Either TXT record mismatch or Node unreachable (HEAD).`,
             );
           }
         }

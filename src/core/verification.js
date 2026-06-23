@@ -7,32 +7,42 @@ import { verifyCiprHash } from './dns.js';
 import { msg, safeFetch } from './utils.js';
 
 /**
+ * Verification result reason codes.
+ * @enum {string}
+ */
+export const VERIFY_REASONS = {
+  OK: 'ok',
+  DNS_TXT_MISMATCH: 'dns_txt_mismatch',
+  HTTP_UNREACHABLE: 'http_unreachable',
+};
+
+/**
  * Verifies if a ciprnode is valid by checking both DNS TXT record and HTTP reachability.
  * @param {import('./config.js').CiprNodeConfig} config
  * @param {string} za - The Zone Apex (domain) of the ciprnode.
  * @param {string} expectedHash - The expected SHA256 hash for the TXT record.
- * @returns {Promise<boolean>} True if both checks pass.
+ * @returns {Promise<{valid: boolean, reason: string}>} Result with validity and reason code.
  */
 export const verifyNode = async (config, za, expectedHash) => {
   if (Deno.env.get('TEST_MOCK_VERIFY_NODE') === 'true') {
-    return true;
+    return { valid: true, reason: VERIFY_REASONS.OK };
   }
-  
+
   const isTxtValid = await verifyCiprHash(config, za, expectedHash);
   if (!isTxtValid) {
     if (config.debug) {
       msg(`[DBG] Verification failed: TXT record mismatch or missing for ${za}`);
     }
-    return false;
+    return { valid: false, reason: VERIFY_REASONS.DNS_TXT_MISMATCH };
   }
 
   const isHttpValid = await verifyNodeHttp(za, config);
   if (!isHttpValid) {
     if (config.debug) msg(`[DBG] Verification failed: HTTP HEAD check failed for ${za}`);
-    return false;
+    return { valid: false, reason: VERIFY_REASONS.HTTP_UNREACHABLE };
   }
 
-  return true;
+  return { valid: true, reason: VERIFY_REASONS.OK };
 };
 
 /**
