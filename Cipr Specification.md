@@ -8,9 +8,9 @@ Take a look at any of the three instances that are already running a  for this t
 
 Take a look at any of the three instances that are currently running in the [proof of concept](https://codeberg.org/barriteau/Ciprnode-zero/) to get a general idea of how it works. Don't expect a populated index, this is a new thing:
 
-[ciprnode.cipr.info](ciprnone.cipr.info)
-[ciprnode.guasa.art](ciprnone.guasa.art)
-[ciprnode.barriteau.net](ciprnone.barriteau.net)
+[https://ciprnode.cipr.info](https://ciprnode.cipr.info)
+[https://ciprnode.guasa.art](https://ciprnode.guasa.art)
+[https://ciprnode.barriteau.net](https://ciprnode.barriteau.net)
 
 This idea is really simple and it's surprising that something like this hasn't been the standard resource indexing system for the World Wide Web since its inception.
 
@@ -463,11 +463,11 @@ Before proceeding with the effective deletion of a `DELETE`d entry in the ciprdu
 
 1. **Ownership Validation**: DNS query to check if the TXT record for the new cipred resource exists and is valid.
 2. **Availability Validation**: `HEAD /` request to the `https://ciprnode.{za}` to check if the cipred resource is responding.
-3. **Reliability Validation**: `QUERY /` to `https://ciprnode.{za}` to validate the correctness of the resource's query results.
+3. **Reliability Validation**: `QUERY /` to `https://ciprnode.{za}` to validate the correctness of the resource's query results. If the network call fails due to a transient error, this step is bypassed (fails open) to avoid data loss from transient network issues.
 
 The *Reliability Validation* requires the use of a random `FTS expression` and random `pages[num]` and random `pages[size]` query parameters, it also could reuse FTS expressions received from users of the ciprface, this implies that the ciprnode must be able to store and retrieve FTS expressions received from users of the ciprface.
 
-The deletion of an entry won't be effective if all of the three checks are successfully passed.
+The deletion of an entry won't be effective if all of the three checks are successfully passed. If the Reliability check fails due to a network error (timeout, connection refused), the deletion is rejected and the entry is retained (fail open).
 
 #### Use of the QUERY method
 
@@ -779,9 +779,17 @@ Every ciprnode must start the following actions every $I$ milliseconds (where $I
 
 1. **Audit and Propagation**: Randomly select a set of $N$ entries from its ciprdup (excluding self), and apply the full **Deletion Validation Sequence** (Ownership, Availability, and Reliability) to each one. For every resource that passes validation, a `PUT` request with a freshened `timestamp` must be sent to $N$ ciprnodes selected at random from the ciprdup. For every resource that fails its audit, a `DELETE` request must be sent to $N$ ciprnodes selected at random from the ciprdup.
 
-2. **Reliability Checks**: Generate a random FTS expression (using configured `test_words` and captured user search terms), execute it locally as a baseline, then send `QUERY` requests to $N$ randomly selected peers whose `timestamp` is older than 1 hour. Compare results using Jaccard set similarity (threshold ≥ 60%). Peers failing this check are evicted locally and a `DELETE` is propagated.
+   **Grace period**: To avoid cascading isolation caused by transient network failures, entries that fail Ownership or Availability validation are not immediately deleted. Instead, a consecutive failure counter is incremented. Only after a configurable number of consecutive failures (default: 3) is the entry deleted. A single successful validation resets the counter. Before deletion, the full Deletion Validation Sequence is run: if the Reliability check passes despite the Ownership/Availability failure, the entry is retained (the node is alive and serving correct results, so the failure was transient).
+
+2. **Reliability Checks**: Generate a random FTS expression (using configured `test_words` and captured user search terms), execute it locally as a baseline, then send `QUERY` requests to $N$ randomly selected peers whose `timestamp` is older than 1 hour. Compare results using Jaccard set similarity. The threshold auto-scales based on result set size: 30% for <=5 results, 45% for <=20, 60% for larger sets. Peers failing this check due to a content mismatch are evicted locally and a `DELETE` is propagated. If the `QUERY` fails due to a network error, the check is bypassed (fail open) and the entry is retained.
 
 3. **Self-Validation**: Every $3 \times I$ milliseconds, validate the local node's own configuration. On success, broadcast a `PUT` for the local entry to $N$ random peers. On persistent failure after retries, send a `DELETE` for the node's own `za` to $N$ random peers (self-destruct signal).
+
+4. **Self-Rebroadcast**: Every 4 hours, re-broadcast the local entry to all known peers via `PUT`. This ensures that even if the local entry was deleted from remote indexes (due to transient failures), it gets re-added. This is a key recovery mechanism against isolation.
+
+5. **Bootstrap Reconnection**: Every 6 hours, re-sync from the configured `bootstrap_nodes`, bypassing the "DB already populated" check. This fetches and verifies entries from bootstrap nodes, breaking the isolation loop that can occur when all peers have evicted each other.
+
+6. **Recovery Sweep**: Every 2 hours, re-check tombstoned entries (entries previously deleted due to verification failures). For each tombstoned entry, attempt to fetch the entry data from the remote node and run the full DNS TXT + HTTP HEAD verification. If verification passes, the entry is re-added to the ciprdup, the tombstone is removed, and a `PUT` is propagated to peers. This provides a secondary recovery mechanism beyond bootstrap reconnection.
 
 ### 5. Ciprface
 
@@ -1001,9 +1009,16 @@ The protocol is fully permissionless: anyone with a registered domain can join t
 
 The `_cipr.{za} TXT` record is the only credential that proves a ciprnode's identity to the network. DNS is controlled by registrars, registries, and ICANN: all subject to legal pressure, terms-of-service enforcement, and political interference.
 
-- A single court order to a registrar can silently remove a node's TXT record, causing all peers to evict it automatically within one or two pulse cycles.
+- A single court order to a registrar can silently remove a node's TXT record, causing all peers to evict it automatically after the grace period (3 consecutive pulse cycles by default).
 - Nodes in jurisdictions that block major DoH providers (China, Iran, Russia block Cloudflare, Google, Quad9) cannot complete Triple Validation on incoming PUTs. They become isolated from the rest of the network.
 - The Zone Apex (`sldl.tldl`) format requirement structurally excludes all path-based resources, shared subdomains, and most 2nd-level ccTLDs (`.co.uk`, `.edu.br`, etc.).
+
+**Mitigations against transient isolation**: The implementation includes several mechanisms to prevent permanent isolation from transient network failures:
+- A **grace period** (3 consecutive failures by default) before evicting an entry that fails Ownership/Availability validation.
+- **Fail-open** behavior on network errors during Reliability Validation (entries are retained, not evicted).
+- **Periodic self-rebroadcast** (every 4 hours) re-broadcasts the local entry to all peers.
+- **Periodic bootstrap reconnection** (every 6 hours) re-syncs from bootstrap nodes.
+- **Recovery sweep** (every 2 hours) re-checks tombstoned entries and re-adds them if they pass verification.
 
 ### No Economic or Reputational Incentive to Run a Node
 

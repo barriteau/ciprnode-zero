@@ -80,8 +80,8 @@ Incoming `PUT /{za}/` requests go through the following validation chain. Any fa
 4. **Currentness Validation**: `body.timestamp` must be within the last 24 hours and not more than 5 minutes in the future (`400` on failure). This prevents stale or replayed entries and limits the window for timestamp-spoofing attacks.
 5. **Field length limits**: Defense-in-depth validation against hash-complexity DoS: `za ≤ 255`, `title ≤ 64`, `description ≤ 256`, `keywords ≤ 512`, `offering ≤ 128`, `seeking ≤ 128`, `primary_lang ≤ 2` (`413` on violation).
 6. **DNS TXT Verification (Triple Validation)**: The `ciprHash` computed from the PUT body must match the `_cipr.{za}` TXT record, verified against **3 randomly selected DoH resolvers** from the configured pool (`403` on failure).
-7. **HTTP Reachability Verification**: A `HEAD https://ciprnode.{za}/` request must return `200 OK`, with **6 retries** at 2-second intervals (`403` on failure).
-8. **Reliability Validation**: A random FTS expression is generated, run locally as a baseline QUERY, then sent as a `QUERY` to `https://ciprnode.{za}/`. The results are compared with **Jaccard set similarity ≥ 60%** (`409` on divergence). Network errors during this step are non-fatal and fail open.
+7. **HTTP Reachability Verification**: A `HEAD https://ciprnode.{za}/` request must return `200 OK`, with **6 retries** at 3-second intervals. 5xx responses are treated as transient and retried; 4xx (except 429) are treated as permanent failures (`403` on failure).
+8. **Reliability Validation**: A random FTS expression is generated, run locally as a baseline QUERY, then sent as a `QUERY` to `https://ciprnode.{za}/`. The results are compared with **Jaccard set similarity** using an auto-scaled threshold (30% for <=5 results, 45% for <=20, 60% for larger sets). Network errors during this step are non-fatal and fail open.
 9. **Insert/Update**: Entry is upserted into the ciprdup.
 
 #### DELETE: Viral Deletion Logic
@@ -90,13 +90,17 @@ Incoming `DELETE /{za}/` requests do not unconditionally delete. Instead:
 
 1. If the entry is not found locally, the DELETE is silently accepted (`202`).
 2. If `za` equals the node's own `za`, the self-deletion is ignored (`202`).
-3. The node re-validates the entry using the same DNS TXT + HTTP HEAD verification as for PUT. If the node **passes** validation, the DELETE is **rejected**: the entry is protected and retained. If the node **fails** validation, the DELETE is **accepted** locally.
+3. The node re-validates the entry using the full **Deletion Validation Sequence** (Ownership + Availability + Reliability):
+   - If the node **passes** all three checks, the DELETE is **rejected**: the entry is protected and retained.
+   - If the node **fails** DNS/HTTP validation, the DELETE is **accepted** locally.
+   - If the node **passes** DNS/HTTP but **fails** Reliability Validation (content mismatch), the DELETE is **accepted** locally.
+   - If the Reliability check encounters a **network error**, the DELETE is **rejected** (fail open: transient network issues must not cause data loss).
 
 This logic is what allows malicious or incorrect DELETE signals to be absorbed without causing data loss across the network.
 
 ### 3. Ciprpulse: The Heartbeat
 
-The scheduler runs continuously in the background, managing three distinct periodic tasks:
+The scheduler runs continuously in the background, managing seven distinct periodic tasks:
 
 #### Audit and Viral Propagation (`runPulseChecks`)
 
@@ -104,9 +108,9 @@ Fires every `expected_propagation_time` milliseconds. In each cycle:
 
 1. Selects `N = calculateNodesPerPulse(total, expectedPropagationTime)` random entries from the ciprdup (excluding self). `N` is calculated as `⌈totalEntries^(1/steps)⌉` where `steps = propagationTime / 1000`.
 2. Entry list is **deduplicated by `za`** before processing to prevent concurrent tasks from racing on the same entry.
-3. Up to 5 entries are audited **concurrently** (controlled by `PULSE_CONCURRENCY_LIMIT = 5`) via the full DNS TXT + HTTP HEAD verification chain.
-4. **Valid entries**: A `PUT` is sent (fire-and-forget) to `N` randomly selected peer nodes. The PUT payload always carries a freshened `timestamp: Date.now()`: without this refresh, entries would fail Currentness Validation on the receiving side after the node has been running for more than 24 hours.
-5. **Invalid or unreachable entries**: The entry is deleted locally, then a `DELETE` is sent to `N` randomly selected peer nodes.
+3. Up to 5 entries are audited **concurrently** (controlled by `PULSE_CONCURRENCY_LIMIT = 5`) via DNS TXT + HTTP HEAD verification.
+4. **Valid entries**: The consecutive failure counter (`fail_count`) is **reset to 0**. A `PUT` is sent (fire-and-forget) to `N` randomly selected peer nodes. The PUT payload always carries a freshened `timestamp: Date.now()`: without this refresh, entries would fail Currentness Validation on the receiving side after the node has been running for more than 24 hours.
+5. **Invalid or unreachable entries**: The entry's `fail_count` is **incremented**. Only when `fail_count` reaches **3 consecutive failures** (the grace period, `MAX_CONSECUTIVE_FAILURES`) is the entry deleted. Before deletion, the full **Deletion Validation Sequence** is run: if the Reliability check passes despite the DNS+HTTP failure, the entry is **retained** and `fail_count` is reset (the node is alive and serving correct results, so the DNS+HTTP failure was transient). If the entry is deleted, a `DELETE` is sent to `N` randomly selected peer nodes.
 
 #### Reliability Validation (`runReliabilityChecks`)
 
@@ -116,7 +120,9 @@ Fires on the same interval as the audit task. In each cycle:
 2. The expression is executed locally as a baseline `QUERY`.
 3. Up to `N` peer nodes whose `timestamp` is older than 1 hour are selected randomly.
 4. Up to 5 peers are queried **concurrently** via `QUERY https://ciprnode.{za}/`.
-5. Each peer's result set is compared to the local baseline using **Jaccard set similarity ≥ 60%**. Peers failing this check are evicted locally and a `DELETE` is propagated to `N` peers.
+5. Each peer's result set is compared to the local baseline using **Jaccard set similarity** with an **auto-scaled threshold**: 30% for <=5 results, 45% for <=20, 60% for larger sets.
+6. **Content mismatch** (QUERY succeeded but results diverge): the peer is evicted locally and a `DELETE` is propagated to `N` peers.
+7. **Network error** (QUERY failed: timeout, connection refused, etc.): **fail open** - the entry is **retained**. Transient network issues must not cause data loss.
 
 #### Self-Validation (`runSelfValidation`)
 
@@ -125,6 +131,24 @@ Fires every `3 × expected_propagation_time` milliseconds:
 1. Validates the local node's own configuration using the same strict schema checks applied at startup.
 2. On success: broadcasts a `PUT` for the local entry to `N` random peers.
 3. On failure: retries 3 times with 1-second delays. After 3 failed retries, a **critical console alert** is displayed and a `DELETE` for the node's own `za` is sent to `N` random peers (self-destruct signal).
+
+#### Self-Rebroadcast (`rebroadcastSelf`)
+
+Fires every **4 hours**. Re-broadcasts the local entry to **all** known peers via `PUT`. This ensures that even if the local entry was deleted from remote indexes (due to transient failures), it gets re-added. This is a key recovery mechanism against isolation.
+
+#### Bootstrap Reconnection (`reconnectToBootstraps`)
+
+Fires every **6 hours**. Re-syncs from the configured `bootstrap_nodes`, bypassing the "DB already populated" check. This fetches and verifies entries from bootstrap nodes, breaking the isolation loop that can occur when all peers have evicted each other. Delegates to `sync.js`'s `reconnectToBootstraps()`.
+
+#### Recovery Sweep (`runRecoverySweep`)
+
+Fires every **2 hours**. Re-checks **tombstoned** entries (entries previously deleted due to verification failures, stored in a `ciprdup_tombstones` table). For each tombstoned entry:
+
+1. Attempts to fetch the entry data from the remote node (`GET /{za}/`).
+2. If the node responds, runs the full DNS TXT + HTTP HEAD verification.
+3. If verification passes, the entry is **re-added** to the ciprdup, the tombstone is removed, and a `PUT` is propagated to peers.
+
+This provides a secondary recovery mechanism beyond bootstrap reconnection, allowing nodes that temporarily went offline to be automatically re-discovered and re-indexed when they come back.
 
 #### Search Term Capture
 
@@ -276,6 +300,8 @@ The Triple Validation function does not use the OS DNS resolver for DoH lookups.
 
 This sequence ensures that no OS-level DNS poisoning or SSRF rebinding can forge the DoH resolver's identity. A fallback to standard `fetch()` (OS DNS) is used only if the Do53 bootstrap fails.
 
+The Triple Validation requires **all 3 randomly selected DoH servers** to return the exact expected hash (3-of-3 consensus). It retries up to **12 times** with an **8-second timeout** per DoH query, giving the system ample opportunity to reach consensus even with slow or distant resolvers.
+
 #### FTS Injection Prevention
 
 All FTS query strings pass through `sanitizeFtsQuery()` (see §1) before touching SQLite. Only structurally valid FTS5 expressions reach the database engine.
@@ -386,9 +412,34 @@ The email provider uses raw SMTP with STARTTLS via Deno's built-in `Deno.connect
 
 New notification providers (e.g., push notifications, webhooks) can be added by creating a module in `integrations/notifications/` that exports a `send(subject, body, providerConfig)` function returning `Promise<boolean>`. Multiple providers can be active simultaneously, and each event can be routed to specific providers via `[notifications.events]`.
 
-### Reliability Validation Fails Open
+### Fail-Open Behavior and Grace Period
 
-When an incoming `PUT /{za}/` triggers the Reliability Validation step and the QUERY to the sender's node fails with a network error (timeout, refused connection, firewall drop), the validation is silently bypassed and the entry is accepted. This is intentional: hard-failing on network errors would break legitimate propagation under transient conditions: but it means a bad-faith node that simply does not respond to QUERY requests can always skip this check.
+The system is designed to avoid cascading isolation caused by transient network failures. Multiple layers of protection work together:
+
+#### Reliability Validation Fails Open
+
+When a Reliability Validation QUERY to a peer fails with a network error (timeout, refused connection, firewall drop), the validation is silently bypassed and the entry is retained. This applies to:
+- Incoming `PUT` requests (the entry is accepted).
+- Incoming `DELETE` requests (the DELETE is rejected, entry is retained).
+- Scheduled `runReliabilityChecks` (the peer is not evicted).
+
+This is intentional: hard-failing on network errors would break legitimate propagation under transient conditions. The trade-off is that a bad-faith node that simply does not respond to QUERY requests can always skip this check.
+
+#### Grace Period Before Deletion
+
+Entries that fail DNS TXT or HTTP HEAD verification during `runPulseChecks` are not immediately deleted. Instead, a **consecutive failure counter** (`fail_count`) is incremented. Only after **3 consecutive failures** is the entry considered for deletion. A single successful verification resets the counter to 0.
+
+Before deleting, the full **Deletion Validation Sequence** is run: if the Reliability check passes (the node is serving correct search results), the entry is retained and the counter is reset, even if DNS+HTTP failed. This prevents deletion of nodes that are alive but experiencing transient DNS or HTTP issues.
+
+#### Recovery Mechanisms
+
+Three periodic mechanisms prevent permanent isolation and recover nodes that have been evicted:
+
+| Mechanism | Interval | Purpose |
+|:---------|:---------|:--------|
+| **Self-rebroadcast** | 4 hours | Re-broadcasts the local entry to all known peers. |
+| **Bootstrap reconnection** | 6 hours | Re-syncs from bootstrap nodes, breaking isolation. |
+| **Recovery sweep** | 2 hours | Re-checks tombstoned entries and re-adds them if they pass verification. |
 
 ## Installation
 
@@ -523,7 +574,7 @@ The configuration validator checks that if a `dns_provider.name` is set, `api_to
 6. **DNS verification**: Runs Triple Validation (3 random DoH providers via custom TLS) of the local `_cipr.{za}` TXT record. Retries 3×60s if the record is stale after a managed update.
 7. **HTTP server start**: Begins serving on the configured port. Static assets, API routes, and fallback HTML are handled in priority order.
 8. **Reachability check**: Sends `HEAD https://ciprnode.{za}/` to confirm the node is publicly reachable. Ciprpulse does not start if this check fails (unless in `debug` mode, where a loopback fallback is tried).
-9. **Ciprpulse start**: Begins the audit/propagation loop, reliability validation loop, and self-validation loop.
+9. **Ciprpulse start**: Begins the audit/propagation loop, reliability validation loop, self-validation loop, self-rebroadcast (4h), bootstrap reconnection (6h), and recovery sweep (2h). The `ciprdup_tombstones` table is created if it doesn't exist.
 
 ### Project Structure
 
@@ -539,23 +590,23 @@ Ciprnode zero/
 │   │   ├── controllers/          # root.js, entry.js, search.js
 │   │   └── views/                # hal.js, renderer.js (Eta templates)
 │   ├── bot/
-│   │   └── scheduler.js          # Ciprpulse: audit, reliability, self-validation, propagation
+│   │   └── scheduler.js          # Ciprpulse: audit, reliability, self-validation, rebroadcast, recovery, propagation
 │   ├── core/
 │   │   ├── config.js             # TOML config loader and parser
 │   │   ├── crypto.js             # SHA-256 hashing (Web Crypto API)
 │   │   ├── dns.js                # DoH/Do53 client, TXT Triple Validation, custom TLS
 │   │   ├── fts_generator.js      # Random FTS expression builder and search term cache
 │   │   ├── logger.js             # File log writer with rotation
-│   │   ├── sync.js               # Initial bootstrap sync
+│   │   ├── sync.js               # Initial bootstrap sync and periodic reconnection
 │   │   ├── utils.js              # ciprHash generation, safeFetch, readBodyWithLimit, msg/line
 │   │   ├── validator.js          # Config and entry validation (za format, geo range, etc.)
-│   │   └── verification.js       # verifyNode (DNS+HTTP), verifyReliability, compareSearchResults
+│   │   └── verification.js       # verifyNode (DNS+HTTP), verifyReliability (returns {reliable, networkError}), compareSearchResults (auto-scaled threshold)
 │   ├── db/
 │   │   ├── client.js             # SQLite connection setup
 │   │   ├── geo.js                # Haversine is_within_radius function
 │   │   ├── languages.json        # ISO 639-1 dataset (180+ entries)
-│   │   ├── repo.js               # Data access: insertEntry, getEntry, deleteEntry, searchEntries
-│   │   └── schema.js             # Table/FTS5/trigger/index DDL
+│   │   ├── repo.js               # Data access: insertEntry, getEntry, deleteEntry, searchEntries, tombstone management
+│   │   └── schema.js             # Table/FTS5/trigger/index DDL, tombstones table, fail_count migration
 │   ├── locales/                  # 18 language JSON translation files
 │   └── templates/                # Eta HTML templates (layouts, views, partials)
 ├── integrations/
