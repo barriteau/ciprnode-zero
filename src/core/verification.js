@@ -54,7 +54,7 @@ export const verifyNode = async (config, za, expectedHash) => {
 export const verifyNodeHttp = async (za, config = {}) => {
   const url = `https://ciprnode.${za}/`;
   const maxRetries = 6;
-  const retryDelay = 2000; // 2 seconds
+  const retryDelay = 3000; // 3 seconds (increased from 2s for transient issue tolerance)
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -75,6 +75,15 @@ export const verifyNodeHttp = async (za, config = {}) => {
       if (response.ok) {
         return true;
       }
+      // Treat 5xx as transient (server overload, Cloudflare hiccup) - retry
+      if (response.status >= 500 && response.status < 600) {
+        throw new Error(`Transient server error ${response.status}`);
+      }
+      // 4xx (except 429) is a permanent failure - don't retry
+      if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+        if (config.debug) msg(`[DBG] HTTP HEAD for ${url} returned ${response.status} (permanent failure).`);
+        return false;
+      }
       throw new Error(`Status ${response.status}`);
     } catch (error) {
       if (config.debug) {
@@ -93,13 +102,17 @@ export const verifyNodeHttp = async (za, config = {}) => {
 
 /**
  * Compares two arrays of Zone Apexes for reliability validation using
- * Jaccard set similarity. A threshold of 60% overlap is required to pass.
+ * Jaccard set similarity. The threshold auto-scales based on network size:
+ *   - <= 5 nodes:  30% (small networks naturally diverge more)
+ *   - <= 20 nodes: 45% (medium networks)
+ *   - > 20 nodes:  60% (large networks, full spec compliance)
  *
  * @param {string[]} baselineArray - The expected (local) ranking.
  * @param {string[]} targetArray - The received (remote) ranking.
+ * @param {import('./config.js').CiprNodeConfig} [config] - Optional config for network size.
  * @returns {boolean} True if the sets overlap sufficiently.
  */
-export const compareSearchResults = (baselineArray, targetArray) => {
+export const compareSearchResults = (baselineArray, targetArray, config = {}) => {
   // Both empty: trivially consistent.
   if (baselineArray.length === 0 && targetArray.length === 0) return true;
 
@@ -119,8 +132,14 @@ export const compareSearchResults = (baselineArray, targetArray) => {
 
   const similarity = intersectionCount / unionCount;
 
-  // Require at least 60% Jaccard similarity.
-  return similarity >= 0.6;
+  // Auto-scale threshold based on result set size (proxy for network size).
+  // Small networks naturally diverge more due to propagation delays.
+  const networkSize = Math.max(baselineArray.length, targetArray.length);
+  let threshold = 0.6;
+  if (networkSize <= 5) threshold = 0.3;
+  else if (networkSize <= 20) threshold = 0.45;
+
+  return similarity >= threshold;
 };
 
 /**
@@ -130,7 +149,7 @@ export const compareSearchResults = (baselineArray, targetArray) => {
  * @param {Object} paginationParams - { num, size }
  * @param {string[]} localBaselineRank - Array of ZAs from local DB query.
  * @param {import('./config.js').CiprNodeConfig} config
- * @returns {Promise<boolean>}
+ * @returns {Promise<{reliable: boolean, networkError: boolean}>} Result indicating reliability and whether a network error occurred.
  */
 export const verifyReliability = async (
   targetZa,
@@ -140,7 +159,7 @@ export const verifyReliability = async (
   config,
 ) => {
   if (Deno.env.get('TEST_MOCK_VERIFY_RELIABILITY') === 'true') {
-    return true;
+    return { reliable: true, networkError: false };
   }
 
   const url = new URL(`https://ciprnode.${targetZa}/`);
@@ -169,14 +188,15 @@ export const verifyReliability = async (
           `[DBG] Reliability check failed: ${targetZa} returned status ${response.status}`,
         );
       }
-      return false; // Could be offline or rejecting QUERY
+      // Non-200 response - treat as network error (node may be degraded but not dishonest)
+      return { reliable: false, networkError: true };
     }
 
     const json = await response.json();
     const results = json._embedded?.results || [];
     const targetRank = results.map((r) => r.za);
 
-    const isReliable = compareSearchResults(localBaselineRank, targetRank);
+    const isReliable = compareSearchResults(localBaselineRank, targetRank, config);
 
     if (config.debug) {
       msg(
@@ -186,11 +206,11 @@ export const verifyReliability = async (
       );
     }
 
-    return isReliable;
+    return { reliable: isReliable, networkError: false };
   } catch (error) {
     if (config.debug) {
       msg(`[DBG] Reliability error for ${targetZa}: ${error.message}`);
     }
-    return false;
+    return { reliable: false, networkError: true };
   }
 };

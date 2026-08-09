@@ -3,10 +3,12 @@
  * @description Scheduling logic for Ciprpulse maintenance tasks.
  */
 
-import { countEntries, getEntry, searchEntries } from '../db/repo.js';
-import { calculateNodesPerPulse, msg, safeFetch } from '../core/utils.js';
+import { countEntries, getEntry, searchEntries, deleteEntry, insertEntry, incrementFailCount, resetFailCount, getTombstones, removeTombstone } from '../db/repo.js';
+import { calculateNodesPerPulse, msg, safeFetch, generateCiprHash } from '../core/utils.js';
 import { validateCiprConfig } from '../core/validator.js';
 import { notify, runDigest } from '../core/notify.js';
+import { verifyNode, verifyReliability, VERIFY_REASONS } from '../core/verification.js';
+import { generateRandomFTSExpression } from '../core/fts_generator.js';
 
 /**
  * Starts the internal scheduler.
@@ -16,6 +18,10 @@ import { notify, runDigest } from '../core/notify.js';
  */
 export const startScheduler = async (config, db, txtUpdated) => {
   msg('Starting Ciprpulse scheduler...');
+
+  // Ensure tombstones table exists for recovery sweep
+  const { ensureTombstonesTable } = await import('../db/schema.js');
+  ensureTombstonesTable(db);
 
   if (txtUpdated) {
     msg('Local TXT record updated. Broadcasting update...');
@@ -38,6 +44,27 @@ export const startScheduler = async (config, db, txtUpdated) => {
   setInterval(() => {
     runSelfValidation(config, db);
   }, SELF_VALIDATION_INTERVAL);
+
+  // Periodic self-rebroadcast: re-broadcast local entry to all peers every 4 hours
+  const REBROADCAST_INTERVAL = 4 * 60 * 60 * 1000; // 4 hours
+  msg(`Self-rebroadcast interval set to ${REBROADCAST_INTERVAL}ms (${REBROADCAST_INTERVAL / 3600000}h)`);
+  setInterval(() => {
+    rebroadcastSelf(config, db);
+  }, REBROADCAST_INTERVAL);
+
+  // Periodic bootstrap reconnection: re-sync from bootstrap nodes every 6 hours
+  const RECONNECT_INTERVAL = 6 * 60 * 60 * 1000; // 6 hours
+  msg(`Bootstrap reconnection interval set to ${RECONNECT_INTERVAL}ms (${RECONNECT_INTERVAL / 3600000}h)`);
+  setInterval(() => {
+    reconnectToBootstraps(config, db);
+  }, RECONNECT_INTERVAL);
+
+  // Periodic recovery sweep: re-check tombstoned entries every 2 hours
+  const RECOVERY_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours
+  msg(`Recovery sweep interval set to ${RECOVERY_INTERVAL}ms (${RECOVERY_INTERVAL / 3600000}h)`);
+  setInterval(() => {
+    runRecoverySweep(config, db);
+  }, RECOVERY_INTERVAL);
 
   // Periodic digest
   const digestInterval = config.notifications?.digest_interval;
@@ -111,12 +138,8 @@ const broadcastUpdate = async (config, db) => {
   }
 };
 
-import { generateCiprHash } from '../core/utils.js';
-import { verifyNode, verifyReliability, VERIFY_REASONS } from '../core/verification.js';
-import { generateRandomFTSExpression } from '../core/fts_generator.js';
-import { deleteEntry } from '../db/repo.js';
-
 const PULSE_CONCURRENCY_LIMIT = 5;
+const MAX_CONSECUTIVE_FAILURES = 3;
 
 const runConcurrent = async (tasks, limit) => {
   const queue = [...tasks];
@@ -142,6 +165,15 @@ const runConcurrent = async (tasks, limit) => {
  * Runs a cycle of random audits and viral propagation.
  * Entries are audited concurrently (up to PULSE_CONCURRENCY_LIMIT) to prevent
  * sequential verification from stacking beyond the pulse interval at higher counts.
+ *
+ * Grace period: entries must fail MAX_CONSECUTIVE_FAILURES consecutive audits
+ * before being deleted. Each pass resets the counter; each fail increments it.
+ *
+ * Per spec: the full Deletion Validation Sequence (Ownership + Availability +
+ * Reliability) is applied before deleting. If DNS+HTTP fail but Reliability
+ * cannot be checked (network error), the fail count is incremented but the
+ * entry is NOT deleted on the first failure.
+ *
  * @param {import('@db/sqlite').Database} db
  * @param {import('../core/config.js').CiprNodeConfig} config
  */
@@ -158,7 +190,7 @@ const runPulseChecks = async (db, config) => {
 
   msg(`Auditing ${auditEntries.length} entries (concurrency: ${PULSE_CONCURRENCY_LIMIT})...`);
 
-  // Deduplicate by za (Vector C: prevent concurrent tasks from racing on the same entry)
+  // Deduplicate by za
   const seen = new Set();
   const tasks = auditEntries
     .filter((entry) => entry.za && !seen.has(entry.za) && seen.add(entry.za))
@@ -175,15 +207,57 @@ const runPulseChecks = async (db, config) => {
         .all(config.za, nodesPerPulse);
 
       if (verifyResult.valid) {
+        // Reset grace period counter on success
+        if (entry.fail_count > 0) {
+          resetFailCount(db, entry.za);
+        }
         if (config.debug) msg(`${entry.za} is VALID. Propagating PUT to ${peerEntries.length} peers.`);
         for (const target of peerEntries) {
           if (target.za !== entry.za) sendPulseRequest(config, target.za, 'PUT', entry);
         }
       } else {
-        msg(`${entry.za} is INVALID/UNREACHABLE (${verifyResult.reason}). Deleting locally and propagating DELETE.`, 'WA');
-        deleteEntry(db, entry.za, verifyResult.reason);
-        for (const target of peerEntries) {
-          sendPulseRequest(config, target.za, 'DELETE', null, entry.za);
+        // DNS+HTTP failed. Run Reliability check (full Deletion Validation Sequence per spec).
+        // If reliability also fails or is inconclusive, increment fail_count.
+        // Only delete when fail_count reaches MAX_CONSECUTIVE_FAILURES.
+        const newFailCount = incrementFailCount(db, entry.za, verifyResult.reason);
+
+        if (newFailCount >= MAX_CONSECUTIVE_FAILURES) {
+          // Grace period exhausted. Run full Deletion Validation Sequence before deleting.
+          let shouldDelete = true;
+          try {
+            const ftsExpression = generateRandomFTSExpression(config);
+            const paginationParams = { num: 1, size: 10 };
+            const baselineItems = searchEntries(db, {
+              query: ftsExpression,
+              ol: [], geo: {}, timestamp: {}, filters: {},
+              pages: [{ offset: 0, limit: 10, pageNum: 1 }],
+              primary_lang: [],
+            });
+            const baselineRank = baselineItems.map((item) => item.za);
+            const isReliable = await verifyReliability(entry.za, ftsExpression, paginationParams, baselineRank, config);
+
+            // If reliability passes, the node IS alive and serving correct results.
+            // The DNS+HTTP failure was likely transient. Do NOT delete.
+            if (isReliable) {
+              shouldDelete = false;
+              resetFailCount(db, entry.za);
+              msg(`${entry.za} failed DNS+HTTP (${verifyResult.reason}) but PASSED Reliability. Retaining (fail_count reset).`, 'WA');
+            }
+          } catch {
+            // Network error during reliability check - inconclusive.
+            // Since grace period is exhausted and DNS+HTTP also failed, proceed with deletion.
+            if (config.debug) msg(`[DBG] ${entry.za}: Reliability check inconclusive (network error). Proceeding with deletion.`);
+          }
+
+          if (shouldDelete) {
+            msg(`${entry.za} is INVALID/UNREACHABLE (${verifyResult.reason}) after ${newFailCount} consecutive failures. Deleting locally and propagating DELETE.`, 'WA');
+            deleteEntry(db, entry.za, verifyResult.reason);
+            for (const target of peerEntries) {
+              sendPulseRequest(config, target.za, 'DELETE', null, entry.za);
+            }
+          }
+        } else {
+          msg(`${entry.za} failed verification (${verifyResult.reason}). Fail count: ${newFailCount}/${MAX_CONSECUTIVE_FAILURES}. Grace period active.`, 'WA');
         }
       }
     });
@@ -367,10 +441,11 @@ const runReliabilityChecks = async (db, config) => {
   if (config.debug) msg(`Running Reliability Check on ${targets.length} peer(s) (concurrency: ${PULSE_CONCURRENCY_LIMIT}).`);
 
   const tasks = targets.map((target) => async () => {
-    const isReliable = await verifyReliability(target.za, ftsExpression, paginationParams, baselineRank, config);
+    const result = await verifyReliability(target.za, ftsExpression, paginationParams, baselineRank, config);
 
-    if (!isReliable) {
-      msg(`${target.za} FAILED Reliability Check. Evicting and propagating DELETE...`);
+    if (!result.reliable && !result.networkError) {
+      // Content mismatch: results diverge beyond threshold. Evict and propagate.
+      msg(`${target.za} FAILED Reliability Check (content mismatch). Evicting and propagating DELETE...`);
       deleteEntry(db, target.za, 'reliability_mismatch');
 
       const peerEntries = db.prepare(
@@ -380,8 +455,142 @@ const runReliabilityChecks = async (db, config) => {
       for (const peer of peerEntries) {
         sendPulseRequest(config, peer.za, 'DELETE', null, target.za);
       }
+    } else if (!result.reliable && result.networkError) {
+      // Network error: fail open. Do NOT delete. The peer may be transiently unreachable.
+      if (config.debug) msg(`[DBG] ${target.za}: Reliability check inconclusive (network error). Failing open - retaining entry.`);
     }
   });
 
   await runConcurrent(tasks, PULSE_CONCURRENCY_LIMIT);
+};
+
+/**
+ * Periodic self-rebroadcast: re-broadcasts the local entry to ALL known peers.
+ * This ensures that even if the local entry was deleted from remote indexes
+ * (due to transient failures), it gets re-added.
+ * @param {import('../core/config.js').CiprNodeConfig} config
+ * @param {import('@db/sqlite').Database} db
+ */
+const rebroadcastSelf = async (config, db) => {
+  try {
+    const totalNodes = countEntries(db);
+    if (totalNodes <= 1) {
+      msg(`[Rebroadcast] No peers to rebroadcast to.`);
+      return;
+    }
+
+    const myEntry = getEntry(db, config.za);
+    if (!myEntry) {
+      msg(`[Rebroadcast] Local entry not found in DB! Skipping.`, 'WA');
+      return;
+    }
+
+    msg(`[Rebroadcast] Re-broadcasting local entry to all ${totalNodes - 1} peers...`);
+
+    const peers = db.prepare(`SELECT za FROM ciprdup WHERE za != ?`).all(config.za);
+
+    for (const peer of peers) {
+      if (peer.za.includes('localhost') || peer.za.includes('127.0.0.1') || peer.za.includes('::1')) {
+        continue;
+      }
+      sendPulseRequest(config, peer.za, 'PUT', myEntry);
+    }
+
+    msg(`[Rebroadcast] Complete.`);
+  } catch (e) {
+    msg(`[Rebroadcast] Error: ${e.message}`, 'KO');
+  }
+};
+
+/**
+ * Periodic bootstrap reconnection: re-syncs from bootstrap nodes to recover
+ * from isolation. Delegates to sync.js reconnectToBootstraps.
+ * @param {import('../core/config.js').CiprNodeConfig} config
+ * @param {import('@db/sqlite').Database} db
+ */
+const reconnectToBootstraps = async (config, db) => {
+  try {
+    const { reconnectToBootstraps: doReconnect } = await import('../core/sync.js');
+    await doReconnect(config, db);
+  } catch (e) {
+    msg(`[Reconnect] Error: ${e.message}`, 'KO');
+  }
+};
+
+/**
+ * Recovery sweep: re-checks tombstoned entries (previously deleted due to
+ * verification failures) and re-adds them if they pass DNS + HTTP verification.
+ * This provides a secondary recovery mechanism beyond bootstrap reconnection.
+ * @param {import('../core/config.js').CiprNodeConfig} config
+ * @param {import('@db/sqlite').Database} db
+ */
+const runRecoverySweep = async (config, db) => {
+  const tombstones = getTombstones(db);
+  if (tombstones.length === 0) {
+    if (config.debug) msg(`[Recovery] No tombstoned entries to recover.`);
+    return;
+  }
+
+  msg(`[Recovery] Checking ${tombstones.length} tombstoned entries for recovery...`);
+
+  for (const tombstone of tombstones) {
+    // Skip self
+    if (tombstone.za === config.za) continue;
+
+    // Skip if already back in the index
+    const existing = getEntry(db, tombstone.za);
+    if (existing) {
+      removeTombstone(db, tombstone.za);
+      continue;
+    }
+
+    try {
+      // Fetch the entry data from the remote node
+      const entryUrl = `https://ciprnode.${tombstone.za}/${tombstone.za}`;
+      const response = await safeFetch(entryUrl, {
+        headers: { Accept: 'application/hal+json' },
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!response.ok) {
+        if (config.debug) msg(`[Recovery] ${tombstone.za}: still unreachable (${response.status}).`);
+        continue;
+      }
+
+      const entry = await response.json();
+
+      // Verify the entry (full Insertion Validation Sequence)
+      const calculatedHash = await generateCiprHash(
+        entry.za, entry.title, entry.description, entry.keywords,
+        entry.offering, entry.seeking, entry.primary_lang,
+        entry.ol, entry.latitude, entry.longitude,
+      );
+
+      const verifyResult = await verifyNode(config, entry.za, calculatedHash);
+
+      if (verifyResult.valid) {
+        // Node has recovered. Re-add it.
+        const now = Math.floor(Date.now() / 1000);
+        const keywordsStr = Array.isArray(entry.keywords) ? entry.keywords.join(' ') : entry.keywords;
+        insertEntry(db, { ...entry, keywords: keywordsStr, timestamp: now });
+        removeTombstone(db, tombstone.za);
+        msg(`[Recovery] ${tombstone.za} recovered and re-added to the index.`);
+
+        // Propagate the recovered entry to peers
+        const totalNodes = countEntries(db);
+        const nodesPerPulse = calculateNodesPerPulse(totalNodes, config.expected_propagation_time);
+        const peers = db.prepare(`SELECT za FROM ciprdup WHERE za != ? ORDER BY RANDOM() LIMIT ?`)
+          .all(config.za, nodesPerPulse);
+        for (const peer of peers) {
+          sendPulseRequest(config, peer.za, 'PUT', { ...entry, keywords: keywordsStr });
+        }
+      } else {
+        if (config.debug) msg(`[Recovery] ${tombstone.za}: still failing verification (${verifyResult.reason}).`);
+      }
+    } catch (e) {
+      if (config.debug) msg(`[Recovery] ${tombstone.za}: recovery check failed (${e.message}).`);
+    }
+  }
+
+  msg(`[Recovery] Sweep complete.`);
 };

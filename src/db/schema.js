@@ -53,6 +53,15 @@ export const initSchema = (db) => {
   ).get();
 
   if (tableExists) {
+    // Migration: add fail_count and fail_reason columns if missing (existing DBs)
+    const columns = db.prepare("PRAGMA table_info(ciprdup)").all();
+    const colNames = columns.map((c) => c.name);
+    if (!colNames.includes('fail_count')) {
+      db.exec('ALTER TABLE ciprdup ADD COLUMN fail_count INTEGER NOT NULL DEFAULT 0;');
+    }
+    if (!colNames.includes('fail_reason')) {
+      db.exec('ALTER TABLE ciprdup ADD COLUMN fail_reason TEXT;');
+    }
     seedLanguages(db);
     return;
   }
@@ -118,7 +127,14 @@ export const initSchema = (db) => {
 
       -- Timestamp: Unix Epoch of last update.
       -- Constraint: Must be a positive integer with 10 to 12 digits.
-      timestamp INTEGER CHECK (timestamp >= 1000000000 AND timestamp <= 999999999999)
+      timestamp INTEGER CHECK (timestamp >= 1000000000 AND timestamp <= 999999999999),
+
+      -- Fail count: Consecutive verification failures (grace period before deletion).
+      -- Reset to 0 on successful verification. Deleted when >= MAX_CONSECUTIVE_FAILURES.
+      fail_count INTEGER NOT NULL DEFAULT 0,
+
+      -- Fail reason: Last verification failure reason code (for diagnostics).
+      fail_reason TEXT
     ) STRICT;
   `);
 
@@ -178,4 +194,20 @@ export const initSchema = (db) => {
   `);
 
   msg('[OK] Database schema initialized successfully.');
+};
+
+/**
+ * Ensures the ciprdup_tombstones table exists (for recovery sweep).
+ * Stores zas of entries that were deleted due to verification failures,
+ * so they can be re-checked periodically and re-added if they recover.
+ * @param {import('@db/sqlite').Database} db - The database instance.
+ */
+export const ensureTombstonesTable = (db) => {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS ciprdup_tombstones (
+      za TEXT PRIMARY KEY,
+      reason TEXT,
+      deleted_at INTEGER NOT NULL
+    ) STRICT;
+  `);
 };

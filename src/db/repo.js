@@ -98,6 +98,7 @@ export const getEntry = (db, za) => {
 
 /**
  * Deletes an entry by its Zone Apex (za).
+ * Also records a tombstone for recovery sweep (unless reason is 'self_destruct').
  * @param {import('@db/sqlite').Database} db
  * @param {string} za
  * @param {string} [reason='unknown'] - Reason for deletion (for notifications).
@@ -105,9 +106,73 @@ export const getEntry = (db, za) => {
 export const deleteEntry = (db, za, reason = 'unknown') => {
   const stmt = db.prepare(`DELETE FROM ciprdup WHERE za = ?`);
   stmt.run(za);
+  // Record tombstone for recovery sweep (skip self-destruct and external_delete to avoid loops)
+  if (reason !== 'self_destruct' && !reason.startsWith('external_delete')) {
+    try { addTombstone(db, za, reason); } catch { /* tombstone table may not exist yet */ }
+  }
   if (onDeleteCallback) {
     try { onDeleteCallback(za, reason); } catch { /* never let callback crash the caller */ }
   }
+};
+
+/**
+ * Increments the consecutive failure counter for an entry.
+ * Stores the reason code for diagnostics. Does NOT delete the entry.
+ * @param {import('@db/sqlite').Database} db
+ * @param {string} za
+ * @param {string} reason - Verification failure reason code.
+ * @returns {number} The new fail_count value.
+ */
+export const incrementFailCount = (db, za, reason) => {
+  const row = db.prepare(`SELECT fail_count FROM ciprdup WHERE za = ?`).get(za);
+  if (!row) return 0;
+  const newCount = (row.fail_count || 0) + 1;
+  db.prepare(`UPDATE ciprdup SET fail_count = ?, fail_reason = ? WHERE za = ?`)
+    .run(newCount, reason, za);
+  return newCount;
+};
+
+/**
+ * Resets the consecutive failure counter to 0 for an entry.
+ * Called when verification passes, clearing the grace period slate.
+ * @param {import('@db/sqlite').Database} db
+ * @param {string} za
+ */
+export const resetFailCount = (db, za) => {
+  db.prepare(`UPDATE ciprdup SET fail_count = 0, fail_reason = NULL WHERE za = ?`)
+    .run(za);
+};
+
+/**
+ * Records a tombstone for a deleted entry (for recovery sweep).
+ * If a tombstone already exists for this za, updates the reason and timestamp.
+ * @param {import('@db/sqlite').Database} db
+ * @param {string} za
+ * @param {string} reason - Deletion reason code.
+ */
+export const addTombstone = (db, za, reason) => {
+  db.prepare(`
+    INSERT INTO ciprdup_tombstones (za, reason, deleted_at) VALUES (?, ?, ?)
+    ON CONFLICT(za) DO UPDATE SET reason = excluded.reason, deleted_at = excluded.deleted_at
+  `).run(za, reason, Math.floor(Date.now() / 1000));
+};
+
+/**
+ * Retrieves all tombstoned zas (entries deleted due to verification failures).
+ * @param {import('@db/sqlite').Database} db
+ * @returns {Array<{za: string, reason: string, deleted_at: number}>}
+ */
+export const getTombstones = (db) => {
+  return db.prepare(`SELECT za, reason, deleted_at FROM ciprdup_tombstones`).all();
+};
+
+/**
+ * Removes a tombstone (called when an entry is successfully recovered/re-added).
+ * @param {import('@db/sqlite').Database} db
+ * @param {string} za
+ */
+export const removeTombstone = (db, za) => {
+  db.prepare(`DELETE FROM ciprdup_tombstones WHERE za = ?`).run(za);
 };
 
 /**

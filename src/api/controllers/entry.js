@@ -151,15 +151,15 @@ export const put = async (req, db, config, za) => {
     });
     const baselineRank = baselineItems.map((item) => item.za);
 
-    const isReliable = await verifyReliability(za, ftsExpression, paginationParams, baselineRank, config);
-    if (!isReliable) {
-      if (config.debug) msg(`[DBG] PUT ${za}: Reliability Validation failed.`);
+    const reliabilityResult = await verifyReliability(za, ftsExpression, paginationParams, baselineRank, config);
+    if (!reliabilityResult.reliable && !reliabilityResult.networkError) {
+      if (config.debug) msg(`[DBG] PUT ${za}: Reliability Validation failed (content mismatch).`);
       return new Response(
         'Reliability Validation Failed. Search results diverge beyond acceptable threshold.',
         { status: 409 },
       );
     }
-    if (config.debug) msg(`[DBG] PUT ${za}: Reliability Validation passed.`);
+    if (config.debug) msg(`[DBG] PUT ${za}: Reliability Validation passed (or network error - fail open).`);
   } catch (e) {
     if (config.debug) msg(`[DBG] PUT ${za}: Reliability check error (non-fatal): ${e.message}`);
   }
@@ -223,15 +223,21 @@ export const del = async (_req, db, config, za) => {
       });
       const baselineRank = baselineItems.map((item) => item.za);
 
-      const isReliable = await verifyReliability(za, ftsExpression, paginationParams, baselineRank, config);
-      if (isReliable) {
+      const reliabilityResult = await verifyReliability(za, ftsExpression, paginationParams, baselineRank, config);
+      if (reliabilityResult.networkError) {
+        // Fail open: network error during reliability check. Retain the entry.
+        msg(`[DELETE] Request for ${za} IGNORED. Reliability check encountered network error.`);
+        if (config.debug) msg(`[DBG] DELETE ${za}: Network error during reliability check. Failing open.`);
+        return new Response(null, { status: 202 });
+      }
+      if (reliabilityResult.reliable) {
         msg(`[DELETE] Request for ${za} IGNORED. Node passed all validation steps.`);
         if (config.debug) {
           msg(`[DBG] DELETE ${za}: Node verified successfully (DNS + HTTP + Reliability). Retaining entry.`);
         }
         return new Response(null, { status: 202 });
       }
-      if (config.debug) msg(`[DBG] DELETE ${za}: Reliability Validation failed.`);
+      if (config.debug) msg(`[DBG] DELETE ${za}: Reliability Validation failed (content mismatch).`);
     } catch (e) {
       if (config.debug) msg(`[DBG] DELETE ${za}: Reliability check error (non-fatal): ${e.message}`);
       msg(`[DELETE] Request for ${za} IGNORED. Reliability check encountered network error.`);

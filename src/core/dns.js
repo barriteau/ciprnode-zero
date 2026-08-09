@@ -24,7 +24,7 @@ export const verifyCiprHash = async (config, za, expectedHash) => {
     return false;
   }
 
-  const maxRetries = 8;
+  const maxRetries = 12;
   const dohList = dnsConfig.doh;
   const do53List = dnsConfig.do53 || [];
 
@@ -138,7 +138,7 @@ const queryDoHTxt = async (dohUrlStr, name, bootstrapIp) => {
   let usedMethod = 'Standard (OS DNS)';
 
   // Timeout Logic
-  const TIMEOUT_MS = 5000;
+  const TIMEOUT_MS = 8000;
 
   try {
     if (!bootstrapIp) throw new Error('No bootstrap IP provided');

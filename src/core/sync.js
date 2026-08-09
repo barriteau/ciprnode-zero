@@ -46,6 +46,30 @@ export const initialSync = async (config, db) => {
 };
 
 /**
+ * Periodic reconnection: re-syncs from bootstrap nodes to recover from isolation.
+ * Unlike initialSync, this bypasses the "DB already populated" check and always
+ * attempts to fetch and verify entries from bootstrap nodes.
+ * @param {import('./config.js').CiprNodeConfig} config
+ * @param {import('@db/sqlite').Database} db
+ */
+export const reconnectToBootstraps = async (config, db) => {
+  const bootstrapNodes = config.bootstrap_nodes;
+  if (!Array.isArray(bootstrapNodes) || bootstrapNodes.length === 0) {
+    return;
+  }
+
+  msg(`[Reconnect] Periodic bootstrap reconnection starting...`);
+  const succeeded = await performSync(config, db, bootstrapNodes);
+
+  if (succeeded) {
+    const entryCount = countEntries(db);
+    msg(`[Reconnect] Bootstrap reconnection complete. Local index now has ${entryCount} entries.`);
+  } else {
+    msg(`[Reconnect] Bootstrap reconnection failed. Will retry on next cycle.`, 'WA');
+  }
+};
+
+/**
  * Background retry loop: attempts to sync with bootstrap_nodes every 30 s for up to 1 h.
  *
  * @param {import('./config.js').CiprNodeConfig} config
