@@ -965,10 +965,10 @@ const initServiceWorker = () => {
 
     let refreshing = false;
     const isFirstInstall = !navigator.serviceWorker.controller;
-    
+
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (isFirstInstall) return; // Prevent reload on first time visit
-      
+
       if (!refreshing) {
         refreshing = true;
         // Navigate with a cache-busting query param so the browser fetches fresh
