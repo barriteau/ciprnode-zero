@@ -828,6 +828,33 @@ const initIntraSearch = () => {
 
   if (!searchInput || !searchResults) return;
 
+  /**
+   * Sanitizes an HTML excerpt from an ISE provider (e.g. Pagefind) so that
+   * only <mark> tags are preserved. All other elements are converted to text
+   * nodes, and all attributes on <mark> are stripped.
+   * Uses DOMParser so the browser's native HTML parser handles malformed
+   * input, encoding tricks, and nested structures safely.
+   * @param {string} str - Raw HTML excerpt from ISE provider.
+   * @returns {string} Sanitized HTML with only <mark> elements.
+   */
+  const sanitizeExcerpt = (str) => {
+    if (!str) return '';
+    const doc = new DOMParser().parseFromString(str, 'text/html');
+    const walk = (node) => {
+      [...node.childNodes].forEach((child) => {
+        if (child.nodeType === Node.TEXT_NODE) return;
+        if (child.nodeType === Node.ELEMENT_NODE && child.tagName === 'MARK') {
+          [...child.attributes].forEach((a) => child.removeAttribute(a.name));
+          walk(child);
+        } else {
+          child.replaceWith(document.createTextNode(child.textContent));
+        }
+      });
+    };
+    walk(doc.body);
+    return doc.body.innerHTML;
+  };
+
   // Listen for clicks on the newly injected .search-toggle
   document.body.addEventListener('change', (e) => {
     if (e.target && e.target.classList.contains('search-toggle')) {
@@ -897,7 +924,7 @@ const initIntraSearch = () => {
 
             const excerpt = document.createElement('div');
             excerpt.className = 'excerpt';
-            excerpt.textContent = item.description || '';
+            excerpt.innerHTML = sanitizeExcerpt(item.description || '');
 
             li.appendChild(h3);
             li.appendChild(excerpt);
