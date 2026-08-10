@@ -27,14 +27,13 @@ const reinitDynamicContent = () => {
 // fully initialized. This is safer than `htmx:after:settle` (which fires
 // before htmx calls process() on new elements).
 document.addEventListener('htmx:after:process', reinitDynamicContent);
-// Also catch history navigation restores:
-document.addEventListener('htmx:before:restore:history', reinitDynamicContent);
+// Also catch history navigation restores (renamed in beta6):
+document.addEventListener('htmx:before:history:restore', reinitDynamicContent);
 
-// Manage HTMX async requests globally (event name is same in HTMX 4)
+// Inject Accept-Language header into all htmx requests
 document.addEventListener('htmx:config:request', (evt) => {
-  // Insert Accept-Language
-  if (evt.detail && evt.detail.headers) {
-    evt.detail.headers['Accept-Language'] = document.documentElement.lang;
+  if (evt.detail?.ctx?.request?.headers) {
+    evt.detail.ctx.request.headers['Accept-Language'] = document.documentElement.lang;
   }
 });
 

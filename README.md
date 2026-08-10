@@ -228,6 +228,16 @@ When the node has ISE providers configured and a target ciprdup entry has a resi
 - A **web app manifest** (`manifest.webmanifest`) enables installation on mobile and desktop.
 - The service worker version is updated by changing the cache key in `sw.js`; a `controllerchange` listener in the client JS triggers a reload when a new version is detected (skipping reload on first install).
 
+#### htmx
+
+The ciprface uses [htmx](https://htmx.org/) **v4.0.0-beta6** (`public/js/htmx.js`) to drive dynamic search interactions without writing custom JavaScript.
+
+The CiprAPI uses the `QUERY` HTTP method (defined in `draft-ietf-httpbis-safe-method-with-body`) for search operations, as required by the Semantic RESTful API design. htmx v4-beta6 supports `QUERY` natively via the `hx-method` attribute: when `hx-method="QUERY"` is set on a form, htmx sends the form data as `application/x-www-form-urlencoded` in the request body (not as URL params, because QUERY is not in the `GET|DELETE` regex that controls URL param serialization), which matches the CiprAPI spec for QUERY requests. The server-side handler (`src/api/controllers/search.js`) merges URL params (e.g., `pages[num]`, `pages[size]`) with body params (e.g., `q`, `ol`, `geo_latitude`).
+
+The search form (`src/templates/partials/search-form.eta`) uses `hx-method="QUERY"` with `hx-action="/"`, `hx-target="#search-results-wrapper"`, `hx-swap="innerHTML"`, and `hx-push-url="true"` to enable bookmarkable search results. Pagination links and the Explore button use standard `hx-get` attributes.
+
+The `QUERY` method is supported by `fetch()` in modern browsers (Chrome 130+, Firefox 134+, Safari 18+). htmx v4 uses `fetch()` (not `XMLHttpRequest`), making it compatible.
+
 #### SEO Metadata
 
 The ciprface `<head>` includes:
@@ -614,7 +624,7 @@ Ciprnode zero/
 │   └── ise/                      # pagefind.js, ise-template.example.js
 ├── public/
 │   ├── css/                      # Stylesheets
-│   ├── js/                       # ciprnode.js, htmx.js
+│   ├── js/                       # ciprnode.js (app logic), htmx.js
 │   ├── figures/                  # SVG icons
 │   ├── profiles/cipr.json        # ALPS profile
 │   ├── manifest.webmanifest      # PWA manifest
@@ -648,3 +658,17 @@ Built with minimalism in mind, using the Deno Standard Library plus two focused 
 | **`@std/assert`**   | Assertion library for tests.                    |
 | **`@db/sqlite`**    | Zero-dependency SQLite driver.                  |
 | **`@eta-dev/eta`**  | Lightweight templating engine for the ciprface. |
+
+### Client-Side Dependencies
+
+The ciprface ships with the following bundled, self-hosted front-end assets (no CDNs, no external requests, all served from `public/`):
+
+| Asset                      | Version       | Source                                                       | Purpose                                                                                                           |
+|:---------------------------|:--------------|:-------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------|
+| **htmx.js**                | v4.0.0-beta6  | [htmx.org](https://htmx.org/)                                | Dynamic HTML interactions. Supports the `QUERY` HTTP method natively via `hx-method` (see [htmx section](#htmx)). |
+| **highlight.js CSS theme** | xcode.min.css | [highlight.js](https://highlightjs.org/)                     | Code block syntax highlighting theme (CSS only, no JS runtime loaded).                                            |
+| **Iosevka**                | woff2         | [GitHub](https://github.com/be5invis/Iosevka)                | Monospace font for code blocks.                                                                                   |
+| **Libertinus**             | woff2         | [GitHub](https://github.com/alerque/libertinus)              | Serif/sans-serif font family for body text and headings.                                                          |
+| **Poller One**             | woff2         | [Google Fonts](https://fonts.google.com/specimen/Poller+One) | Display font for the main title.                                                                                  |
+
+All fonts are self-hosted as `.woff2` files in `public/css/typography/`. The CSS includes KaTeX and MathJax compatibility classes (`.katex`, `mjx-container.MathJax`) but neither library's JS runtime is loaded.
