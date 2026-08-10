@@ -116,9 +116,11 @@ export const startServer = async (config, db, txtUpdated, skipScheduler = false)
       ) {
         let res = await serveDir(request, { fsRoot: 'public', urlRoot: '' });
 
-      if (url.pathname === '/sw.js') {
+        // All static files get no-cache so Cloudflare and browsers always fetch
+        // fresh content from origin. The service worker handles client-side
+        // caching for offline use - the HTTP cache layer must not be sticky
+        // or deploys will serve stale JS/CSS for hours.
         res = withNoCache(res);
-      }
 
         return withCompression(request, res);
       }
