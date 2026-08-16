@@ -1,55 +1,45 @@
 # Cipr: Cosmic Index of Public Resources {.root-cover-title}
 
-The *Cosmic^[Because Martians and Belters are welcome.] Index of Public Resources* ―Cipr― is a decentralized, distributed, independent, public, and universal directory of DNS-resolvable web presences, services, and resources.
+> Important note: The author is not a native English speaker, expectations should be managed accordingly.
 
-The Cipr is a potential alternative to the well-established web search engines that modestly-realistically aims to facilitate interaction among bloggers, writers, artists, homelabbers, freelancers, researchers, privacy advocates, decentralization proponents, and members of other expert or focused communities.
+## Introduction
 
-Take a look at any of the three instances that are already running a  for this to get a general idea of how it works, don't expect a populated index, this is new:
+The *Cosmic^[Because Martians and Belters are also welcome...] Index of Public Resources* ―Cipr― is a decentralized, distributed, independent, public, and universal directory of DNS-resolvable resources.
 
-Take a look at any of the three instances that are currently running in the [proof of concept](https://codeberg.org/barriteau/Ciprnode-zero/) to get a general idea of how it works. Don't expect a populated index, this is a new thing:
+The Cipr could potentially be an alternative to well-established web search engines, but it is probably more suited to bloggers, homelab enthusiasts, privacy advocates, decentralization proponents, the IndieWeb community, members of expert or focused communities, and their audiences.
+
+The Cipr shares features with conventional search engines, web directories, web rings, expert networks and service directories. The distinctive point is that **being indexed in the Cipr does not depend on any person or organization**, every content publisher *owns* their entries in the index, meaning, they can include, update or exclude them at will and with immediate effect, no need to beg to be crawled or to get the approval from curators, editors, or administrators. The trade-off: You need to own a domain name and deploy a small daemon somewhere.
+
+Worldwide availability of any inclusion, update or exclusion to the Cipr is expected to take only a few minutes, even seconds.
+
+The factors that determine the ranking position of search results cannot be obscured in the Cipr, they are standardized and publicly available for auditing.
+
+The SEO equivalent in the Cipr is very simple, publishers only need to use right and consistent-in-time information about their resources (title, description, keywords, primary language, and localization data) to make them visible to their target audience, nothing else.
+
+Censoring, banning, blocking or filtering a Cipr indexed resource is only possible through DNS censoring, banning, blocking or filtering.
+
+This is really a very simple idea, it's surprising that something like this hasn't been the standard resource indexing system for the World Wide Web since its inception.
+
+Take a look at any of the three instances of [Ciprnode zero](https://codeberg.org/barriteau/Ciprnode-zero/) ―a proof of concept of the ciprnode― currently running in the author's homelab:
 
 [https://ciprnode.cipr.info](https://ciprnode.cipr.info)
 [https://ciprnode.guasa.art](https://ciprnode.guasa.art)
 [https://ciprnode.barriteau.net](https://ciprnode.barriteau.net)
 
-This idea is really simple and it's surprising that something like this hasn't been the standard resource indexing system for the World Wide Web since its inception.
+Would you like to try this? If you already own a domain name, download, configure and deploy a copy of the **Ciprnode zero** and join *me*^[At the early stage, it will be *me* and not *us*.] in the Cosmic Index.
 
-The Cipr shares features with conventional search engines, web directories, webrings, expert networks and service directories. The key point is that presence in the Cipr does not require web crawling or the approval of curators, editors or administrators because of its decentralized and user-controlled nature.
-
-With the Cipr, every content publisher *owns* their entries in the index, meaning, they can include, update or exclude them at will. It is the publisher who decides when and how their resource is indexed or not.
-
-The factors that determine the ranking position of search results cannot be obscured in the Cipr, they are standardized, public and auditable.
-
-The equivalent to the SEO activity in the Cipr is very basic, a publisher only needs to use the right and consistent-in-time information about their resources (title, description, keywords, primary language and localization data) to make them visible to their target audience, nothing else.
-
-Censoring, banning, blocking or filtering a Cipr indexed resource is only possible through DNS censoring, banning, blocking or filtering.
-
-The worldwide availability of any inclusion, update or exclusion to the Cipr is expected to take only a few minutes when no less.
-
-Having a website or any other Internet resource effectively indexed in the Cipr is a matter of:
-
-- Owning a domain name, e.g. `example.com`.
-- Deploying a simple demon in the Internet: a ciprnode.
-- Authorizing your ciprnode to add a couple of records to your DNS zone (or doing it manually).
-
-If you know what comes next in this document and you already own a domain name, grab a binary of **Ciprnode zero**, a ciprnode PoC, and get listed in the Cosmic Index.
-
-― [Binaries on Codeberg](https://codeberg.org/barriteau/Ciprnode-zero/tags/)
+― [Ciprnode zero binaries on Codeberg](https://codeberg.org/barriteau/Ciprnode-zero/tags/) ([GitHub mirror](https://github.com/barriteau/ciprnode-zero/releases))
 
 Please be careful, try it in a safe environment, it's just a PoC.
 
-Ciprnode zero source code:
-
-― [Codeberg](https://codeberg.org/barriteau/Ciprnode-zero/)
-
 ## Technical overview
 
-In this specification, a *resource* refers to whatever a zone apex^[Also known as "root" or "naked" domain, your domain name.] points to, as well as any subdomain beneath it, so, any resource that is effectively indexed in the Cipr is referred as a *cipred resource* and identified by its Zone Apex or za, which will always be: `sldl.tldl` (`Second Level Domain` `.` `Top Level Domain`).
+In this document, a *resource* refers to whatever a zone apex^[Also known as "root" or "naked" domain, your domain name.] points to, as well as any subdomain beneath it, so, any resource that is effectively indexed in the Cipr is referred as a *cipred resource* and identified by its Zone Apex or za, which will always be: `sldl.tldl` (`Second Level Domain` `.` `Top Level Domain`).
 
-The Cipr is built upon a set of software components, network elements, protocols, services, policies, and constraints that ensure its completeness, integrity, availability, responsiveness, accuracy, reliability, and *up-to-dateness*. These components are:
+The Cipr is built upon a set of software components, network elements, protocols, services, policies, and constraints that ensure its completeness, integrity, availability, responsiveness, accuracy, reliability, and up-to-dateness. These components are:
 
 - **Domain Name System**: The existing Internet's naming system.
-- **Ciprnodes**: A type of demon whose swarm enables the existence of the Cipr.
+- **Ciprnodes**: A type of daemon whose swarm enables the existence of the Cipr.
 
 A ciprnode is composed of:
 
@@ -78,7 +68,7 @@ Each ciprnode must be published following this pattern:
 
 `https://ciprnode.{za}`
 
-Where `{za}` is the same as `sldl.tldl`. The literal *ciprnode* **must** be the *third level domain* (3LD) label assigned to the demon, for example:
+Where `{za}` is the same as `sldl.tldl`. The literal *ciprnode* **must** be the *third level domain* (3LD) label assigned to the daemon, for example:
 
 `https://ciprnode.cipr.info`
 
